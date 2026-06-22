@@ -1,0 +1,184 @@
+### Para mostrar todos los libros
+GET http://localhost:1234/books
+
+### Para mostrar por genero
+GET http://localhost:1234/books?genre=fiction
+
+### Para mostrar por editorial 
+GET http://localhost:1234/books?editorial=Sudamericana
+
+### Para mostrar por titulo 
+GET http://localhost:1234/books?title=the%20hobbit
+
+### Para mostrar por autor
+GET http://localhost:1234/books?author=Viktor%20E.%20Frankl
+
+### Para mostrar por id 
+GET http://localhost:1234/books/02f8f001-17f9-11f1-af5e-00ff41e311bf
+
+### Para crear un libro 
+POST http://localhost:1234/books
+Content-Type: application/json
+
+{
+    "title": "The Hobbit",
+    "pages": 310,
+    "year": 1937,
+    "img": "https://upload.wikimedia.org/wikipedia/en/4/4a/TheHobbit_FirstEdition.jpg",
+    "editorial": "Editorial Harder",
+    "author": ["J.R.R. Tolkien"],
+    "genre": ["Fantasy", "Adventure"],
+    "sinopsis": ""
+}
+
+### Para actualizar un libro
+PATCH http://localhost:1234/books/0e719dd1-d54a-4f46-98cf-fe4a95cb64dc
+Content-Type: application/json
+
+{
+    "author" : ["J. R. R. Tolkien."]
+}
+
+### Para eliminar un libro 
+DELETE http://localhost:1234/books/9b84ba48-6656-4d1b-9cc2-d787ed6eb6d0
+
+### Para crear un registro 
+POST http://localhost:1234/auth/register
+Content-Type: application/json
+
+{
+    "name": "lauvis",
+    "password": "123456"
+}
+
+### Para iniciar sesion 
+POST http://localhost:1234/auth/login
+Content-Type: application/json
+
+{
+    "name": "lauvis",
+    "password": "lauvis220805"
+}
+
+### Para cerrar sesion 
+POST http://localhost:1234/auth/logout
+
+### Para actualizar la contraseña
+PATCH http://localhost:1234/auth/password
+Content-Type: application/json
+
+{
+    "current_password": "123456",
+    "new_password": "lauvis220805"
+}
+
+### Para ver la informacion del perfil de un usuario
+GET http://localhost:1234/user/335a5afe-63f1-4de7-a174-8236fa45415c/profile
+
+### Para actualizar el perfil de un usuario
+PATCH http://localhost:1234/user/profile
+Content-Type: application/json
+
+{
+    "bio": "Me gusta mucho leer libros"
+}
+
+### Para ver los libros favoritos
+GET http://localhost:1234/users/favorites
+
+### Para guardar un libro en favoritos
+POST http://localhost:1234/users/favorites
+Content-Type: application/json
+
+{
+    "book_id": "27925f75-1ef1-42ef-96f8-51b0ff1a9c0b"
+}
+
+### Para eliminar un libro de favoritos
+DELETE http://localhost:1234/users/favorites/27925f75-1ef1-42ef-96f8-51b0ff1a9c0b
+
+### Para dar o actualizar una calificacion 
+PUT http://localhost:1234/books/02f8f001-17f9-11f1-af5e-00ff41e311bf/rating
+Content-Type: application/json
+
+{
+    "rate": 4
+}
+
+### Para ver los comentarios
+GET http://localhost:1234/book/02f8f001-17f9-11f1-af5e-00ff41e311bf/comments
+
+### Para ver las respuestas de un comentario
+GET http://localhost:1234/book/comments/12/replies
+
+### Para hacer un comentario
+POST http://localhost:1234/book/02f8f001-17f9-11f1-af5e-00ff41e311bf/comments
+Content-Type: application/json
+
+{
+    "content": "tienes razon es muy bueno",
+    "parent_id": 12
+}
+
+### Para eliminar un comentario
+DELETE http://localhost:1234/book/comments/10
+
+### Para dar like a un comentario 
+POST http://localhost:1234/book/comments/13/likes
+
+### Para sacar el like
+DELETE http://localhost:1234/book/comments/13/likes
+
+### Para ver los libros con estado 'reading'
+GET http://localhost:1234/status?status=reading
+### Para ver los libros con estado 'completed'
+GET http://localhost:1234/status?status=completed
+### Para ver los libros con estado 'want to read'
+GET http://localhost:1234/status?status=want_to_read
+
+### Para agregar un estado 
+POST http://localhost:1234/status
+Content-Type: application/json
+
+{
+    "book_id": "02f8f001-17f9-11f1-af5e-00ff41e311bf",
+    "status": "completed"
+}
+
+### Para borrar el estado 
+DELETE http://localhost:1234/status/02f8f001-17f9-11f1-af5e-00ff41e311bf
+
+### Buscar por autor
+GET http://localhost:1234/books?author=Viktor%20E.%20Frankl
+
+### Ver mi rating de un libro (requiere auth)
+GET http://localhost:1234/books/02f8f001-17f9-11f1-af5e-00ff41e311bf/rating
+
+### Para chatear con la Inteligencia Artificial
+POST http://localhost:1234/ai
+Content-Type: application/json
+
+{
+  "message": "Recomiéndame libros de autoyuda",
+  "history": []
+}
+
+### Para que el admin busque libros de la api de google para añadir
+GET http://localhost:1234/books/search?q=harry+potter
+
+### Prueba para agregar libros de la api de google
+POST http://localhost:1234/books
+Content-Type: application/json
+
+{
+    "googleBooksId": "f280CwAAQBAJ",
+    "title": "Harry Potter y la piedra filosofal",
+    "author": "J.K. Rowling",
+    "genres": ["Fantasía", "Juvenil"],
+    "publisher": "Salamandra",
+    "pages": 256,
+    "publishedYear": 1997,
+    "synopsis": "Harry Potter se ha quedado huérfano...",
+    "coverUrl": "https://books.google.com/books/content?id=f280CwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+}
+
