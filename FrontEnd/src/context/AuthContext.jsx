@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
     const { data } = await authAPI.login(credentials)
     const user = data.user
     if (user?.id) {
-      const userData = { id: user.id, name: user.name, role: user.role }
+      const userData = { id: user.id, name: user.name, role: user.role, profile_img: user.profile_img }
       setUser(userData)
       localStorage.setItem('user', JSON.stringify(userData))
       return userData
@@ -40,6 +40,15 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user')
   }
 
+  const updateUser = (data) => {
+    setUser(prev => {
+      if (!prev) return null
+      const updated = { ...prev, ...data }
+      localStorage.setItem('user', JSON.stringify(updated))
+      return updated
+    })
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -48,6 +57,7 @@ export function AuthProvider({ children }) {
       login: handleLogin,
       register: handleRegister,
       logout: handleLogout,
+      updateUser,
     }}>
       {children}
     </AuthContext.Provider>

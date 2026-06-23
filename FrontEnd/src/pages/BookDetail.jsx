@@ -394,7 +394,7 @@ export default function BookDetail() {
                     <div className="shrink-0">
                       <Link to={`/user/${comment.user_id}`} className="block w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm hover:ring-secondary transition-all duration-200">
                         {comment.profile_img ? (
-                          <img className="w-full h-full object-cover" src={comment.profile_img} alt={comment.name} />
+                          <img className="w-full h-full object-cover bg-[#d3c3bb]" src={comment.profile_img} alt={comment.name} />
                         ) : (
                           comment.name?.charAt(0)?.toUpperCase()
                         )}
@@ -484,7 +484,7 @@ export default function BookDetail() {
                           <div key={reply.id} className="flex gap-4 py-4 px-4 hover:bg-surface-container-low/50 rounded-sm transition-colors duration-200 group/reply">
                             <Link to={`/user/${reply.user_id}`} className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs hover:ring-2 hover:ring-secondary transition-all duration-200">
                               {reply.profile_img ? (
-                                <img className="w-full h-full object-cover" src={reply.profile_img} alt={reply.name} />
+                                <img className="w-full h-full object-cover bg-[#d3c3bb]" src={reply.profile_img} alt={reply.name} />
                               ) : (
                                 reply.name?.charAt(0)?.toUpperCase()
                               )}

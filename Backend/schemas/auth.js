@@ -1,7 +1,7 @@
 import z from 'zod'
 
 const authSchema = z.object({
-    name: z.string().min(3).max(10),
+    name: z.string().min(3).max(50),
     password: z.string().min(6).max(100).regex(/[0-9]/, 'Debe tener al menos un número'),
 })
 

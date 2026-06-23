@@ -3,6 +3,19 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 
+const PREDEFINED_AVATARS = [
+  'https://api.dicebear.com/7.x/notionists/svg?seed=1',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=2',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=3',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=4',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=5',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=6',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=7',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=8',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=9',
+  'https://api.dicebear.com/7.x/notionists/svg?seed=10'
+]
+
 export default function UserProfile() {
   const { id } = useParams()
   const { user, isAuthenticated } = useAuth()
@@ -74,7 +87,11 @@ export default function UserProfile() {
       const updates = {}
       if (bio !== profile.bio) updates.bio = bio
       if (profileImg !== profile.profile_img) updates.profile_img = profileImg
-      if (Object.keys(updates).length > 0) { await updateProfile(updates); fetchProfile() }
+      if (Object.keys(updates).length > 0) { 
+        await updateProfile(updates); 
+        fetchProfile();
+        if (updates.profile_img && updateUser) updateUser({ profile_img: updates.profile_img });
+      }
       setEditing(false)
     } catch (_) {}
   }
@@ -237,7 +254,7 @@ export default function UserProfile() {
           <div className="relative group">
             <div className="w-24 md:w-36 h-24 md:h-36 rounded-full overflow-hidden shadow-[0_8px_30px_rgba(65,40,23,0.2)] ring-4 ring-white">
               {profile.profile_img ? (
-                <img alt={profile.name} className="w-full h-full object-cover" src={profile.profile_img} />
+                <img alt={profile.name} className="w-full h-full object-cover bg-[#d3c3bb]" src={profile.profile_img} />
               ) : (
                 <div className="w-full h-full bg-primary flex items-center justify-center text-[#ffdcc6] font-headline text-4xl md:text-6xl font-black">
                   {profile.name?.charAt(0)?.toUpperCase()}
@@ -302,16 +319,24 @@ export default function UserProfile() {
             </div>
 
             <div className="relative group">
-              <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors group-focus-within:text-[#412817]">
-                URL de imagen de perfil
+              <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-4 transition-colors group-focus-within:text-[#412817]">
+                Seleccionar Avatar
               </label>
-              <input
-                type="url"
-                value={profileImg}
-                onChange={(e) => setProfileImg(e.target.value)}
-                className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-3 px-1 transition-all duration-300"
-                placeholder="https://images.unsplash.com/..."
-              />
+              <div className="grid grid-cols-5 gap-3">
+                {PREDEFINED_AVATARS.map((avatar, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setProfileImg(avatar)}
+                    className={`relative w-full aspect-square rounded-full overflow-hidden transition-all duration-300 ${
+                      profileImg === avatar 
+                        ? 'ring-4 ring-[#412817] scale-110 shadow-lg z-10' 
+                        : 'ring-2 ring-transparent hover:ring-[#d3c3bb] hover:scale-105 opacity-80 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover bg-[#d3c3bb]" />
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex gap-4 pt-4">

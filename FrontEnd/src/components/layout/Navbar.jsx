@@ -1,9 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useState, useRef, useEffect } from 'react'
+import { getProfile } from '../../api/profile'
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, updateUser } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [search, setSearch] = useState('')
@@ -31,6 +32,15 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Fetch profile to get avatar for existing sessions
+  useEffect(() => {
+    if (user?.id && !user.profile_img && updateUser) {
+      getProfile(user.id).then(res => {
+         updateUser({ profile_img: res.data.profile_img })
+      }).catch(() => {})
+    }
+  }, [user?.id])
 
   const handleLogout = async () => {
     setMenuOpen(false)
@@ -147,8 +157,12 @@ export default function Navbar() {
                         : 'bg-white/90 text-[#412817] hover:bg-white hover:shadow-md'
                     }`}
                   >
-                    <div className="w-7 h-7 md:w-6 md:h-6 rounded-full bg-primary flex items-center justify-center text-[#ffdcc6] text-xs font-bold">
-                      {user?.name?.charAt(0)?.toUpperCase()}
+                    <div className="w-7 h-7 md:w-6 md:h-6 rounded-full bg-primary flex items-center justify-center text-[#ffdcc6] text-xs font-bold overflow-hidden">
+                      {user?.profile_img ? (
+                        <img src={user.profile_img} alt={user.name} className="w-full h-full object-cover bg-[#d3c3bb]" />
+                      ) : (
+                        user?.name?.charAt(0)?.toUpperCase()
+                      )}
                     </div>
                     <span className="hidden md:block font-label text-xs font-medium max-w-[80px] truncate">
                       {user?.name}
@@ -164,8 +178,12 @@ export default function Navbar() {
                       {/* User Header */}
                       <div className="px-5 py-4 bg-surface-container-low border-b border-[#d3c3bb]/20">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-[#ffdcc6] font-headline font-bold text-lg">
-                            {user?.name?.charAt(0)?.toUpperCase()}
+                          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-[#ffdcc6] font-headline font-bold text-lg overflow-hidden">
+                            {user?.profile_img ? (
+                              <img src={user.profile_img} alt={user.name} className="w-full h-full object-cover bg-[#d3c3bb]" />
+                            ) : (
+                              user?.name?.charAt(0)?.toUpperCase()
+                            )}
                           </div>
                           <div>
                             <p className="font-headline font-bold text-[#412817]">{user?.name}</p>
