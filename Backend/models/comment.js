@@ -12,7 +12,7 @@ const connection = mysql.createPool(config)
 export class CommentModel{
     static async getAll({id, user_id}){
         const [comments] = await connection.query(
-            `SELECT book.title, comments.id, users.name, user_profile.profile_img, content, comments.create_at, COUNT(comments_likes.comment_id) AS likes,
+            `SELECT book.title, comments.id, BIN_TO_UUID(users.id) AS user_id, users.name, user_profile.profile_img, content, comments.create_at, COUNT(comments_likes.comment_id) AS likes,
             CASE WHEN user_like.user_id IS NOT NULL THEN 1 ELSE 0 END AS user_liked FROM comments 
             JOIN users ON users.id = comments.user_id
             JOIN user_profile ON user_profile.user_id = users.id
@@ -28,7 +28,7 @@ export class CommentModel{
 
     static async getReplies({id, user_id}){
         const [replies] = await connection.query(
-            `SELECT comments.id, users.name, user_profile.profile_img, content, comments.create_at, COUNT(comments_likes.comment_id) AS likes, CASE WHEN user_like.user_id IS NOT NULL THEN 1 ELSE 0 END AS user_liked FROM comments
+            `SELECT comments.id, BIN_TO_UUID(users.id) AS user_id, users.name, user_profile.profile_img, content, comments.create_at, COUNT(comments_likes.comment_id) AS likes, CASE WHEN user_like.user_id IS NOT NULL THEN 1 ELSE 0 END AS user_liked FROM comments
             JOIN users ON users.id = comments.user_id
             JOIN user_profile ON user_profile.user_id = users.id
             LEFT JOIN comments_likes ON comments_likes.comment_id = comments.id

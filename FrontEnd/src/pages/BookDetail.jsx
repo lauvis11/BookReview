@@ -392,20 +392,20 @@ export default function BookDetail() {
                   <div className="flex gap-3 md:gap-6 p-4 md:p-8 bg-white/50 hover:bg-white transition-all duration-300 rounded-sm">
                     {/* Avatar */}
                     <div className="shrink-0">
-                      <div className="w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm">
+                      <Link to={`/user/${comment.user_id}`} className="block w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm hover:ring-secondary transition-all duration-200">
                         {comment.profile_img ? (
                           <img className="w-full h-full object-cover" src={comment.profile_img} alt={comment.name} />
                         ) : (
                           comment.name?.charAt(0)?.toUpperCase()
                         )}
-                      </div>
+                      </Link>
                     </div>
                     
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       {/* Header */}
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
-                        <span className="font-headline font-bold text-primary">{comment.name}</span>
+                        <Link to={`/user/${comment.user_id}`} className="font-headline font-bold text-primary hover:text-secondary transition-colors duration-200">{comment.name}</Link>
                         <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
                         <time className="text-secondary font-bold text-[11px] font-label tracking-widest">
                           {new Date(comment.create_at).toLocaleDateString('es-AR', { 
@@ -482,12 +482,16 @@ export default function BookDetail() {
                       {repliesMap[comment.id]?.length > 0 ? (
                         repliesMap[comment.id].map(reply => (
                           <div key={reply.id} className="flex gap-4 py-4 px-4 hover:bg-surface-container-low/50 rounded-sm transition-colors duration-200 group/reply">
-                            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">
-                              {reply.name?.charAt(0)?.toUpperCase()}
-                            </div>
+                            <Link to={`/user/${reply.user_id}`} className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs hover:ring-2 hover:ring-secondary transition-all duration-200">
+                              {reply.profile_img ? (
+                                <img className="w-full h-full object-cover" src={reply.profile_img} alt={reply.name} />
+                              ) : (
+                                reply.name?.charAt(0)?.toUpperCase()
+                              )}
+                            </Link>
                             <div className="flex-1">
                               <div className="flex items-baseline gap-2 mb-1">
-                                <span className="font-bold text-sm text-primary">{reply.name}</span>
+                                <Link to={`/user/${reply.user_id}`} className="font-bold text-sm text-primary hover:text-secondary transition-colors duration-200">{reply.name}</Link>
                                 <span className="text-secondary font-bold text-[10px] font-label tracking-wider">
                                   {new Date(reply.create_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                                 </span>

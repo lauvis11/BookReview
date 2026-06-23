@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
-import { getByStatus } from '../api/status'
-import { getFavorites } from '../api/favorites'
 import { useAuth } from '../context/AuthContext'
 
 export default function UserProfile() {
@@ -26,43 +24,49 @@ export default function UserProfile() {
 
   const isOwn = isAuthenticated && String(user?.id) === String(id)
 
-  useEffect(() => { 
+  // Guard: id inválido (ej: link con user_id undefined porque el backend no fue reiniciado)
+  if (!id || id === 'undefined') return (
+    <div className="text-center py-32 px-6">
+      <span className="material-symbols-outlined text-6xl text-[#d3c3bb] block mb-4">link_off</span>
+      <p className="font-headline text-2xl text-[#50453e] mb-2">Enlace inválido</p>
+      <p className="font-body text-[#82746d] mb-6">El perfil de este usuario no está disponible.</p>
+      <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[#412817] text-[#ffdcc6] font-label text-xs uppercase tracking-widest rounded shadow-lg hover:brightness-110 transition-all">
+        <span className="material-symbols-outlined text-sm">arrow_back</span>
+        Volver al inicio
+      </Link>
+    </div>
+  )
+
+  useEffect(() => {
     fetchProfile()
-    if (isOwn || isAuthenticated) fetchUserData()
-  }, [id, isOwn])
+  }, [id])
 
   const fetchProfile = async () => {
     setLoading(true)
-    try { 
+    try {
       const { data } = await getProfile(id)
       setProfile(data)
       setBio(data.bio || '')
       setProfileImg(data.profile_img || '')
-    } catch (_) {}
-    setLoading(false)
-  }
 
-  const fetchUserData = async () => {
-    try {
-      const [readingRes, completedRes, wantRes, favRes] = await Promise.all([
-        getByStatus('reading').catch(() => ({ data: [] })),
-        getByStatus('completed').catch(() => ({ data: [] })),
-        getByStatus('want_to_read').catch(() => ({ data: [] })),
-        getFavorites().catch(() => ({ data: [] }))
-      ])
-      
-      setReading(readingRes.data || [])
-      setCompleted(completedRes.data || [])
-      setWantToRead(wantRes.data || [])
-      setFavorites(favRes.data || [])
-      
+      const readingBooks   = data.reading      || []
+      const completedBooks = data.completed     || []
+      const wantBooks      = data.want_to_read  || []
+      const favBooks       = data.favorites     || []
+
+      setReading(readingBooks)
+      setCompleted(completedBooks)
+      setWantToRead(wantBooks)
+      setFavorites(favBooks)
+
       setStats({
-        reading: readingRes.data?.length || 0,
-        completed: completedRes.data?.length || 0,
-        wantToRead: wantRes.data?.length || 0,
-        favorites: favRes.data?.length || 0
+        reading:    readingBooks.length,
+        completed:  completedBooks.length,
+        wantToRead: wantBooks.length,
+        favorites:  favBooks.length
       })
     } catch (_) {}
+    setLoading(false)
   }
 
   const handleSave = async () => {
@@ -209,9 +213,14 @@ export default function UserProfile() {
   )
 
   if (!profile) return (
-    <div className="text-center py-32">
-      <span className="material-symbols-outlined text-6xl text-[#d3c3bb] mb-4">person_off</span>
-      <p className="font-headline text-2xl text-[#50453e]">Usuario no encontrado</p>
+    <div className="text-center py-32 px-6">
+      <span className="material-symbols-outlined text-6xl text-[#d3c3bb] block mb-4">person_off</span>
+      <p className="font-headline text-2xl text-[#50453e] mb-2">Usuario no encontrado</p>
+      <p className="font-body text-[#82746d] mb-6">Este perfil no existe o no está disponible.</p>
+      <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[#412817] text-[#ffdcc6] font-label text-xs uppercase tracking-widest rounded shadow-lg hover:brightness-110 transition-all">
+        <span className="material-symbols-outlined text-sm">arrow_back</span>
+        Volver al inicio
+      </Link>
     </div>
   )
 
