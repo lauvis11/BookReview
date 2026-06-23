@@ -499,18 +499,31 @@ export default function UserProfile() {
                 {tabs.find(t => t.id === activeTab)?.icon}
               </span>
               <p className="font-body text-[#82746d]">
-                {activeTab === 'reading' && 'No estás leyendo ningún libro actualmente'}
-                {activeTab === 'completed' && 'Aún no has completado ningún libro'}
-                {activeTab === 'want_to_read' && 'Tu lista está vacía'}
-                {activeTab === 'favorites' && 'No tienes favoritos aún'}
+                {isOwn ? (
+                  <>
+                    {activeTab === 'reading' && 'No estás leyendo ningún libro actualmente'}
+                    {activeTab === 'completed' && 'Aún no has completado ningún libro'}
+                    {activeTab === 'want_to_read' && 'Tu lista está vacía'}
+                    {activeTab === 'favorites' && 'No tienes favoritos aún'}
+                  </>
+                ) : (
+                  <>
+                    {activeTab === 'reading' && 'Este usuario no está leyendo ningún libro'}
+                    {activeTab === 'completed' && 'Este usuario aún no ha completado ningún libro'}
+                    {activeTab === 'want_to_read' && 'La lista de este usuario está vacía'}
+                    {activeTab === 'favorites' && 'Este usuario no tiene favoritos aún'}
+                  </>
+                )}
               </p>
-              <Link 
-                to="/" 
-                className="inline-flex items-center gap-2 mt-4 text-[#412817] font-label text-xs uppercase tracking-wider font-bold hover:text-[#745a34] transition-colors"
-              >
-                <span className="material-symbols-outlined text-sm">explore</span>
-                Explorar catálogo
-              </Link>
+              {isOwn && (
+                <Link 
+                  to="/catalog" 
+                  className="inline-flex items-center gap-2 mt-4 text-[#412817] font-label text-xs uppercase tracking-wider font-bold hover:text-[#745a34] transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">explore</span>
+                  Explorar catálogo
+                </Link>
+              )}
             </div>
           )}
         </section>
