@@ -40,11 +40,11 @@ export class BookModel {
                 LEFT JOIN ratings ON ratings.book_id = book_genre.book_id
                 LEFT JOIN book_author ON book_author.book_id = book_genre.book_id
                 LEFT JOIN author ON author.id = book_author.author_id
-                WHERE LOWER(genre.name) = LOWER(?)
+                WHERE LOWER(genre.name) LIKE LOWER(?)
                 GROUP BY book_genre.book_id
                 LIMIT ?
                 OFFSET ?;
-                `, [genre, limit, offset]
+                `, [`%${genre}%`, limit, offset]
             )
 
             return books
@@ -59,11 +59,11 @@ export class BookModel {
                 LEFT JOIN ratings ON ratings.book_id = book_genre.book_id
                 LEFT JOIN book_author ON book_author.book_id = book_genre.book_id
                 LEFT JOIN author ON author.id = book_author.author_id
-                WHERE LOWER(editorial.name) = LOWER(?)
+                WHERE LOWER(editorial.name) LIKE LOWER(?)
                 GROUP BY book_genre.book_id
                 LIMIT ?
                 OFFSET ?;
-                `, [editorial, limit, offset]
+                `, [`%${editorial}%`, limit, offset]
             )
 
             return books
