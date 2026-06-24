@@ -201,12 +201,6 @@ export default function Auth() {
         <div className="hidden md:block absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-transparent via-[#412817]/20 to-transparent z-40"></div>
 
       </div>
-
-      {/* Decorative Element */}
-      <div className="absolute bottom-12 flex flex-col items-center gap-4 opacity-30 pointer-events-none">
-        <span className="material-symbols-outlined text-4xl text-primary">menu_book</span>
-        <div className="w-px h-12 bg-primary"></div>
-      </div>
     </main>
   )
 }
