@@ -25,7 +25,7 @@ export class AiController{
                 } 
             })
 
-            const stream = await chat.sendMessageStream(message)
+            const { stream } = await chat.sendMessageStream(message)
             for await (const chunk of stream){
                 const text = chunk.text()
                 if(text){

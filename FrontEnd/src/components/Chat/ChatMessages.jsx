@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { Book } from 'lucide-react'
 import ChatMessage from './ChatMessage'
 
 export default function ChatMessages({ messages, loading }) {
@@ -9,6 +8,10 @@ export default function ChatMessages({ messages, loading }) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
+
+  // Mostrar el typing indicator solo si loading=true Y el último mensaje del modelo está vacío
+  const lastMsg = messages[messages.length - 1]
+  const showTyping = loading && (!lastMsg || lastMsg.role !== 'model' || lastMsg.text === '')
 
   return (
     <div className="chat-messages-area" role="log" aria-label="Conversación con Lib" aria-live="polite">
@@ -26,13 +29,16 @@ export default function ChatMessages({ messages, loading }) {
         </div>
       )}
 
-      {/* Lista de mensajes */}
-      {messages.map((msg, index) => (
-        <ChatMessage key={index} message={msg} />
-      ))}
+      {/* Lista de mensajes — se omiten los del modelo aún sin texto (esperando primer chunk) */}
+      {messages.map((msg, index) => {
+        if (msg.role === 'model' && msg.text === '') return null
+        return (
+          <ChatMessage key={index} message={msg} isStreaming={loading && index === messages.length - 1 && msg.role === 'model'} />
+        )
+      })}
 
-      {/* Indicador de escritura */}
-      {loading && (
+      {/* Indicador de escritura — solo mientras espera el primer chunk */}
+      {showTyping && (
         <div className="typing-indicator" aria-label="Lib está escribiendo">
           <div className="chat-msg-avatar" aria-hidden="true">
             <img src="/foto-de-asistente-lib.webp" alt="Lib" className="w-full h-full object-cover rounded-full" />

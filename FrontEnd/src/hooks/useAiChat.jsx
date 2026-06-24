@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export function useAiChat() {
     const apiUrl = import.meta.env.VITE_API_URL
@@ -7,48 +7,60 @@ export function useAiChat() {
     const [messages, setMessages] = useState([])
     const [history, setHistory] = useState([])
 
-    async function sendMessage(userMessage) {
-        if(!userMessage.trim()) return;
+    const sendMessage = useCallback(async (userMessage) => {
+        if (!userMessage.trim()) return;
 
-        const userEntry = {role: "user", text: userMessage}
-        setMessages(prevMessages => [...prevMessages, userEntry])
-
+        setMessages(prev => [...prev, { role: "user", text: userMessage }])
         setLoading(true)
         setError(null)
+
+        // Añadir el mensaje vacío del modelo que irá llenándose con los chunks
+        setMessages(prev => [...prev, { role: "model", text: "" }])
 
         try {
             const response = await fetch(`${apiUrl}/ai`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ message: userMessage, history: history })
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ message: userMessage, history })
             })
-            if(!response.ok) throw new Error("Fallo al obtener respuesta")
 
-            const result = await response.json()
-            const aiText = result.chatResponse
-            setHistory(prevHistory => [
-                ...prevHistory, 
-                {
-                    role: "user",
-                    parts: [{ text: userMessage }]
-                },
-                {
-                    role: "model",
-                    parts: [{ text: aiText }]
-                } 
+            if (!response.ok) throw new Error("Fallo al obtener respuesta")
+
+            const reader = response.body.getReader()
+            const decoder = new TextDecoder()
+            let fullText = ""
+
+            while (true) {
+                const { done, value } = await reader.read()
+                if (done) break
+
+                const chunk = decoder.decode(value, { stream: true })
+                fullText += chunk
+
+                // Actualizar el último mensaje (el del modelo) con el texto acumulado
+                setMessages(prev => {
+                    const updated = [...prev]
+                    updated[updated.length - 1] = { role: "model", text: fullText }
+                    return updated
+                })
+            }
+
+            // Guardar en el historial solo cuando ya llegó el texto completo
+            setHistory(prev => [
+                ...prev,
+                { role: "user", parts: [{ text: userMessage }] },
+                { role: "model", parts: [{ text: fullText }] }
             ])
-            setMessages((prev) => [...prev, { role: "model", text: aiText }]);
-            return aiText
+
         } catch (err) {
-            setError(err.message)
+            setError("No pude conectarme con el asistente. Intenta de nuevo.")
+            // Eliminar el mensaje vacío del modelo si hubo error
+            setMessages(prev => prev.slice(0, -1))
         } finally {
             setLoading(false)
         }
+    }, [history, apiUrl])
 
-    }
-
-
-    return { messages, loading, error, sendMessage}
-}
+    return { messages, loading, error, sendMessage }
+}
