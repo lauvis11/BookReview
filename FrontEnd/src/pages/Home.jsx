@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
+import Hero from '../components/layout/Hero'
 
 export default function Home() {
   const [recentBooks, setRecentBooks] = useState([])
@@ -27,7 +28,9 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="pt-20 md:pt-32 pb-16 md:pb-24 max-w-[1440px] mx-auto px-6 md:px-12 min-h-screen flex flex-col">
+    <main className="pb-16 md:pb-24 max-w-[1440px] mx-auto min-h-screen flex flex-col">
+      <Hero />
+      <div className="px-6 md:px-12">
       {/* Bot Chat Suggestions */}
       <section className="mb-16">
         <div className="mb-6">
@@ -117,6 +120,7 @@ export default function Home() {
       <div className="border-l-4 border-secondary/30 pl-6 md:pl-10 italic font-headline text-on-surface-variant max-w-2xl mx-auto mt-12 md:mt-20">
         <p className="text-xl md:text-3xl leading-relaxed md:leading-snug mb-6">"A reader lives a thousand lives before he dies. The man who never reads lives only one."</p>
         <cite className="block font-label not-italic text-xs md:text-sm uppercase tracking-[0.3em] text-primary font-bold">— George R.R. Martin</cite>
+      </div>
       </div>
     </main>
   )
