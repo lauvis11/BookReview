@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 function HeroIllustration() {
   return (
-    <svg width="100%" viewBox="0 0 680 420" role="img" aria-label="Ilustración de libros apilados">
+    <svg width="100%" viewBox="120 110 420 305" role="img" aria-label="Ilustración de libros apilados">
 
       {/* Sombra base */}
       <ellipse cx="340" cy="395" rx="190" ry="10" fill="#41281720"/>
@@ -89,9 +89,9 @@ export default function Hero() {
         <div className="order-2 md:order-1 text-center md:text-left">
 
           <h1 className="font-headline font-black text-[#412817] leading-[1.05] tracking-tighter mb-4 md:mb-5">
+            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl block">Explora,</span>
             <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl block">Descubre,</span>
-            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl block">Lee,</span>
-            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl block text-[#c2a878]">Comparte.</span>
+            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl block text-[#c2a878]">Opina.</span>
           </h1>
 
           <p className="font-body text-[#50453e] text-base md:text-lg leading-relaxed max-w-sm sm:max-w-md mx-auto md:mx-0 mb-8 md:mb-10">
