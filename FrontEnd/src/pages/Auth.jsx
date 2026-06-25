@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { frases } from '../utils/frases'
 
 
 export default function Auth() {
@@ -11,6 +12,7 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
   const { login, register } = useAuth()
   const navigate = useNavigate()
 
@@ -56,9 +58,9 @@ export default function Auth() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="mt-10 space-y-3">
-          <p className="font-headline italic text-xl md:text-2xl text-[#ffdcc6] drop-shadow-sm">"Una habitación sin libros es como un cuerpo sin alma."</p>
-          <p className="font-label text-xs tracking-widest uppercase text-[#c2a878] opacity-80">— Cicerón</p>
+        <div className="mt-10 space-y-3 px-4 max-w-sm">
+          <p className="font-headline italic text-xl md:text-2xl text-[#ffdcc6] drop-shadow-sm">"{quote.frase}"</p>
+          <p className="font-label text-xs tracking-widest uppercase text-[#c2a878] opacity-80">— {quote.autor}</p>
         </div>
       </div>
     </div>

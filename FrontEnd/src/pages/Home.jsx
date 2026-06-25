@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 import { getBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
 import Hero from '../components/layout/Hero'
+import { frases } from '../utils/frases'
 
 export default function Home() {
   const [recentBooks, setRecentBooks] = useState([])
   const [fantasyBooks, setFantasyBooks] = useState([])
   const [selfHelpBooks, setSelfHelpBooks] = useState([])
+  const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -118,8 +120,8 @@ export default function Home() {
 
       {/* Sidebar-style quote */}
       <div className="border-l-4 border-secondary/30 pl-6 md:pl-10 italic font-headline text-on-surface-variant max-w-2xl mx-auto mt-12 md:mt-20">
-        <p className="text-xl md:text-3xl leading-relaxed md:leading-snug mb-6">"A reader lives a thousand lives before he dies. The man who never reads lives only one."</p>
-        <cite className="block font-label not-italic text-xs md:text-sm uppercase tracking-[0.3em] text-primary font-bold">— George R.R. Martin</cite>
+        <p className="text-xl md:text-3xl leading-relaxed md:leading-snug mb-6">"{quote.frase}"</p>
+        <cite className="block font-label not-italic text-xs md:text-sm uppercase tracking-[0.3em] text-primary font-bold">— {quote.autor}</cite>
       </div>
       </div>
     </main>
