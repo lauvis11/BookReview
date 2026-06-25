@@ -261,25 +261,29 @@ export default function UserProfile() {
                 </div>
               )}
             </div>
-            {isOwn && (
-              <button onClick={() => setEditing(true)}
-                className="absolute bottom-2 right-2 w-10 h-10 bg-[#412817] text-[#ffdcc6] rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg">
-                <span className="material-symbols-outlined text-lg">edit</span>
-              </button>
-            )}
           </div>
 
           {/* User Info */}
           <div className="flex-1 text-center md:text-left">
-            <div className="mb-3 md:mb-4">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-[#412817] tracking-tight leading-none">
-                {profile.name}
-              </h1>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3">
-                <span className="font-label text-[10px] uppercase tracking-[0.2em] text-[#82746d] font-medium">
-                  Miembro desde {new Date(profile.created_at).toLocaleDateString('es', { year: 'numeric', month: 'long' })}
-                </span>
+            <div className="mb-3 md:mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-[#412817] tracking-tight leading-none">
+                  {profile.name}
+                </h1>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3">
+                  <span className="font-label text-[10px] uppercase tracking-[0.2em] text-[#82746d] font-medium">
+                    Miembro desde {new Date(profile.created_at).toLocaleDateString('es', { year: 'numeric', month: 'long' })}
+                  </span>
+                </div>
               </div>
+              
+              {isOwn && (
+                <button onClick={() => setEditing(true)}
+                  className="inline-flex self-center md:self-start items-center justify-center gap-2 px-6 py-2.5 bg-primary text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-md hover:shadow-lg hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
+                  <span className="material-symbols-outlined text-sm">edit</span>
+                  Editar Perfil
+                </button>
+              )}
             </div>
 
             {/* Bio */}
@@ -294,59 +298,91 @@ export default function UserProfile() {
 
 
 
-      {/* Edit Form */}
+      {/* Edit Profile Modal */}
       {editing && (
-        <div className="bg-white p-6 md:p-8 rounded-xl shadow-[0_10px_40px_rgba(65,40,23,0.1)] border border-[#d3c3bb]/20 mb-10 md:mb-12 max-w-2xl">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="material-symbols-outlined text-[#412817]">settings</span>
-            <h3 className="font-headline text-xl font-bold text-[#412817]">Editar Perfil</h3>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-[#412817]/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setEditing(false)}
+          />
           
-          <div className="space-y-6">
-            <div className="relative group">
-              <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors group-focus-within:text-[#412817]">
-                Biografía
-              </label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                rows={4}
-                maxLength={300}
-                className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-3 px-1 resize-none leading-relaxed transition-all duration-300"
-                placeholder="Cuéntanos sobre ti y tu amor por los libros..."
-              />
-              <p className="text-[10px] text-[#82746d] mt-1 text-right">{bio.length}/300</p>
+          {/* Modal Content */}
+          <div className="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-[#412817] px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#ffdcc6]">manage_accounts</span>
+                <h3 className="font-headline text-xl font-bold text-[#ffdcc6]">Editar Perfil</h3>
+              </div>
+              <button 
+                onClick={() => setEditing(false)}
+                className="text-[#d3c3bb] hover:text-white transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
             </div>
+            
+            {/* Body */}
+            <div className="p-6 md:p-8 space-y-8 max-h-[75vh] overflow-y-auto">
+              {/* Avatar Selection */}
+              <div>
+                <label className="block font-label text-xs uppercase tracking-widest text-[#82746d] mb-4">
+                  Elige tu Avatar
+                </label>
+                <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
+                  {PREDEFINED_AVATARS.map((avatar, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setProfileImg(avatar)}
+                      className={`relative w-16 h-16 rounded-full overflow-hidden transition-all duration-300 ${
+                        profileImg === avatar 
+                          ? 'ring-4 ring-[#412817] scale-110 shadow-lg z-10' 
+                          : 'ring-2 ring-transparent hover:ring-[#d3c3bb] hover:scale-105 opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover bg-[#d3c3bb]" />
+                      {profileImg === avatar && (
+                        <div className="absolute inset-0 bg-[#412817]/20 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-white text-xl drop-shadow-md">check</span>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            <div className="relative group">
-              <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-4 transition-colors group-focus-within:text-[#412817]">
-                Seleccionar Avatar
-              </label>
-              <div className="grid grid-cols-5 gap-3">
-                {PREDEFINED_AVATARS.map((avatar, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setProfileImg(avatar)}
-                    className={`relative w-full aspect-square rounded-full overflow-hidden transition-all duration-300 ${
-                      profileImg === avatar 
-                        ? 'ring-4 ring-[#412817] scale-110 shadow-lg z-10' 
-                        : 'ring-2 ring-transparent hover:ring-[#d3c3bb] hover:scale-105 opacity-80 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover bg-[#d3c3bb]" />
-                  </button>
-                ))}
+              {/* Bio Textarea */}
+              <div className="relative group">
+                <label className="block font-label text-xs uppercase tracking-widest text-[#82746d] mb-2 transition-colors group-focus-within:text-[#412817]">
+                  Biografía
+                </label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  rows={4}
+                  maxLength={300}
+                  className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-white border border-[#d3c3bb]/50 focus:border-[#c2a878] rounded-lg focus:ring-2 focus:ring-[#c2a878]/30 font-body p-4 resize-none leading-relaxed transition-all duration-300 shadow-inner"
+                  placeholder="Cuéntanos sobre ti y tu amor por los libros..."
+                />
+                <p className="absolute bottom-3 right-4 text-[10px] text-[#82746d] font-medium">{bio.length}/300</p>
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4">
-              <button onClick={handleSave}
-                className="px-8 py-3 bg-primary text-[#ffdcc6] font-label font-bold uppercase tracking-widest text-xs rounded shadow-lg hover:shadow-xl hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
-                Guardar Cambios
-              </button>
-              <button onClick={() => setEditing(false)}
-                className="px-6 py-3 border border-[#d3c3bb] text-[#50453e] font-label text-xs uppercase tracking-widest hover:bg-[#f7f3ea] transition-colors rounded cursor-pointer">
+            {/* Footer */}
+            <div className="bg-[#f7f3ea] px-6 py-4 flex justify-end gap-3 border-t border-[#d3c3bb]/30">
+              <button 
+                onClick={() => setEditing(false)}
+                className="px-5 py-2.5 text-[#50453e] font-label text-xs uppercase tracking-widest hover:bg-[#d3c3bb]/20 transition-colors rounded-md cursor-pointer font-bold"
+              >
                 Cancelar
+              </button>
+              <button 
+                onClick={handleSave}
+                className="px-6 py-2.5 bg-primary text-on-primary font-label font-bold uppercase tracking-widest text-xs rounded-md shadow-md hover:shadow-lg hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">save</span>
+                Guardar
               </button>
             </div>
           </div>
