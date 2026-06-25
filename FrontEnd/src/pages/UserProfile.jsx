@@ -1,28 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
-
-const PREDEFINED_AVATARS = [
-  'https://api.dicebear.com/7.x/notionists/svg?seed=1',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=2',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=3',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=4',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=5',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=6',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=7',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=8',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=9',
-  'https://api.dicebear.com/7.x/notionists/svg?seed=10'
-]
+import { PREDEFINED_AVATARS } from '../utils/avatars'
 
 export default function UserProfile() {
   const { id } = useParams()
   const { user, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(location.state?.openEdit || false)
   const [bio, setBio] = useState('')
   const [profileImg, setProfileImg] = useState('')
   const [activeTab, setActiveTab] = useState('reading')
@@ -335,16 +324,16 @@ export default function UserProfile() {
                     <button
                       key={index}
                       onClick={() => setProfileImg(avatar)}
-                      className={`relative w-16 h-16 rounded-full overflow-hidden transition-all duration-300 ${
+                      className={`relative w-16 h-16 rounded-full transition-all duration-300 ${
                         profileImg === avatar 
-                          ? 'ring-4 ring-[#412817] scale-110 shadow-lg z-10' 
-                          : 'ring-2 ring-transparent hover:ring-[#d3c3bb] hover:scale-105 opacity-70 hover:opacity-100'
+                          ? 'ring-2 ring-primary ring-offset-2 ring-offset-[#fdfbf7] scale-110 shadow-md z-10' 
+                          : 'ring-1 ring-transparent hover:ring-[#d3c3bb] hover:scale-105 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover bg-[#d3c3bb]" />
+                      <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full rounded-full object-cover bg-[#d3c3bb]" />
                       {profileImg === avatar && (
-                        <div className="absolute inset-0 bg-[#412817]/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-white text-xl drop-shadow-md">check</span>
+                        <div className="absolute -bottom-1 -right-1 bg-primary w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                          <span className="material-symbols-outlined text-[#ffdcc6] text-[12px] font-bold">check</span>
                         </div>
                       )}
                     </button>

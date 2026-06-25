@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-// Paleta: #412817 primario | #745a34 secundario | #c2a878 dorado | #ffdcc6 crema | #f7f3ea beige | #d3c3bb borde
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
@@ -29,9 +28,8 @@ export default function Auth() {
         navigate('/')
       } else {
         await register({ name, password })
-        setSuccess('¡Cuenta creada! Ahora puedes iniciar sesión.')
-        setIsLogin(true)
-        setPassword('')
+        const userData = await login({ name, password })
+        navigate(`/user/${userData.id}`, { state: { openEdit: true } })
       }
     } catch (err) {
       if (!isLogin && err.response?.status === 409) {
@@ -137,6 +135,7 @@ export default function Auth() {
             </p>
           )}
         </div>
+
         <button
           className="w-full py-4 bg-primary text-on-primary font-label font-bold uppercase tracking-[0.15em] rounded-sm shadow-md hover:shadow-xl hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] active:brightness-95 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           type="submit"
