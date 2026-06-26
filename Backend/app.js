@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true
 }));
 app.use(cookieParser())
@@ -69,18 +69,21 @@ app.use('/ai', aiRouter)
 
 app.use(errorHandler)
 
-
-const server = app.listen(PORT, ()=>{
+if(process.env.NODE_ENV !== 'production'){
+    const server = app.listen(PORT, ()=>{
     console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`)
-})
+    })
 
-process.on('SIGTERM', () => {
-    server.close(() => {
-        connection.end()
+    process.on('SIGTERM', () => {
+        server.close(() => {
+            connection.end()
+        })
     })
-})
-process.on('SIGINT', () => {
-    server.close(() => {
-        connection.end()
+    process.on('SIGINT', () => {
+        server.close(() => {
+            connection.end()
+        })
     })
-})
+}
+
+export default app;

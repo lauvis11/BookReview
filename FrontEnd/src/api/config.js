@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'http://localhost:1234',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:1234',
   withCredentials: true,
 })
 
@@ -41,7 +41,8 @@ API.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await axios.get('http://localhost:1234/auth/refresh', { withCredentials: true })
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:1234'
+        await axios.get(`${apiUrl}/auth/refresh`, { withCredentials: true })
         processQueue(null)
         return API(originalRequest)
       } catch (refreshError) {
