@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-process.loadEnvFile()
+try { process.loadEnvFile() } catch (e) {}
 
 const api_key = process.env.GEMINI_API_KEY
 
