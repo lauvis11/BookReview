@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom'
+import { useSEO } from '../hooks/useSEO'
 
 export default function NotFound() {
+  useSEO({
+    title: '404 — Página no encontrada',
+    description: 'La página que buscás no existe en BookReview.',
+    noindex: true,
+  })
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-surface-container-low">
       <span className="material-symbols-outlined text-9xl text-primary/20 mb-6 block">

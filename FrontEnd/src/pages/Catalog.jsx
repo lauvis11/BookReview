@@ -3,12 +3,42 @@ import { useSearchParams } from 'react-router-dom'
 import { getBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
 import SearchBar from '../components/books/SearchBar'
+import { useSEO } from '../hooks/useSEO'
 
 export default function Catalog() {
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // Build a dynamic SEO title based on active filters
+  const genre = searchParams.get('genre')
+  const author = searchParams.get('author')
+  const titleParam = searchParams.get('title')
+  const seoTitle = genre
+    ? `Catálogo de ${genre.charAt(0) + genre.slice(1).toLowerCase()}`
+    : author
+    ? `Libros de ${author}`
+    : titleParam
+    ? `Búsqueda: "${titleParam}"`
+    : 'Catálogo de Libros'
+  const seoDescription = genre
+    ? `Explorá todos los libros de ${genre.charAt(0) + genre.slice(1).toLowerCase()} disponibles en BookReview. Calificaciones, reseñas y más.`
+    : 'Explorá el catálogo completo de BookReview. Buscá por título, autor o género y descubrí tu próxima lectura.'
+
+  useSEO({
+    title: seoTitle,
+    description: seoDescription,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `${seoTitle} — BookReview`,
+      description: seoDescription,
+      url: `https://book-review-six-rho.vercel.app/catalog${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+      isPartOf: { '@type': 'WebSite', name: 'BookReview', url: 'https://book-review-six-rho.vercel.app/' },
+    },
+  })
+
 
   const fetchBooks = async (params = {}) => {
     setLoading(true)

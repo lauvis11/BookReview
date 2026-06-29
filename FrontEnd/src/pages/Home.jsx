@@ -4,12 +4,28 @@ import { getBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
 import Hero from '../components/layout/Hero'
 import { frases } from '../utils/frases'
+import { useSEO } from '../hooks/useSEO'
+
 
 export default function Home() {
   const [recentBooks, setRecentBooks] = useState([])
   const [fantasyBooks, setFantasyBooks] = useState([])
   const [selfHelpBooks, setSelfHelpBooks] = useState([])
   const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
+
+  useSEO({
+    title: 'Inicio',
+    description: 'BookReview: descubrí, calificá y discutí libros con una comunidad de lectores. Reseñas, catálogo, favoritos y un asistente de IA para tu próxima lectura.',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'BookReview - Descubrí, Calificá y Discutí Libros',
+      url: 'https://book-review-six-rho.vercel.app/',
+      description: 'Plataforma de reseñas de libros con catálogo, sistema de favoritos y asistente de IA.',
+      isPartOf: { '@type': 'WebSite', name: 'BookReview', url: 'https://book-review-six-rho.vercel.app/' },
+    },
+  })
+
 
   useEffect(() => {
     const fetchHomeData = async () => {

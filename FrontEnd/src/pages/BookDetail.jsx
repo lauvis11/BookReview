@@ -6,6 +6,7 @@ import { getUserRating, saveRating } from '../api/rating'
 import { saveFavorite, deleteFavorite, getFavorites } from '../api/favorites'
 import { saveStatus } from '../api/status'
 import { useAuth } from '../context/AuthContext'
+import { useSEO } from '../hooks/useSEO'
 
 export default function BookDetail() {
   const { id } = useParams()
@@ -13,6 +14,37 @@ export default function BookDetail() {
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
   const [myRating, setMyRating] = useState(null)
+
+  // Build JSON-LD Book schema from loaded book data
+  const bookJsonLd = book ? {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: book.title,
+    author: book.author ? book.author.split(',').map(a => ({ '@type': 'Person', name: a.trim() })) : undefined,
+    genre: book.genre,
+    numberOfPages: book.pages,
+    datePublished: String(book.year),
+    image: book.img || undefined,
+    description: book.sinopsis || undefined,
+    publisher: book.editorial ? { '@type': 'Organization', name: book.editorial } : undefined,
+    aggregateRating: book.rate && Number(book.rate) > 0 ? {
+      '@type': 'AggregateRating',
+      ratingValue: Number(book.rate),
+      bestRating: 5,
+      worstRating: 1,
+    } : undefined,
+    url: `https://book-review-six-rho.vercel.app/books/${id}`,
+  } : null
+
+  useSEO({
+    title: book ? book.title : 'Cargando libro...',
+    description: book
+      ? `${book.title}${ book.author ? ` de ${book.author}` : ''}. ${book.sinopsis ? book.sinopsis.slice(0, 140) + '...' : 'Leé reseñas, calificá y agregá a tus favoritos en BookReview.'}`
+      : 'Detalle de libro en BookReview.',
+    image: book?.img || undefined,
+    type: 'book',
+    jsonLd: bookJsonLd,
+  })
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [repliesMap, setRepliesMap] = useState({})

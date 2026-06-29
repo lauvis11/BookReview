@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /library
+Disallow: /user/
+
+Sitemap: https://book-review-six-rho.vercel.app/sitemap.xml

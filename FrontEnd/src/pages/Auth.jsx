@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { frases } from '../utils/frases'
+import { useSEO } from '../hooks/useSEO'
 
 
 export default function Auth() {
@@ -13,6 +14,12 @@ export default function Auth() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
+
+  useSEO({
+    title: isLogin ? 'Iniciar Sesión' : 'Crear Cuenta',
+    description: 'Iniciá sesión o crea tu cuenta en BookReview para acceder a tu biblioteca personal, favoritos y el asistente de lectura IA.',
+    noindex: true,
+  })
   const { login, register } = useAuth()
   const navigate = useNavigate()
 
