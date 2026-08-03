@@ -15,7 +15,7 @@ import { statusRouter } from './routes/status.js';
 import { aiRouter } from './routes/ai.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import connection from './config/db.js';
+
 
 
 
@@ -61,38 +61,6 @@ app.get('/', (req, res) => {
     res.json({ message: 'API de biblioteca' })
 })
 
-// Endpoint temporal de diagnóstico — ELIMINAR después de resolver el problema
-app.get('/health', async (req, res) => {
-    try {
-        await connection.query('SELECT 1')
-        res.json({
-            status: 'ok',
-            db: 'connected',
-            env: {
-                DB_HOST: process.env.DB_HOST,
-                DB_PORT: process.env.DB_PORT,
-                DB_USER: process.env.DB_USER,
-                DB_NAME: process.env.DB_NAME,
-                NODE_ENV: process.env.NODE_ENV,
-                // No exponer password
-            }
-        })
-    } catch (err) {
-        res.status(500).json({
-            status: 'error',
-            db: 'failed',
-            error: err.message,
-            code: err.code,
-            env: {
-                DB_HOST: process.env.DB_HOST,
-                DB_PORT: process.env.DB_PORT,
-                DB_USER: process.env.DB_USER,
-                DB_NAME: process.env.DB_NAME,
-                NODE_ENV: process.env.NODE_ENV,
-            }
-        })
-    }
-})
 
 app.use('/books', bookRouter)
 app.use('/auth', authLimiter, authRouter)
