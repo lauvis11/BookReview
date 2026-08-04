@@ -20,7 +20,7 @@ export default function BookDetail() {
     '@context': 'https://schema.org',
     '@type': 'Book',
     name: book.title,
-    author: book.author ? book.author.split(',').map(a => ({ '@type': 'Person', name: a.trim() })) : undefined,
+    author: book.author ? (Array.isArray(book.author) ? book.author : book.author.split(',')).map(a => ({ '@type': 'Person', name: String(a).trim() })) : undefined,
     genre: book.genre,
     numberOfPages: book.pages,
     datePublished: String(book.year),
@@ -39,7 +39,7 @@ export default function BookDetail() {
   useSEO({
     title: book ? book.title : 'Cargando libro...',
     description: book
-      ? `${book.title}${ book.author ? ` de ${book.author}` : ''}. ${book.sinopsis ? book.sinopsis.slice(0, 140) + '...' : 'Leé reseñas, calificá y agregá a tus favoritos en BookReview.'}`
+      ? `${book.title}${ book.author ? ` de ${Array.isArray(book.author) ? book.author.join(', ') : book.author}` : ''}. ${book.sinopsis ? book.sinopsis.slice(0, 140) + '...' : 'Leé reseñas, calificá y agregá a tus favoritos en BookReview.'}`
       : 'Detalle de libro en BookReview.',
     image: book?.img || undefined,
     type: 'book',
