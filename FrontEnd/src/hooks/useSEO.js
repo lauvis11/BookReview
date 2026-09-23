@@ -45,11 +45,10 @@ export function useSEO({
       let el = document.querySelector(selector)
       if (!el) {
         el = document.createElement('meta')
-        const [attrName, attrVal] = selector
-          .replace(/\[|\]/g, '')
-          .split('=')
-          .map(s => s.replace(/"/g, ''))
-        el.setAttribute(attrName, attrVal)
+        const match = selector.match(/\[([a-zA-Z_:]+)=["']?(.*?)["']?\]/)
+        if (match) {
+          el.setAttribute(match[1], match[2])
+        }
         document.head.appendChild(el)
       }
       el.setAttribute(attr, value)
