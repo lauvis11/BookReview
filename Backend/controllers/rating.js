@@ -7,7 +7,7 @@ export class RatingController{
             const {id} = req.params
             const userData = req.session.user
             const verifyRate = validateRate(req.body)
-            if(!verifyRate.success) return res.status(401).json({message: 'Invalid rate data'})
+            if(!verifyRate.success) return res.status(400).json({message: 'Invalid rate data'})
             const rate = await RatingModel.save({book_id: id, user_id: userData.id, rate: verifyRate.data.rate})
             res.status(200).json({rate: verifyRate.data.rate, message: 'Rate complete'})
         } catch (e) {

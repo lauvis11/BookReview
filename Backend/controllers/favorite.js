@@ -16,10 +16,10 @@ export class FavoritesController{
     static async save(req, res, next){
         try {
             const bookId = ValidateUserFavorite(req.body)
-            if(!bookId.success) return res.status(401).json({message: 'Invalid Data'})
+            if(!bookId.success) return res.status(400).json({message: 'Invalid Data'})
             const userData = req.session.user
             const favoriteBook = await FavoritesModel.save({book_id: bookId.data.book_id, user_id: userData.id})
-            if(favoriteBook === false) return res.status(404).json({message: 'Book exists'})
+            if(favoriteBook === false) return res.status(409).json({message: 'Book exists'})
             res.status(200).json({message: 'Book save successuly'})
         } catch (e) {
             next(e)
