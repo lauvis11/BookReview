@@ -52,13 +52,24 @@ export class AuthController{
 
     static async refresh(req, res, next){
         try {
-            const refreshToken = req.cookies['refresh-token']
-            const validToken = await AuthModel.verifyToken({refreshToken})
-            if(!validToken) return res.status(401).json({message: 'Invalid Token'})
-            const data = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY)
+            const refreshToken = req.cookies?.['refresh-token']
+            if (!refreshToken) {
+                return res.status(401).json({ message: 'Refresh token required' })
+            }
+
+            const validToken = await AuthModel.verifyToken({ refreshToken })
+            if (!validToken) return res.status(401).json({ message: 'Invalid Token' })
+
+            let data
+            try {
+                data = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY)
+            } catch (jwtErr) {
+                await AuthModel.deleteRefreshToken({ refreshToken })
+                return res.status(401).json({ message: 'Refresh token expired or invalid' })
+            }
 
             // Invalidar el refresh token usado (rotation)
-            await AuthModel.deleteRefreshToken({refreshToken})
+            await AuthModel.deleteRefreshToken({ refreshToken })
 
             const newToken = jwt.sign({id: data.id, name: data.name, role: data.role}, process.env.SECRET_KEY, {
                 expiresIn: '1h'
