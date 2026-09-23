@@ -130,76 +130,82 @@ export class BookModel {
         } = input
 
         const uuid = crypto.randomUUID()
+        const conn = connection.getConnection ? await connection.getConnection() : connection
+        const hasTx = typeof conn.beginTransaction === 'function'
 
         try {
+            if (hasTx) await conn.beginTransaction()
+
             // Create editorial if not exists
             let editorialId
-            const [existingEditorial] = await connection.query(
+            const [existingEditorial] = await conn.query(
                 `SELECT id FROM editorial WHERE name = ?`, [editorial]
             )
             if (existingEditorial.length > 0) {
                 editorialId = existingEditorial[0].id
             } else {
-                const [newEditorial] = await connection.query(
+                const [newEditorial] = await conn.query(
                     `INSERT INTO editorial(name) VALUES (?)`, [editorial]
                 )
                 editorialId = newEditorial.insertId
             }
 
-            await connection.query(
+            await conn.query(
                 `INSERT INTO book(id, title, pages, year, editorial_id, img, sinopsis, googleBooksId) VALUES
                 (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?);
                 `, [uuid, title, pages, year, editorialId, img, sinopsis, googleBooksId || null]
             )
 
-            await Promise.all(genre.map(async (g) => {
+            for (const g of genre) {
                 // Create genre if not exists
                 let genreId
-                const [genres] = await connection.query(
+                const [genres] = await conn.query(
                     `SELECT id FROM genre WHERE name = ?`, [g]
                 )
                 if (genres.length > 0) {
                     genreId = genres[0].id
                 } else {
-                    const [newGenre] = await connection.query(
+                    const [newGenre] = await conn.query(
                         `INSERT INTO genre(name) VALUES (?)`, [g]
                     )
                     genreId = newGenre.insertId
                 }
 
-                await connection.query(
+                await conn.query(
                     `INSERT INTO book_genre(book_id, genre_id) VALUES
                     (UUID_TO_BIN(?), ?);
                     `, [uuid, genreId]
                 )
-            }))
+            }
 
-            await Promise.all(author.map(async (a) => {
-                const [authors] = await connection.query(
+            for (const a of author) {
+                const [authors] = await conn.query(
                     `SELECT id FROM author WHERE name = ?`, [a]
                 )
 
+                let authorId
                 if (authors.length === 0) {
-                    const [newAuthor] = await connection.query(
+                    const [newAuthor] = await conn.query(
                         `INSERT INTO author(name) VALUES (?)`, [a]
                     )
-                    const newAuthorId = newAuthor.insertId
-                    await connection.query(
-                        `INSERT INTO book_author(book_id, author_id) VALUES
-                        (UUID_TO_BIN(?), ?);`, [uuid, newAuthorId]
-                    )
+                    authorId = newAuthor.insertId
                 } else {
-                    const [{ id: authorId }] = authors
-                    await connection.query(
-                        `INSERT INTO book_author(book_id, author_id) VALUES
-                        (UUID_TO_BIN(?), ?);`, [uuid, authorId]
-                    )
+                    authorId = authors[0].id
                 }
-            }))
 
+                await conn.query(
+                    `INSERT INTO book_author(book_id, author_id) VALUES
+                    (UUID_TO_BIN(?), ?);`, [uuid, authorId]
+                )
+            }
+
+            if (hasTx) await conn.commit()
         } catch (error) {
+            if (hasTx) await conn.rollback()
             console.log(error)
             throw new Error('Error creating book')
+        } finally {
+            if (conn.release) conn.release()
         }
 
         const [book] = await connection.query(
@@ -321,57 +327,69 @@ export class BookModel {
     }
 
     static async delete({ id }) {
+        const conn = connection.getConnection ? await connection.getConnection() : connection
+        const hasTx = typeof conn.beginTransaction === 'function'
+
         try {
-            const [result] = await connection.query(
+            if (hasTx) await conn.beginTransaction()
+
+            const [result] = await conn.query(
                 `SELECT id from book WHERE id = UUID_TO_BIN(?);`, [id]
             )
 
-            if (result.length === 0) return false
+            if (result.length === 0) {
+                if (hasTx) await conn.rollback()
+                return false
+            }
 
             // Delete ratings
-            await connection.query(
+            await conn.query(
                 `DELETE FROM ratings WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete reading status
-            await connection.query(
+            await conn.query(
                 `DELETE FROM reading_status WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete comment_likes linked to comments of this book
-            await connection.query(
+            await conn.query(
                 `DELETE FROM comments_likes WHERE comment_id IN (SELECT id FROM comments WHERE book_id = UUID_TO_BIN(?));`, [id]
             )
 
             // Delete comments
-            await connection.query(
+            await conn.query(
                 `DELETE FROM comments WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete favorites
-            await connection.query(
+            await conn.query(
                 `DELETE FROM users_favorites WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete book_genre
-            await connection.query(
+            await conn.query(
                 `DELETE FROM book_genre WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete book_author
-            await connection.query(
+            await conn.query(
                 `DELETE FROM book_author WHERE book_id = UUID_TO_BIN(?);`, [id]
             )
 
             // Delete book
-            await connection.query(
+            await conn.query(
                 `DELETE FROM book WHERE id = UUID_TO_BIN(?);`, [id]
             )
 
+            if (hasTx) await conn.commit()
+            return true
         } catch (error) {
+            if (hasTx) await conn.rollback()
             console.error("SQL DELETE ERROR: ", error)
             throw new Error('Error deleting book')
+        } finally {
+            if (conn.release) conn.release()
         }
-        return true
     }
 }

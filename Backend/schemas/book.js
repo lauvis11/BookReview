@@ -5,7 +5,7 @@ const bookSchema = z.object({
     year: z.number().int().min(1000).max(new Date().getFullYear()),
     editorial: z.string().min(2).max(50),
     genre: z.array(z.string().min(2).max(50)).min(1, 'Debe incluir al menos un género'),
-    img: z.string().url().optional(),
+    img: z.url().optional(),
     author: z.array(z.string().min(2).max(50)).min(1, 'Debe incluir al menos un autor'),
     sinopsis: z.string().min(2).max(500)
 })
