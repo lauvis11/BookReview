@@ -13,7 +13,7 @@ export class BookController{
             const offset = (page - 1) * limit;
             const book = await BookModel.getAll({genre, editorial, title, author, limit, offset})
             if(!book) return res.status(404).json({message: 'Books Not Found'});
-            const bookWhitGenre = book.map(b => ({ ...b, genre: b.genre.split(','), author: b.author ? b.author.split(',') : []}))
+            const bookWhitGenre = book.map(b => ({ ...b, genre: b.genre ? b.genre.split(',') : [], author: b.author ? b.author.split(',') : []}))
             res.status(200).json(bookWhitGenre)
         } catch (e) {
             next(e)

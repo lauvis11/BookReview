@@ -6,7 +6,7 @@ export class FavoritesController{
         try {
             const userData = req.session.user
             const favoritesBooks = await FavoritesModel.getAll({user_id: userData.id})
-            const favoritesBooksData = favoritesBooks.map(b => ({ ...b, genre: b.genre.split(','), author: b.author ? b.author.split(',') : []}))
+            const favoritesBooksData = favoritesBooks.map(b => ({ ...b, genre: b.genre ? b.genre.split(',') : [], author: b.author ? b.author.split(',') : []}))
             res.status(200).send(favoritesBooksData)
         } catch (e) {
             next(e)
