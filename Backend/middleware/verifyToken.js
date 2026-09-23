@@ -8,7 +8,6 @@ export function verifyToken (req, res, next){
         req.session.user = data 
         next()
     }catch{
-        return res.status(401).send('Access no authorized')
+        return res.status(401).json({ message: 'Access not authorized' })
     }
-    
 }
