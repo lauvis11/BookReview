@@ -24,8 +24,12 @@ export class BookController{
         try {
             const {id} = req.params
             const book = await BookModel.getById({id})
-            if(book === null) return res.status(404).json({message: 'Book Not Found'});
-            const bookWhitGenre = { ...book, genre: book.genre.split(','), author: book.author ? book.author.split(',') : [] }
+            if(!book) return res.status(404).json({message: 'Book Not Found'});
+            const bookWhitGenre = {
+                ...book,
+                genre: book.genre ? book.genre.split(',') : [],
+                author: book.author ? book.author.split(',') : []
+            }
             res.json(bookWhitGenre)
         } catch (e) {
             next(e)
