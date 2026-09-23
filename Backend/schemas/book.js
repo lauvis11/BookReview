@@ -7,7 +7,7 @@ const bookSchema = z.object({
     genre: z.array(z.string().min(2).max(50)).min(1, 'Debe incluir al menos un género'),
     img: z.url().optional(),
     author: z.array(z.string().min(2).max(50)).min(1, 'Debe incluir al menos un autor'),
-    sinopsis: z.string().min(2).max(500)
+    sinopsis: z.string().min(2).max(5000)
 })
 
 export function validateBook(input){
