@@ -16,7 +16,7 @@ export class ProfileController{
     static async update(req, res, next){
         try {
             const input = ValidatePartialProfile(req.body)
-            if(!input.success) return res.status(400).json('Invalid Profile data')
+            if(!input.success) return res.status(400).json({ message: 'Invalid profile data' })
             const userData = req.session.user
             const profileUpdate = await ProfileModel.update({id: userData.id, input: input.data})
             res.status(200).json(profileUpdate)

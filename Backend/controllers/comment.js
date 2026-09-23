@@ -31,7 +31,7 @@ export class CommentController{
             const commentVerify = ValidateComment(req.body)
             if(!commentVerify.success) return res.status(400).json({message: 'Invalid comment data'})
             await CommentModel.create({book_id: id, user_id: userData.id, input: commentVerify.data})
-            res.status(201).json({message: 'Proccess complete'})
+            res.status(201).json({message: 'Process completed'})
         } catch (e) {
             next(e)
         }

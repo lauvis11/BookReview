@@ -5,7 +5,7 @@ export class StatusModel{
         const [books] = await connection.query(
             `SELECT BIN_TO_UUID(book_genre.book_id) id, book.title, book.pages, book.year, book.img, editorial.name editorial, GROUP_CONCAT(DISTINCT genre.name) genre, GROUP_CONCAT(DISTINCT author.name) author, ROUND(COALESCE(AVG(ratings.rate), 0), 1) rate FROM book_genre
             JOIN book ON book.id = book_genre.book_id
-            JOIN genre ON genre.id = genre_id
+            JOIN genre ON genre.id = book_genre.genre_id
             JOIN editorial ON editorial.id = book.editorial_id
             JOIN reading_status ON reading_status.book_id = book_genre.book_id
             LEFT JOIN ratings ON ratings.book_id = book_genre.book_id

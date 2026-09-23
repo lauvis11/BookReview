@@ -32,7 +32,7 @@ export class StatusController{
             const { id } = req.params
             const userData = req.session.user
             await StatusModel.delete({user_id: userData.id, book_id: id})
-            return res.status(200).json({message: 'Delete succesfuly'})
+            return res.status(200).json({message: 'Deleted successfully'})
         } catch (e) {
             next(e)
         }

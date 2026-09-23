@@ -9,7 +9,7 @@ export class AuthController{
             if(!userData.success) return res.status(400).json({message: 'Invalid user data'})
             const user = await AuthModel.create({input: userData.data})
             if(!user) return res.status(409).json({message: 'User Exists'})
-            return res.status(201).json({user: user, message: 'Register Succesfuly'})
+            return res.status(201).json({user: user, message: 'Registered successfully'})
         } catch (e) {
             next(e)
         }
@@ -44,7 +44,7 @@ export class AuthController{
                     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
                 })
                 .status(200)
-                .json({user: userExist, message: 'Login Succesfuly'})
+                .json({user: userExist, message: 'Login successfully'})
         } catch (e) {
             next(e)
         }
@@ -108,7 +108,7 @@ export class AuthController{
                 await AuthModel.deleteRefreshToken({ refreshToken })
             }
             res.clearCookie('refresh-token')
-            res.json({message: 'Logout Succesfuly'})
+            res.json({message: 'Logout successfully'})
         } catch (e) {
             next(e)
         }

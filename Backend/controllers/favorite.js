@@ -20,7 +20,7 @@ export class FavoritesController{
             const userData = req.session.user
             const favoriteBook = await FavoritesModel.save({book_id: bookId.data.book_id, user_id: userData.id})
             if(favoriteBook === false) return res.status(409).json({message: 'Book exists'})
-            res.status(200).json({message: 'Book save successuly'})
+            res.status(200).json({message: 'Book saved successfully'})
         } catch (e) {
             next(e)
         }
@@ -32,7 +32,7 @@ export class FavoritesController{
             const userData = req.session.user
             const favoriteBook = await FavoritesModel.delete({book_id: id, user_id: userData.id})
             if(favoriteBook === false) return res.status(404).json({message: 'Book not found'})
-            res.status(200).json({message: 'Book delete succesfully'})
+            res.status(200).json({message: 'Book deleted successfully'})
         } catch (e) {
             next(e)
         }
