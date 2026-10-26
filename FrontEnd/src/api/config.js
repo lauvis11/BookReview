@@ -41,7 +41,8 @@ API.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:1234'
+        const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:1234'
+        const apiUrl = rawApiUrl.replace(/\/$/, '')
         await axios.get(`${apiUrl}/auth/refresh`, { withCredentials: true })
         processQueue(null)
         return API(originalRequest)
