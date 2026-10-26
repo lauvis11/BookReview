@@ -30,17 +30,18 @@ export class AuthController{
 
             await AuthModel.refresh({userId: userExist.id, refreshToken: refreshToken})
 
+            const isProduction = process.env.NODE_ENV === 'production'
             return res
                 .cookie('access-token', token, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: isProduction,
+                    sameSite: isProduction ? 'none' : 'lax',
                     maxAge: 60 * 60 * 1000 // 1 hora
                 })
                 .cookie('refresh-token', refreshToken, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: isProduction,
+                    sameSite: isProduction ? 'none' : 'lax',
                     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
                 })
                 .status(200)
@@ -81,17 +82,18 @@ export class AuthController{
             })
             await AuthModel.refresh({userId: data.id, refreshToken: newRefreshToken})
 
+            const isProduction = process.env.NODE_ENV === 'production'
             res
                 .cookie('access-token', newToken, {
                     httpOnly: true, 
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: isProduction,
+                    sameSite: isProduction ? 'none' : 'lax',
                     maxAge: 60 * 60 * 1000 // 1 hora
                 })
                 .cookie('refresh-token', newRefreshToken, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: isProduction,
+                    sameSite: isProduction ? 'none' : 'lax',
                     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
                 })
                 .json({message: 'Refresh complete'})
@@ -102,12 +104,18 @@ export class AuthController{
 
     static async logout(req, res, next){
         try {
-            res.clearCookie('access-token')
+            const isProduction = process.env.NODE_ENV === 'production'
+            const clearOptions = {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax'
+            }
+            res.clearCookie('access-token', clearOptions)
             const refreshToken = req.cookies['refresh-token']
             if (refreshToken) {
                 await AuthModel.deleteRefreshToken({ refreshToken })
             }
-            res.clearCookie('refresh-token')
+            res.clearCookie('refresh-token', clearOptions)
             res.json({message: 'Logout successfully'})
         } catch (e) {
             next(e)
