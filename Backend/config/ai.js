@@ -9,9 +9,9 @@ if (!api_key) {
 
 const genAi = new GoogleGenerativeAI(api_key)
 
-export const getGeminiModel = () => {
+export const getGeminiModel = (modelName = "gemini-3.5-flash") => {
   return genAi.getGenerativeModel({
-    model: "gemini-3.1-flash-lite",
+    model: modelName,
   })
 }
 

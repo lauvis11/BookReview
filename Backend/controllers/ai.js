@@ -9,24 +9,34 @@ export class AiController{
         const { message, history = [] } = result.data;
 
         try{
-            res.setHeader('Content-Type', 'text/plain', 'utf-8')
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
             res.setHeader('Transfer-Encoding', 'chunked')
-            
-            const model = getGeminiModel()
-            const chat = model.startChat({
-                systemInstruction: {
-                    parts: [{text: systemContext}]
-                },
-                history: history, 
-                generationConfig: {
-                    maxOutputTokens: 512,
-                    temperature: 0.7,
-                    topP: 0.9,
-                } 
-            })
 
-            const { stream } = await chat.sendMessageStream(message)
-            for await (const chunk of stream){
+            const generateStream = async (modelName) => {
+                const model = getGeminiModel(modelName)
+                const chat = model.startChat({
+                    systemInstruction: {
+                        parts: [{ text: systemContext }]
+                    },
+                    history: history, 
+                    generationConfig: {
+                        maxOutputTokens: 512,
+                        temperature: 0.7,
+                        topP: 0.9,
+                    } 
+                })
+                return await chat.sendMessageStream(message)
+            }
+
+            let streamResponse
+            try {
+                streamResponse = await generateStream("gemini-3.5-flash")
+            } catch (modelErr) {
+                console.warn('Fallback activado en IA:', modelErr.message || modelErr.status)
+                streamResponse = await generateStream("gemini-3.8-flash")
+            }
+
+            for await (const chunk of streamResponse.stream){
                 const text = chunk.text()
                 if(text){
                     res.write(text)
@@ -35,6 +45,7 @@ export class AiController{
             
             res.end()
         }catch(error){
+            console.error('Error en AiController:', error)
             if(!res.headersSent){
                 res.setHeader('Content-Type', 'application/json')
                 res.status(500).json({error: 'Error generating response'})
