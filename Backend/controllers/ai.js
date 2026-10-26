@@ -20,9 +20,12 @@ export class AiController{
                     },
                     history: history, 
                     generationConfig: {
-                        maxOutputTokens: 512,
+                        maxOutputTokens: 2048,
                         temperature: 0.7,
                         topP: 0.9,
+                        thinkingConfig: {
+                            thinkingBudget: 0
+                        }
                     } 
                 })
                 return await chat.sendMessageStream(message)
