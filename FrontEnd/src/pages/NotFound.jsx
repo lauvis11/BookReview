@@ -18,7 +18,7 @@ export default function NotFound() {
       <h2 className="text-2xl md:text-3xl font-headline font-bold text-secondary mb-6">
         Parece que este libro no está en nuestra biblioteca
       </h2>
-      <p className="text-lg text-[#50453e] font-body max-w-md mx-auto mb-10">
+      <p className="text-lg text-on-surface-variant font-body max-w-md mx-auto mb-10">
         La página que estás buscando no existe, ha sido movida o está temporalmente inaccesible.
       </p>
       
