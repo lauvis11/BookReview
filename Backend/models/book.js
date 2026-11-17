@@ -2,7 +2,29 @@ import crypto from 'node:crypto'
 import connection from '../config/db.js'
 
 export class BookModel {
-    static async getAll({ genre, editorial, title, author, limit, offset }) {
+    static async getAll({ q, genre, editorial, title, author, limit, offset }) {
+        if (q) {
+            const pattern = `%${q}%`
+            const [books] = await connection.query(
+                `SELECT BIN_TO_UUID(book_genre.book_id) id, book.title, book.pages, book.year, book.img, editorial.name editorial, GROUP_CONCAT(DISTINCT genre.name) genre, GROUP_CONCAT(DISTINCT author.name) author, ROUND(COALESCE(AVG(ratings.rate), 0), 1) rate, book.sinopsis FROM book_genre
+                JOIN book ON book.id = book_genre.book_id
+                JOIN genre ON genre.id = genre_id
+                JOIN editorial ON editorial.id = book.editorial_id
+                LEFT JOIN ratings ON ratings.book_id = book_genre.book_id
+                LEFT JOIN book_author ON book_author.book_id = book_genre.book_id
+                LEFT JOIN author ON author.id = book_author.author_id
+                WHERE LOWER(book.title) LIKE LOWER(?)
+                   OR LOWER(author.name) LIKE LOWER(?)
+                   OR LOWER(genre.name) LIKE LOWER(?)
+                   OR LOWER(editorial.name) LIKE LOWER(?)
+                GROUP BY book_genre.book_id
+                LIMIT ?
+                OFFSET ?;
+                `, [pattern, pattern, pattern, pattern, limit, offset]
+            )
+            return books
+        }
+
         if (author) {
             const [books] = await connection.query(
                 `SELECT BIN_TO_UUID(book_genre.book_id) id, book.title, book.pages, book.year, book.img, editorial.name editorial, GROUP_CONCAT(DISTINCT genre.name) genre, GROUP_CONCAT(DISTINCT author.name) author, ROUND(COALESCE(AVG(ratings.rate), 0), 1) rate, book.sinopsis FROM book_genre

@@ -7,11 +7,11 @@ import { ValidateBook as ValidateGoogleBook } from '../schemas/books.validator.j
 export class BookController{
     static async getAll(req, res, next){
         try {
-            const {genre, editorial, title, author} = req.query;
+            const {q, genre, editorial, title, author} = req.query;
             const page = req.query.page ?? 1;
             const limit = 10;
             const offset = (page - 1) * limit;
-            const book = await BookModel.getAll({genre, editorial, title, author, limit, offset})
+            const book = await BookModel.getAll({q, genre, editorial, title, author, limit, offset})
             if(!book) return res.status(404).json({message: 'Books Not Found'});
             const bookWhitGenre = book.map(b => ({ ...b, genre: b.genre ? b.genre.split(',') : [], author: b.author ? b.author.split(',') : []}))
             res.status(200).json(bookWhitGenre)

@@ -12,10 +12,13 @@ export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // Build a dynamic SEO title based on active filters
+  const qParam = searchParams.get('q')
   const genre = searchParams.get('genre')
   const author = searchParams.get('author')
   const titleParam = searchParams.get('title')
-  const seoTitle = genre
+  const seoTitle = qParam
+    ? `Búsqueda: "${qParam}"`
+    : genre
     ? `Catálogo de ${genre.charAt(0) + genre.slice(1).toLowerCase()}`
     : author
     ? `Libros de ${author}`
