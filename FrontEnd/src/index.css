@@ -13,15 +13,15 @@
   --color-inverse-primary: #d6e8b5;
 
   /* 2. Secundario / Acento: Amarillo / Ámbar cálido */
-  --color-secondary: #e9a45e;
+  --color-secondary: #edbd79;
   --color-secondary-light: #edbd79;
-  --color-secondary-hover: #f2b777;
+  --color-secondary-hover: #f3cc90;
   --color-secondary-dark: #c9833b;
   --color-secondary-container: #f7e4cd;
   --color-on-secondary: #18332f;
   --color-on-secondary-container: #7a4d16;
   --color-secondary-fixed: #edbd79;
-  --color-secondary-fixed-dim: #e9a45e;
+  --color-secondary-fixed-dim: #e2ae64;
   --color-on-secondary-fixed: #18332f;
   --color-on-secondary-fixed-variant: #7a4d16;
   --color-accent: #edbd79;
@@ -120,6 +120,24 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drawerSlideLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

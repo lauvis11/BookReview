@@ -11,11 +11,36 @@ import '../../styles/chat.css'
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { messages, loading, error, sendMessage } = useAiChat()
   const { isAuthenticated } = useAuth()
   const location = useLocation()
 
-  if (location.pathname === '/auth') return null
+  useEffect(() => {
+    const handleMobileMenu = (e) => {
+      const open = Boolean(e.detail?.open)
+      setMobileMenuOpen(open)
+      if (open) {
+        setIsOpen(false)
+        setIsClosing(false)
+      }
+    }
+    window.addEventListener('mobile-menu-toggle', handleMobileMenu)
+    return () => window.removeEventListener('mobile-menu-toggle', handleMobileMenu)
+  }, [])
+
+  useEffect(() => {
+    const handleCustomOpen = (e) => {
+      setIsOpen(true)
+      if (e.detail?.message && isAuthenticated) {
+        sendMessage(e.detail.message)
+      }
+    }
+    window.addEventListener('open-ai-chat', handleCustomOpen)
+    return () => window.removeEventListener('open-ai-chat', handleCustomOpen)
+  }, [sendMessage, isAuthenticated])
+
+  if (location.pathname === '/auth' || mobileMenuOpen) return null
 
   function handleOpen() {
     if (isOpen) {
@@ -29,17 +54,6 @@ export default function ChatWidget() {
       setIsOpen(true)
     }
   }
-
-  useEffect(() => {
-    const handleCustomOpen = (e) => {
-      setIsOpen(true)
-      if (e.detail?.message && isAuthenticated) {
-        sendMessage(e.detail.message)
-      }
-    }
-    window.addEventListener('open-ai-chat', handleCustomOpen)
-    return () => window.removeEventListener('open-ai-chat', handleCustomOpen)
-  }, [sendMessage, isAuthenticated])
 
   return (
     <>
@@ -59,13 +73,13 @@ export default function ChatWidget() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
                 <span className="material-symbols-outlined text-3xl">lock</span>
               </div>
-              <p className="font-body text-sm text-[#50453e] mb-6">
+              <p className="font-body text-sm text-on-surface-variant mb-6">
                 Si quieres utilizar el asistente debes iniciar sesión.
               </p>
               <Link 
                 to="/auth" 
                 onClick={() => setIsOpen(false)}
-                className="px-6 py-3 bg-primary text-[#ffdcc6] rounded-full font-label text-xs uppercase tracking-widest font-bold hover:brightness-110 shadow-md transition-all"
+                className="px-6 py-3 bg-primary text-white rounded-full font-label text-xs uppercase tracking-widest font-bold hover:bg-primary-container shadow-md transition-all"
               >
                 Iniciar Sesión
               </Link>
