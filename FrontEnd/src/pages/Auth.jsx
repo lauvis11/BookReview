@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
+import BrandLogo from '../components/ui/BrandLogo'
 
 
 export default function Auth() {
@@ -53,12 +54,12 @@ export default function Auth() {
   }
 
   const renderVisualSide = () => (
-    <div className="flex w-full h-full bg-[#412817] relative items-center justify-center p-12 overflow-hidden">
+    <div className="flex w-full h-full bg-primary relative items-center justify-center p-12 overflow-hidden">
       <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="w-full h-full bg-[radial-gradient(#ffdcc6_1px,transparent_1px)] [background-size:24px_24px]"></div>
+        <div className="w-full h-full bg-[radial-gradient(#edbd79_1px,transparent_1px)] [background-size:24px_24px]"></div>
       </div>
       <div className="relative z-10 text-center flex flex-col items-center">
-        <div className="w-56 h-72 md:w-60 md:h-80 bg-surface-container rounded-sm shadow-2xl flex items-center justify-center transform -rotate-2 hover:rotate-0 transition-transform duration-700 overflow-hidden border-4 border-[#c2a878]/20">
+        <div className="w-56 h-72 md:w-60 md:h-80 bg-surface-container rounded-sm shadow-2xl flex items-center justify-center transform -rotate-2 hover:rotate-0 transition-transform duration-700 overflow-hidden border-4 border-secondary-light/30">
           <img 
             src="/imagen-libro.png" 
             alt="BookReview Logo" 
@@ -66,8 +67,8 @@ export default function Auth() {
           />
         </div>
         <div className="mt-10 space-y-3 px-4 max-w-sm">
-          <p className="font-headline italic text-xl md:text-2xl text-[#ffdcc6] drop-shadow-sm">"{quote.frase}"</p>
-          <p className="font-label text-xs tracking-widest uppercase text-[#c2a878] opacity-80">— {quote.autor}</p>
+          <p className="font-headline italic text-xl md:text-2xl text-white drop-shadow-sm">"{quote.frase}"</p>
+          <p className="font-label text-xs tracking-widest uppercase text-secondary-light opacity-90">— {quote.autor}</p>
         </div>
       </div>
     </div>
@@ -76,10 +77,10 @@ export default function Auth() {
   const renderFormSide = (isLoginMode) => (
     <div className="flex w-full h-full flex-col justify-center bg-surface-container-lowest p-6 md:p-8 lg:p-12">
       <header className="mb-8 flex flex-col items-center text-center">
-        <h2 className="font-headline font-semibold text-xl md:text-2xl text-[#745a34] mb-3 tracking-wide opacity-90">
+        <h2 className="font-headline font-semibold text-xl md:text-2xl text-secondary-dark mb-3 tracking-wide opacity-90">
           {isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta'}
         </h2>
-        <img src="/Book-rewiev-logo-removebg-preview.png" alt="BookReview Logo" className="h-14 md:h-16 object-contain mb-2 drop-shadow-sm opacity-90" />
+        <BrandLogo variant="light" className="h-10 md:h-12 w-auto mb-3" />
         <p className="font-body text-on-surface-variant font-light text-sm max-w-sm">
           {isLoginMode ? 'Bienvenido de nuevo. Por favor, ingresa tus datos.' : 'Únete a nuestra comunidad de lectores.'}
         </p>
@@ -206,7 +207,7 @@ export default function Auth() {
         </div>
 
         {/* Center Spine Line (Decorative) */}
-        <div className="hidden md:block absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-transparent via-[#412817]/20 to-transparent z-40"></div>
+        <div className="hidden md:block absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-40"></div>
 
       </div>
     </main>

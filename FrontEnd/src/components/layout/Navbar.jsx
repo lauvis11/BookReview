@@ -8,13 +8,10 @@ export default function Navbar() {
   const { user, isAuthenticated, logout, updateUser } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [search, setSearch] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [searchFocused, setSearchFocused] = useState(false)
   const menuRef = useRef(null)
-  const searchRef = useRef(null)
 
   // Track scroll for navbar appearance
   useEffect(() => {
@@ -34,6 +31,16 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Notify ChatWidget & lock body scroll when mobile menu opens
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('mobile-menu-toggle', { detail: { open: mobileMenuOpen } }))
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    return () => {
+      window.dispatchEvent(new CustomEvent('mobile-menu-toggle', { detail: { open: false } }))
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
+
   // Fetch profile to get avatar for existing sessions
   useEffect(() => {
     if (user?.id && !user.profile_img && updateUser) {
@@ -50,15 +57,6 @@ export default function Navbar() {
     navigate('/')
   }
 
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (search.trim()) {
-      navigate(`/catalog?title=${encodeURIComponent(search.trim())}`)
-      setSearchFocused(false)
-      setMobileMenuOpen(false)
-    }
-  }
-
   const isAdmin = user?.role === 'admin'
 
   const isActive = (path) => location.pathname === path
@@ -70,16 +68,26 @@ export default function Navbar() {
           ? 'bg-footer-bg/98 backdrop-blur-xl shadow-[0_6px_30px_rgba(7,35,30,0.3)]' 
           : 'bg-footer-bg/95 backdrop-blur-lg shadow-[0_2px_20px_rgba(7,35,30,0.18)]'
       }`}>
-        <div className="max-w-[1440px] mx-auto px-4 md:px-10">
-          <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-10">
+          <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-2 h-16 md:h-20">
             
-            {/* Logo Section - Editorial Style */}
-            <Link to="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
-              <BrandLogo className="h-9 md:h-11 w-auto" />
-            </Link>
+            {/* Left Section: Mobile Menu Toggle + Logo */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                className="md:hidden p-2 -ml-1 text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
+              </button>
+
+              <Link to="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
+                <BrandLogo variant="dark" className="h-7 sm:h-9 md:h-11 w-auto" />
+              </Link>
+            </div>
 
             {/* Navigation Links - Editorial Tabs (Desktop) */}
-            <div className="hidden md:flex items-center gap-3 ml-8">
+            <div className="hidden md:flex items-center justify-center gap-3">
               <NavLink 
                 to="/" 
                 active={isActive('/')}
@@ -106,38 +114,7 @@ export default function Navbar() {
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center gap-2 md:gap-4">
-              
-              {/* Search - Fixed width (Desktop only) */}
-              <form 
-                onSubmit={handleSearch} 
-                className="hidden md:block relative w-60"
-                ref={searchRef}
-              >
-                <div className="relative flex items-center w-full group">
-                  <span className={`material-symbols-outlined text-lg absolute left-3 z-10 transition-colors ${searchFocused ? 'text-secondary-dark' : 'text-outline group-hover:text-primary'}`}>
-                    search
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => !search && setSearchFocused(false)}
-                    className="w-full bg-surface/95 hover:bg-white border border-white/20 focus:border-secondary focus:bg-white focus:ring-0 rounded-full text-sm py-2 pl-10 pr-10 placeholder:text-outline/70 font-body text-primary transition-all duration-300 shadow-sm focus:shadow-md outline-none"
-                  />
-                  {search && (
-                    <button 
-                      type="submit" 
-                      className="absolute right-3 text-primary hover:text-secondary-dark transition-colors z-10 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-lg mt-1">arrow_forward</span>
-                    </button>
-                  )}
-                </div>
-              </form>
-
+            <div className="flex items-center justify-end gap-2 md:gap-4 md:w-full">
               {/* User Menu */}
               {isAuthenticated ? (
                 <div className="relative" ref={menuRef}>
@@ -240,78 +217,67 @@ export default function Navbar() {
               ) : (
                 <Link 
                   to="/auth" 
-                  className="flex items-center gap-2 px-3 py-2 md:px-4 bg-secondary text-on-secondary rounded-full font-label text-xs uppercase tracking-wider font-bold hover:bg-secondary-hover hover:shadow-lg active:scale-95 transition-all duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 md:px-4 bg-secondary text-on-secondary rounded-full font-label text-[11px] sm:text-xs uppercase tracking-wider font-bold whitespace-nowrap hover:bg-secondary-hover hover:shadow-lg active:scale-95 transition-all duration-200"
                 >
-                  <span className="material-symbols-outlined text-lg">login</span>
-                  <span className="hidden md:inline">Acceder</span>
+                  <span className="material-symbols-outlined text-base sm:text-lg">login</span>
+                  <span>Iniciar Sesión</span>
                 </Link>
               )}
-
-              {/* Mobile Menu Toggle */}
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
-              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay - full-featured drawer */}
+      {/* Mobile Menu Overlay - Left side drawer (70% width) */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed top-[67px] left-0 right-0 bottom-0 bg-footer-bg flex flex-col z-40 animate-[dropdownIn_0.2s_ease] overflow-y-auto">
-          {/* Mobile Search */}
-          <div className="px-6 py-4 border-b border-white/10">
-            <form onSubmit={handleSearch} className="relative">
-              <span className="material-symbols-outlined text-lg absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-              <input
-                type="text"
-                placeholder="Buscar un libro..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-surface border border-white/20 rounded-full text-sm py-3 pl-10 pr-4 font-body text-primary outline-none focus:border-secondary"
-              />
-            </form>
-          </div>
+        <div className="md:hidden fixed top-[67px] left-0 right-0 bottom-0 z-50 flex">
+          {/* Backdrop oscuro clickable para cerrar */}
+          <div
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute inset-0 bg-black/60 animate-[drawerBackdropIn_200ms_ease_both]"
+            aria-hidden="true"
+          />
 
-          {/* Main Nav Links */}
-          <div className="flex-1 px-4 py-2">
-            <MobileNavLink to="/" active={isActive('/')} icon="home" onClick={() => setMobileMenuOpen(false)}>Inicio</MobileNavLink>
-            <MobileNavLink to="/catalog" active={isActive('/catalog')} icon="library_books" onClick={() => setMobileMenuOpen(false)}>Catálogo</MobileNavLink>
-            {isAuthenticated && (
-              <>
-                <MobileNavLink to="/library" active={isActive('/library')} icon="bookmark" onClick={() => setMobileMenuOpen(false)}>Biblioteca</MobileNavLink>
-                <MobileNavLink to={`/user/${user?.id}`} active={isActive(`/user/${user?.id}`)} icon="person" onClick={() => setMobileMenuOpen(false)}>Mi Perfil</MobileNavLink>
-                {isAdmin && (
-                  <MobileNavLink to="/admin" active={isActive('/admin')} icon="dashboard" onClick={() => setMobileMenuOpen(false)}>Panel Admin</MobileNavLink>
-                )}
-              </>
-            )}
-          </div>
+          {/* Left Drawer Panel */}
+          <aside className="relative z-10 w-[70%] h-full bg-footer-bg/80 backdrop-blur-xl border-r border-white/15 shadow-[8px_0_32px_rgba(0,0,0,0.45)] flex flex-col overflow-y-auto overscroll-contain animate-[drawerSlideLeft_280ms_var(--ease-drawer)_both]">
+            {/* Main Nav Links - Left aligned from top */}
+            <div className="flex-1 flex flex-col items-stretch justify-start gap-1.5 px-3 py-5">
+              <MobileNavLink to="/" active={isActive('/')} icon="home" onClick={() => setMobileMenuOpen(false)}>Inicio</MobileNavLink>
+              <MobileNavLink to="/catalog" active={isActive('/catalog')} icon="library_books" onClick={() => setMobileMenuOpen(false)}>Catálogo</MobileNavLink>
+              {isAuthenticated && (
+                <>
+                  <MobileNavLink to="/library" active={isActive('/library')} icon="bookmark" onClick={() => setMobileMenuOpen(false)}>Biblioteca</MobileNavLink>
+                  <MobileNavLink to={`/user/${user?.id}`} active={isActive(`/user/${user?.id}`)} icon="person" onClick={() => setMobileMenuOpen(false)}>Mi Perfil</MobileNavLink>
+                  {isAdmin && (
+                    <MobileNavLink to="/admin" active={isActive('/admin')} icon="dashboard" onClick={() => setMobileMenuOpen(false)}>Admin</MobileNavLink>
+                  )}
+                </>
+              )}
+            </div>
 
-          {/* Footer Action */}
-          <div className="px-6 py-6 border-t border-white/10">
-            {isAuthenticated ? (
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-3 px-5 py-3.5 border border-[#ffdad6]/40 text-[#ffdad6] rounded-full font-label text-xs uppercase tracking-widest font-bold hover:bg-[#ba1a1a]/30 transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-lg">logout</span>
-                Cerrar Sesión
-              </button>
-            ) : (
-              <Link
-                to="/auth"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-3 px-5 py-3.5 bg-secondary text-on-secondary rounded-full font-label text-xs uppercase tracking-widest font-bold hover:bg-secondary-hover transition-all"
-              >
-                <span className="material-symbols-outlined text-lg">login</span>
-                Acceder
-              </Link>
-            )}
-          </div>
+            {/* Footer Action */}
+            <div className="px-3 sm:px-4 py-5 border-t border-white/10">
+              {isAuthenticated ? (
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-3 border border-[#ffdad6]/40 text-[#ffdad6] rounded-full font-label text-[11px] uppercase tracking-wider font-bold hover:bg-[#ba1a1a]/30 transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">logout</span>
+                  <span>Salir</span>
+                </button>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-3 bg-secondary text-on-secondary rounded-full font-label text-[11px] uppercase tracking-wider font-bold hover:bg-secondary-hover transition-all"
+                >
+                  <span className="material-symbols-outlined text-base">login</span>
+                  <span>Iniciar Sesión</span>
+                </Link>
+              )}
+            </div>
+          </aside>
         </div>
       )}
     </>
@@ -339,12 +305,12 @@ function MobileNavLink({ to, active, icon, children, onClick }) {
     <Link
       to={to}
       onClick={onClick}
-      className={`flex items-center gap-4 px-4 py-4 border-b border-white/10 font-headline text-lg font-bold transition-colors rounded-lg hover:bg-[#166e5e] ${
+      className={`w-full flex items-center justify-start gap-3 px-4 py-3 font-headline text-base sm:text-lg font-bold transition-colors rounded-xl hover:bg-[#166e5e] ${
         active ? 'text-secondary' : 'text-white'
       }`}
     >
-      <span className={`material-symbols-outlined text-2xl ${active ? 'text-secondary' : 'text-white'}`}>{icon}</span>
-      {children}
+      <span className={`material-symbols-outlined text-xl ${active ? 'text-secondary' : 'text-white'}`}>{icon}</span>
+      <span>{children}</span>
     </Link>
   )
 }

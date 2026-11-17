@@ -1,51 +1,44 @@
 export default function BrandLogo({
+  variant = 'light',
   showText = true,
   className = 'h-10 w-auto',
 }) {
+  const mainColor = variant === 'dark' ? '#edbd79' : '#0e5146'
+  const starColor = '#edbd79'
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={showText ? '0 0 316 64' : '0 0 64 64'}
+      viewBox={showText ? '0 0 350 72' : '0 0 72 72'}
       fill="none"
       role="img"
       aria-label="BookReview"
       className={className}
     >
-      {/* Minimalist rounded-square lighter Forest Green badge */}
-      <rect
-        x="0.75"
-        y="0.75"
-        width="62.5"
-        height="62.5"
-        rx="11.25"
-        fill="#166e5e"
-        stroke="#edbd79"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
-      />
+      <g transform={showText ? undefined : 'translate(-1, 2)'}>
+        {/* Ícono: Libro abierto geométrico */}
+        <polygon fill={mainColor} points="10,20 34,25 34,57 10,52" />
+        <polygon fill={mainColor} points="64,20 40,25 40,57 64,52" />
+        <polygon fill={mainColor} points="15,15 35,21 35,23 15,17" />
+        <polygon fill={mainColor} points="59,15 39,21 39,23 59,17" />
+        <polygon fill={mainColor} points="34,59 37,62 40,59 37,56" />
 
-      {/* Open book with turning page (exact shared geometry with bookreview-icon.svg) */}
-      <g transform="scale(0.13333333) translate(-16, -16)">
-        <path
-          fill="#edbd79"
-          d="M116 204C116 190 123 182.3 136 177C168 164 204 164 236 177C249 182.3 256 190 256 204V338C256 340.5 258.5 342 261 340.5C296 319 336 316 368 325.5V175C386 179 396 187 396 204V351C396 359 389.5 363.5 381 360.5C363 354 345 349 326 349C295 349 276 370 256 370C236 370 217 349 186 349C167 349 149 354 131 360.5C122.5 363.5 116 359 116 351Z"
-        />
-        <path
-          fill="#edbd79"
-          d="M278 203C278 190 282 181.5 293 171.5L342.5 127C344.5 125.2 346 126 346 128.5V237C346 247.5 342.5 254.2 334 261.8L281.5 308.9C279.5 310.7 278 309.9 278 307.5Z"
+        {/* Estrella saliendo de las páginas */}
+        <polygon
+          fill={starColor}
+          points="37,6 39.9,11.9 46.5,12.9 41.7,17.5 42.9,24.1 37,21 31.1,24.1 32.3,17.5 27.5,12.9 34.1,11.9"
         />
       </g>
 
       {showText && (
         <text
-          x="79"
-          y="45.5"
-          fontFamily="'Noto Serif', Georgia, serif"
-          fontSize="40"
+          x="82"
+          y="51"
+          fill={mainColor}
+          fontFamily="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+          fontSize="42"
           fontWeight="700"
-          fontStyle="italic"
-          letterSpacing="-1"
-          fill="#ffffff"
+          letterSpacing="-0.5"
         >
           BookReview
         </text>
