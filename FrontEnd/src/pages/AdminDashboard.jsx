@@ -20,7 +20,7 @@ const MOCK_ACTIVITY = [
 
 const TYPE_CONFIG = {
   comentario: { label: 'Comentario', icon: 'chat_bubble',     bg: 'bg-blue-50',       text: 'text-blue-700',   border: 'border-blue-200' },
-  rate:       { label: 'Calificación', icon: 'star',          bg: 'bg-[#fedaaa]/40',  text: 'text-[#795e38]',  border: 'border-[#c2a878]/30' },
+  rate:       { label: 'Calificación', icon: 'star',          bg: 'bg-[#f7e4cd]/40',  text: 'text-[#7a4d16]',  border: 'border-[#e9a45e]/30' },
   registro:   { label: 'Registro',   icon: 'person_add',     bg: 'bg-emerald-50',    text: 'text-emerald-700', border: 'border-emerald-200' },
 }
 
@@ -39,7 +39,7 @@ function TypeBadge({ type }) {
 function RateStars({ value }) {
   const num = parseFloat(value)
   return (
-    <span className="flex items-center gap-1 font-label text-sm font-bold text-[#795e38]">
+    <span className="flex items-center gap-1 font-label text-sm font-bold text-[#7a4d16]">
       <span className="material-symbols-outlined text-base text-[#E5B02E]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
       {num}/5
     </span>
@@ -48,11 +48,11 @@ function RateStars({ value }) {
 
 function StatCard({ icon, label, value, dark = false }) {
   return (
-    <div className={`p-6 relative overflow-hidden ${dark ? 'bg-[#412817] text-white' : 'bg-[#f7f3ea]'}`}>
-      <p className={`font-label text-[10px] tracking-[0.2em] uppercase mb-2 ${dark ? 'text-white/70' : 'text-[#50453e]'}`}>
+    <div className={`p-6 relative overflow-hidden ${dark ? 'bg-[#0e5146] text-white' : 'bg-[#f2f5f0]'}`}>
+      <p className={`font-label text-[10px] tracking-[0.2em] uppercase mb-2 ${dark ? 'text-white/70' : 'text-[#4a615b]'}`}>
         {label}
       </p>
-      <h3 className={`text-4xl font-serif font-bold ${dark ? 'text-white' : 'text-[#412817]'}`}>
+      <h3 className={`text-4xl font-serif font-bold ${dark ? 'text-white' : 'text-[#0e5146]'}`}>
         {value}
       </h3>
       <span className={`material-symbols-outlined absolute -right-4 -bottom-4 text-[80px] ${dark ? 'opacity-10' : 'opacity-5'}`}>
@@ -98,10 +98,10 @@ export default function AdminDashboard() {
     <div className="p-8 md:p-10 max-w-7xl mx-auto">
       {/* Header */}
       <header className="mb-10">
-        <span className="font-label text-xs uppercase tracking-[0.2em] text-[#50453e] mb-2 block">
+        <span className="font-label text-xs uppercase tracking-[0.2em] text-[#4a615b] mb-2 block">
           Overview
         </span>
-        <h2 className="text-4xl font-serif font-black text-[#412817] leading-tight">
+        <h2 className="text-4xl font-serif font-black text-[#0e5146] leading-tight">
           Dashboard
         </h2>
       </header>
@@ -110,99 +110,99 @@ export default function AdminDashboard() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <StatCard icon="auto_stories" label="Total de Libros" value={loadingBooks ? '...' : totalBooks} />
         <StatCard icon="group" label="Usuarios Nuevos (último mes)" value={newUsersLastMonth} dark />
-        <div className="bg-white p-6 border border-[#d3c3bb]/30 relative overflow-hidden flex flex-col justify-between">
+        <div className="bg-white p-6 border border-[#d2dcd6]/30 relative overflow-hidden flex flex-col justify-between">
           <div>
-            <p className="font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase mb-2">Próximamente</p>
-            <h3 className="text-3xl font-serif font-bold text-[#412817]">—</h3>
+            <p className="font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase mb-2">Próximamente</p>
+            <h3 className="text-3xl font-serif font-bold text-[#0e5146]">—</h3>
           </div>
-          <p className="font-body text-xs text-[#82746d] mt-4 italic">Más métricas disponibles pronto.</p>
-          <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-[80px] opacity-5 text-[#412817]">bar_chart</span>
+          <p className="font-body text-xs text-[#6c7f7a] mt-4 italic">Más métricas disponibles pronto.</p>
+          <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-[80px] opacity-5 text-[#0e5146]">bar_chart</span>
         </div>
       </section>
 
       {/* Quick Links */}
       <section className="mb-12">
-        <h3 className="font-serif font-bold text-xl text-[#412817] mb-4 border-b border-[#d3c3bb]/20 pb-2">
+        <h3 className="font-serif font-bold text-xl text-[#0e5146] mb-4 border-b border-[#d2dcd6]/20 pb-2">
           Accesos Rápidos
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <a href="/admin/books" className="group flex items-center gap-4 p-5 bg-[#f7f3ea] hover:bg-[#ece8df] transition-colors">
-            <span className="material-symbols-outlined text-3xl text-[#745a34] group-hover:scale-110 transition-transform">menu_book</span>
+          <a href="/admin/books" className="group flex items-center gap-4 p-5 bg-[#f2f5f0] hover:bg-[#e3e9e1] transition-colors">
+            <span className="material-symbols-outlined text-3xl text-[#c9833b] group-hover:scale-110 transition-transform">menu_book</span>
             <div>
-              <p className="font-serif font-bold text-[#412817]">Gestión de Libros</p>
-              <p className="font-body text-sm text-[#50453e]">Agregar, editar o eliminar libros</p>
+              <p className="font-serif font-bold text-[#0e5146]">Gestión de Libros</p>
+              <p className="font-body text-sm text-[#4a615b]">Agregar, editar o eliminar libros</p>
             </div>
-            <span className="material-symbols-outlined ml-auto text-[#d3c3bb] group-hover:text-[#745a34] transition-colors">arrow_forward</span>
+            <span className="material-symbols-outlined ml-auto text-[#d2dcd6] group-hover:text-[#c9833b] transition-colors">arrow_forward</span>
           </a>
-          <a href="/admin/users" className="group flex items-center gap-4 p-5 bg-[#f7f3ea] hover:bg-[#ece8df] transition-colors">
-            <span className="material-symbols-outlined text-3xl text-[#745a34] group-hover:scale-110 transition-transform">group</span>
+          <a href="/admin/users" className="group flex items-center gap-4 p-5 bg-[#f2f5f0] hover:bg-[#e3e9e1] transition-colors">
+            <span className="material-symbols-outlined text-3xl text-[#c9833b] group-hover:scale-110 transition-transform">group</span>
             <div>
-              <p className="font-serif font-bold text-[#412817]">Gestión de Usuarios</p>
-              <p className="font-body text-sm text-[#50453e]">Ver y administrar usuarios</p>
+              <p className="font-serif font-bold text-[#0e5146]">Gestión de Usuarios</p>
+              <p className="font-body text-sm text-[#4a615b]">Ver y administrar usuarios</p>
             </div>
-            <span className="material-symbols-outlined ml-auto text-[#d3c3bb] group-hover:text-[#745a34] transition-colors">arrow_forward</span>
+            <span className="material-symbols-outlined ml-auto text-[#d2dcd6] group-hover:text-[#c9833b] transition-colors">arrow_forward</span>
           </a>
         </div>
       </section>
 
       {/* Recent Activity */}
       <section>
-        <div className="flex items-end justify-between mb-4 border-b border-[#d3c3bb]/20 pb-2">
-          <h3 className="font-serif font-bold text-xl text-[#412817]">Actividad Reciente</h3>
-          <span className="font-label text-[10px] uppercase tracking-widest text-[#82746d]">Últimas {activity.length} actividades</span>
+        <div className="flex items-end justify-between mb-4 border-b border-[#d2dcd6]/20 pb-2">
+          <h3 className="font-serif font-bold text-xl text-[#0e5146]">Actividad Reciente</h3>
+          <span className="font-label text-[10px] uppercase tracking-widest text-[#6c7f7a]">Últimas {activity.length} actividades</span>
         </div>
 
         <div className="overflow-x-auto rounded">
           <table className="w-full text-left border-separate border-spacing-0">
             <thead>
-              <tr className="bg-[#f7f3ea]">
-                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30 whitespace-nowrap">Acción</th>
-                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30 whitespace-nowrap">Usuario</th>
-                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30">Valor</th>
-                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30 whitespace-nowrap">Fecha</th>
-                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30 text-right whitespace-nowrap">Eliminar</th>
+              <tr className="bg-[#f2f5f0]">
+                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 whitespace-nowrap">Acción</th>
+                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 whitespace-nowrap">Usuario</th>
+                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">Valor</th>
+                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 whitespace-nowrap">Fecha</th>
+                <th className="px-5 py-3 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 text-right whitespace-nowrap">Eliminar</th>
               </tr>
             </thead>
             <tbody>
               {activity.map((item, i) => (
-                <tr key={item.id} className={`group transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#fdf9f0]'} hover:bg-[#f7f3ea]`}>
+                <tr key={item.id} className={`group transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#f8f7f2]'} hover:bg-[#f2f5f0]`}>
                   {/* Tipo */}
-                  <td className="px-5 py-4 border-b border-[#d3c3bb]/10 whitespace-nowrap">
+                  <td className="px-5 py-4 border-b border-[#d2dcd6]/10 whitespace-nowrap">
                     <TypeBadge type={item.type} />
                   </td>
 
                   {/* Usuario */}
-                  <td className="px-5 py-4 border-b border-[#d3c3bb]/10">
+                  <td className="px-5 py-4 border-b border-[#d2dcd6]/10">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                         {item.user.charAt(0)}
                       </div>
-                      <span className="font-body text-sm text-[#412817] whitespace-nowrap">{item.user}</span>
+                      <span className="font-body text-sm text-[#0e5146] whitespace-nowrap">{item.user}</span>
                     </div>
                   </td>
 
                   {/* Valor */}
-                  <td className="px-5 py-4 border-b border-[#d3c3bb]/10 max-w-xs">
+                  <td className="px-5 py-4 border-b border-[#d2dcd6]/10 max-w-xs">
                     {item.type === 'comentario' && (
-                      <p className="font-body text-sm text-[#50453e] truncate max-w-[260px]" title={item.value}>
+                      <p className="font-body text-sm text-[#4a615b] truncate max-w-[260px]" title={item.value}>
                         "{item.value}"
                       </p>
                     )}
                     {item.type === 'rate' && <RateStars value={item.value} />}
                     {item.type === 'registro' && (
-                      <span className="font-mono text-xs text-[#82746d] bg-[#f7f3ea] px-2 py-1 rounded">
+                      <span className="font-mono text-xs text-[#6c7f7a] bg-[#f2f5f0] px-2 py-1 rounded">
                         {item.value}
                       </span>
                     )}
                   </td>
 
                   {/* Fecha */}
-                  <td className="px-5 py-4 border-b border-[#d3c3bb]/10 whitespace-nowrap">
-                    <span className="font-body text-xs text-[#82746d]">{formatDate(item.date)}</span>
+                  <td className="px-5 py-4 border-b border-[#d2dcd6]/10 whitespace-nowrap">
+                    <span className="font-body text-xs text-[#6c7f7a]">{formatDate(item.date)}</span>
                   </td>
 
                   {/* Eliminar */}
-                  <td className="px-5 py-4 border-b border-[#d3c3bb]/10 text-right">
+                  <td className="px-5 py-4 border-b border-[#d2dcd6]/10 text-right">
                     {item.type === 'comentario' && (
                       <button
                         onClick={() => handleDeleteActivity(item.id)}
@@ -213,13 +213,13 @@ export default function AdminDashboard() {
                       </button>
                     )}
                     {item.type === 'rate' && (
-                      <span className="text-xs font-label text-[#d3c3bb] uppercase tracking-wider">—</span>
+                      <span className="text-xs font-label text-[#d2dcd6] uppercase tracking-wider">—</span>
                     )}
                     {item.type === 'registro' && (
                       <button
                         disabled
                         title="No es posible eliminar registros"
-                        className="text-[#d3c3bb] p-1.5 rounded-full cursor-not-allowed"
+                        className="text-[#d2dcd6] p-1.5 rounded-full cursor-not-allowed"
                       >
                         <span className="material-symbols-outlined text-base">delete</span>
                       </button>
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs font-body text-[#82746d] italic mt-3 px-1">
+        <p className="text-xs font-body text-[#6c7f7a] italic mt-3 px-1">
           * Datos de ejemplo. Se conectará a la API en una siguiente etapa.
         </p>
       </section>

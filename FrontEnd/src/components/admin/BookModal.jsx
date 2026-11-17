@@ -228,18 +228,18 @@ export default function BookModal({ book, onClose, onSave }) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#82746d] hover:text-[#412817] z-10"
+          className="absolute top-4 right-4 text-[#6c7f7a] hover:text-[#0e5146] z-10"
         >
           <span className="material-symbols-outlined">close</span>
         </button>
 
         {/* Sidebar Preview */}
-        <div className="hidden md:block w-1/3 bg-[#f7f3ea] p-10 space-y-8">
+        <div className="hidden md:block w-1/3 bg-[#f2f5f0] p-10 space-y-8">
           <div className="space-y-4">
-            <p className="font-label text-[10px] uppercase tracking-[0.3em] text-[#82746d]">
+            <p className="font-label text-[10px] uppercase tracking-[0.3em] text-[#6c7f7a]">
               Vista Previa
             </p>
-            <div className="aspect-[3/4] bg-[#ece8df] relative overflow-hidden shadow-md">
+            <div className="aspect-[3/4] bg-[#e3e9e1] relative overflow-hidden shadow-md">
               {previewImg ? (
                 <img
                   src={previewImg}
@@ -248,7 +248,7 @@ export default function BookModal({ book, onClose, onSave }) {
                   onError={() => setPreviewImg('')}
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#d3c3bb] p-6 text-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#d2dcd6] p-6 text-center">
                   <span className="material-symbols-outlined text-4xl mb-2">
                     auto_stories
                   </span>
@@ -262,10 +262,10 @@ export default function BookModal({ book, onClose, onSave }) {
             </div>
           </div>
           <div className="space-y-1">
-            <h4 className="font-serif font-bold text-[#412817] italic">
+            <h4 className="font-serif font-bold text-[#0e5146] italic">
               Notas Editoriales
             </h4>
-            <p className="font-body text-sm text-[#50453e] leading-relaxed">
+            <p className="font-body text-sm text-[#4a615b] leading-relaxed">
               Asegurate de que todos los metadatos coincidan. Se requiere verificación manual de la portada para evitar enlaces rotos.
             </p>
           </div>
@@ -274,10 +274,10 @@ export default function BookModal({ book, onClose, onSave }) {
         {/* Form Content */}
         <div className="flex-1 overflow-y-auto p-8 md:p-12">
           <header className="mb-10">
-            <h3 className="text-3xl font-serif font-black text-[#412817] leading-tight">
+            <h3 className="text-3xl font-serif font-black text-[#0e5146] leading-tight">
               {isEditing ? 'Editar Libro' : 'Añadir Nuevo Libro'}
             </h3>
-            <p className="text-[#50453e] font-body mt-2">
+            <p className="text-[#4a615b] font-body mt-2">
               Actualizá el catálogo digital con nuevas adquisiciones.
             </p>
           </header>
@@ -290,7 +290,7 @@ export default function BookModal({ book, onClose, onSave }) {
 
           {!isEditing && (
             <div className="mb-8 relative" ref={dropdownRef}>
-              <div className="flex items-center bg-[#412817] text-white rounded shadow-md px-4 py-3 gap-3">
+              <div className="flex items-center bg-[#0e5146] text-white rounded shadow-md px-4 py-3 gap-3">
                 <span className="material-symbols-outlined text-lg">search</span>
                 <input
                   type="text"
@@ -307,25 +307,25 @@ export default function BookModal({ book, onClose, onSave }) {
 
               {/* Google Books Dropdown */}
               {showDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full mt-2 left-0 right-0 bg-white shadow-xl border border-[#d3c3bb]/30 rounded max-h-64 overflow-y-auto z-50">
-                  <ul className="divide-y divide-[#d3c3bb]/10">
+                <div className="absolute top-full mt-2 left-0 right-0 bg-white shadow-xl border border-[#d2dcd6]/30 rounded max-h-64 overflow-y-auto z-50">
+                  <ul className="divide-y divide-[#d2dcd6]/10">
                     {searchResults.map((gBook) => (
                       <li
                         key={gBook.googleBooksId}
                         onClick={() => handleSelectGoogleBook(gBook)}
-                        className="flex gap-4 p-3 hover:bg-[#f7f3ea] cursor-pointer transition-colors"
+                        className="flex gap-4 p-3 hover:bg-[#f2f5f0] cursor-pointer transition-colors"
                       >
-                        <div className="w-10 h-14 bg-[#ece8df] flex-shrink-0">
+                        <div className="w-10 h-14 bg-[#e3e9e1] flex-shrink-0">
                           {gBook.coverUrl ? (
                             <img src={gBook.coverUrl} alt={gBook.title} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[#d3c3bb] text-[10px]">Sin<br/>Imagen</div>
+                            <div className="w-full h-full flex items-center justify-center text-[#d2dcd6] text-[10px]">Sin<br/>Imagen</div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-serif font-bold text-sm text-[#412817] truncate">{gBook.title}</p>
-                          <p className="text-xs font-body text-[#50453e] truncate">{gBook.author}</p>
-                          <p className="text-[10px] font-label text-[#82746d] uppercase mt-1">Año: {gBook.publishedYear || 'N/A'}</p>
+                          <p className="font-serif font-bold text-sm text-[#0e5146] truncate">{gBook.title}</p>
+                          <p className="text-xs font-body text-[#4a615b] truncate">{gBook.author}</p>
+                          <p className="text-[10px] font-label text-[#6c7f7a] uppercase mt-1">Año: {gBook.publishedYear || 'N/A'}</p>
                         </div>
                       </li>
                     ))}
@@ -339,7 +339,7 @@ export default function BookModal({ book, onClose, onSave }) {
             {/* Main Info */}
             <div className="space-y-6">
               <div className="relative group">
-                <label className="block font-serif font-bold text-[#412817] mb-2 italic transition-colors duration-200 group-focus-within:text-[#745a34]">
+                <label className="block font-serif font-bold text-[#0e5146] mb-2 italic transition-colors duration-200 group-focus-within:text-[#c9833b]">
                   Título
                 </label>
                 <div className="relative">
@@ -349,7 +349,7 @@ export default function BookModal({ book, onClose, onSave }) {
                     value={formData.title}
                     onChange={handleChange}
                     required
-                    className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-serif text-xl py-3 px-1 placeholder:text-[#d3c3bb] transition-all duration-300"
+                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-serif text-xl py-3 px-1 placeholder:text-[#d2dcd6] transition-all duration-300"
                     placeholder="Harry Potter y la piedra filosofal"
                   />
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
@@ -359,7 +359,7 @@ export default function BookModal({ book, onClose, onSave }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Author with chips */}
                 <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                     Autor
                   </label>
                   <div className="flex gap-2 mb-2">
@@ -371,7 +371,7 @@ export default function BookModal({ book, onClose, onSave }) {
                         onKeyDown={(e) =>
                           e.key === 'Enter' && (e.preventDefault(), handleAddAuthor(e))
                         }
-                        className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
+                        className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
                         placeholder="J.K. Rowling"
                       />
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
@@ -379,7 +379,7 @@ export default function BookModal({ book, onClose, onSave }) {
                     <button
                       type="button"
                       onClick={handleAddAuthor}
-                      className="text-[#412817] hover:text-[#c2a878] active:scale-90 transition-all duration-200"
+                      className="text-[#0e5146] hover:text-[#e9a45e] active:scale-90 transition-all duration-200"
                     >
                       <span className="material-symbols-outlined">add_circle</span>
                     </button>
@@ -389,7 +389,7 @@ export default function BookModal({ book, onClose, onSave }) {
                       {formData.author.map((a) => (
                         <span
                           key={a}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#fedaaa] hover:bg-[#f5d89a] text-[#795e38] text-xs font-label transition-colors duration-200"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#f7e4cd] hover:bg-[#f5d89a] text-[#7a4d16] text-xs font-label transition-colors duration-200"
                         >
                           {a}
                           <button
@@ -409,7 +409,7 @@ export default function BookModal({ book, onClose, onSave }) {
 
                 {/* Genre with chips */}
                 <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                     Género
                   </label>
                   <div className="flex gap-2 mb-2">
@@ -421,7 +421,7 @@ export default function BookModal({ book, onClose, onSave }) {
                         onKeyDown={(e) =>
                           e.key === 'Enter' && (e.preventDefault(), handleAddGenre(e))
                         }
-                        className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
+                        className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
                         placeholder="Fantasía"
                       />
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
@@ -429,7 +429,7 @@ export default function BookModal({ book, onClose, onSave }) {
                     <button
                       type="button"
                       onClick={handleAddGenre}
-                      className="text-[#412817] hover:text-[#c2a878] active:scale-90 transition-all duration-200"
+                      className="text-[#0e5146] hover:text-[#e9a45e] active:scale-90 transition-all duration-200"
                     >
                       <span className="material-symbols-outlined">add_circle</span>
                     </button>
@@ -439,7 +439,7 @@ export default function BookModal({ book, onClose, onSave }) {
                       {formData.genre.map((g) => (
                         <span
                           key={g}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#fedaaa] hover:bg-[#f5d89a] text-[#795e38] text-xs font-label transition-colors duration-200"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#f7e4cd] hover:bg-[#f5d89a] text-[#7a4d16] text-xs font-label transition-colors duration-200"
                         >
                           {g}
                           <button
@@ -459,7 +459,7 @@ export default function BookModal({ book, onClose, onSave }) {
               </div>
 
               <div className="relative group">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                   URL de la Portada
                 </label>
                 <div className="relative">
@@ -468,7 +468,7 @@ export default function BookModal({ book, onClose, onSave }) {
                     name="img"
                     value={formData.img}
                     onChange={handleChange}
-                    className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 text-sm transition-all duration-300"
+                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 text-sm transition-all duration-300"
                     placeholder="https://images.unsplash.com/..."
                   />
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
@@ -477,7 +477,7 @@ export default function BookModal({ book, onClose, onSave }) {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                     Páginas
                   </label>
                   <div className="relative">
@@ -486,14 +486,14 @@ export default function BookModal({ book, onClose, onSave }) {
                       name="pages"
                       value={formData.pages}
                       onChange={handleChange}
-                      className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
+                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
                       placeholder="512"
                     />
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
                   </div>
                 </div>
                 <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                     Año
                   </label>
                   <div className="relative">
@@ -502,14 +502,14 @@ export default function BookModal({ book, onClose, onSave }) {
                       name="year"
                       value={formData.year}
                       onChange={handleChange}
-                      className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
+                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
                       placeholder="1997"
                     />
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
                   </div>
                 </div>
                 <div className="relative col-span-2 md:col-span-1 group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#82746d] mb-2 transition-colors duration-200 group-focus-within:text-[#412817]">
+                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
                     Editorial
                   </label>
                   <div className="relative">
@@ -518,7 +518,7 @@ export default function BookModal({ book, onClose, onSave }) {
                       name="editorial"
                       value={formData.editorial}
                       onChange={handleChange}
-                      className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
+                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
                       placeholder="Salamandra"
                     />
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
@@ -527,7 +527,7 @@ export default function BookModal({ book, onClose, onSave }) {
               </div>
 
               <div className="relative group">
-                <label className="block font-serif font-bold text-[#412817] mb-2 italic transition-colors duration-200 group-focus-within:text-[#745a34]">
+                <label className="block font-serif font-bold text-[#0e5146] mb-2 italic transition-colors duration-200 group-focus-within:text-[#c9833b]">
                   Sinopsis
                 </label>
                 <div className="relative">
@@ -536,7 +536,7 @@ export default function BookModal({ book, onClose, onSave }) {
                     value={formData.sinopsis}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full bg-[#f7f3ea] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d3c3bb]/50 focus:border-[#c2a878] focus:ring-0 font-body py-3 px-1 resize-none leading-relaxed transition-all duration-300"
+                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-3 px-1 resize-none leading-relaxed transition-all duration-300"
                   />
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
                 </div>
@@ -544,11 +544,11 @@ export default function BookModal({ book, onClose, onSave }) {
             </div>
 
             {/* Actions */}
-            <div className="pt-8 flex items-center justify-end gap-6 border-t border-[#d3c3bb]/20">
+            <div className="pt-8 flex items-center justify-end gap-6 border-t border-[#d2dcd6]/20">
               <button
                 type="button"
                 onClick={handleClearForm}
-                className="text-[#412817] font-body font-semibold text-sm hover:text-[#745a34] hover:underline underline-offset-4 transition-all duration-200"
+                className="text-[#0e5146] font-body font-semibold text-sm hover:text-[#c9833b] hover:underline underline-offset-4 transition-all duration-200"
               >
                 Limpiar Formulario
               </button>

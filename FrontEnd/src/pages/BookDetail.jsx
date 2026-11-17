@@ -298,7 +298,7 @@ export default function BookDetail() {
                 Por leer
               </button>
               <button onClick={handleFavorite}
-                className={`py-3.5 md:py-4 border rounded-xl font-label font-bold uppercase tracking-widest text-sm transition-all duration-300 w-12 md:w-14 h-12 md:h-14 flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 group ${isFavorite ? 'bg-[#412817] border-[#412817] text-[#e7bea5] shadow-lg' : 'border-outline text-secondary bg-surface-container-high hover:bg-surface-container-low'}`}>
+                className={`py-3.5 md:py-4 border rounded-xl font-label font-bold uppercase tracking-widest text-sm transition-all duration-300 w-12 md:w-14 h-12 md:h-14 flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 group ${isFavorite ? 'bg-primary border-primary text-secondary-light shadow-lg' : 'border-outline text-secondary-dark bg-surface-container-high hover:bg-surface-container-low'}`}>
                 <span className={`material-symbols-outlined text-lg transition-transform duration-300 group-hover:scale-110 ${isFavorite ? 'scale-110' : ''}`}
                   style={{ fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0" }}>
                   favorite
@@ -328,17 +328,17 @@ export default function BookDetail() {
           {/* Ask AI Banner */}
           <div className="bg-primary rounded-xl p-5 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 md:gap-6 shadow-xl relative overflow-hidden group">
             <div className="w-16 h-16 shrink-0 rounded-full bg-white/10 flex items-center justify-center border border-white/20 relative z-10">
-              <span className="material-symbols-outlined text-3xl text-[#e7bea5]">auto_awesome</span>
+              <span className="material-symbols-outlined text-3xl text-secondary-light">auto_awesome</span>
             </div>
             <div className="flex-1 text-center sm:text-left relative z-10">
-              <h3 className="font-headline font-bold text-xl text-[#fdf9f0] mb-2">¿Dudas sobre este libro?</h3>
-              <p className="font-body text-[#e7bea5] text-sm leading-relaxed">
+              <h3 className="font-headline font-bold text-xl text-white mb-2">¿Dudas sobre este libro?</h3>
+              <p className="font-body text-forest-muted text-sm leading-relaxed">
                 Preguntale a Lib, nuestro asistente IA, que te cuente más o busque reseñas sin darte spoilers.
               </p>
             </div>
             <button 
               onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: `Contame más sobre el libro "${book.title}" sin spoilers.` } }))}
-              className="shrink-0 px-8 py-3 bg-[#e7bea5] text-[#412817] font-label text-xs font-bold uppercase tracking-widest rounded shadow-lg hover:bg-white hover:scale-105 active:scale-95 transition-all cursor-pointer relative z-10"
+              className="shrink-0 px-8 py-3 bg-secondary text-on-secondary font-label text-xs font-bold uppercase tracking-widest rounded-xl shadow-lg hover:bg-secondary-hover hover:scale-105 active:scale-95 transition-all cursor-pointer relative z-10"
             >
               Preguntarle a Lib
             </button>
@@ -426,7 +426,7 @@ export default function BookDetail() {
                     <div className="shrink-0">
                       <Link to={`/user/${comment.user_id}`} className="block w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm hover:ring-secondary transition-all duration-200">
                         {comment.profile_img ? (
-                          <img className="w-full h-full object-cover bg-[#d3c3bb]" src={comment.profile_img} alt={comment.name} />
+                          <img className="w-full h-full object-cover bg-surface-container-high" src={comment.profile_img} alt={comment.name} />
                         ) : (
                           comment.name?.charAt(0)?.toUpperCase()
                         )}
@@ -466,7 +466,7 @@ export default function BookDetail() {
                           }`}
                           style={{ 
                             fontVariationSettings: likedComments.has(comment.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0",
-                            color: likedComments.has(comment.id) ? '#412817' : undefined
+                            color: likedComments.has(comment.id) ? '#0e5146' : undefined
                           }}>
                             favorite
                           </span>
@@ -516,7 +516,7 @@ export default function BookDetail() {
                           <div key={reply.id} className="flex gap-4 py-4 px-4 hover:bg-surface-container-low/50 rounded-sm transition-colors duration-200 group/reply">
                             <Link to={`/user/${reply.user_id}`} className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs hover:ring-2 hover:ring-secondary transition-all duration-200">
                               {reply.profile_img ? (
-                                <img className="w-full h-full object-cover bg-[#d3c3bb]" src={reply.profile_img} alt={reply.name} />
+                                <img className="w-full h-full object-cover bg-surface-container-high" src={reply.profile_img} alt={reply.name} />
                               ) : (
                                 reply.name?.charAt(0)?.toUpperCase()
                               )}
@@ -540,7 +540,7 @@ export default function BookDetail() {
                                 <span className="material-symbols-outlined text-sm transition-transform duration-200 hover:scale-110"
                                   style={{ 
                                     fontVariationSettings: likedComments.has(reply.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0",
-                                    color: likedComments.has(reply.id) ? '#412817' : undefined
+                                    color: likedComments.has(reply.id) ? '#0e5146' : undefined
                                   }}>
                                   favorite
                                 </span>
@@ -581,21 +581,21 @@ export default function BookDetail() {
 // Status Modal Component
 function StatusModal({ onClose, onSelect }) {
   const statuses = [
-    { id: 'want_to_read', label: 'Por leer', icon: 'bookmark', color: 'bg-[#c2a878]' },
-    { id: 'reading', label: 'Leyendo', icon: 'auto_stories', color: 'bg-[#412817]' },
-    { id: 'completed', label: 'Completado', icon: 'check_circle', color: 'bg-[#745a34]' }
+    { id: 'want_to_read', label: 'Por leer', icon: 'bookmark', color: 'bg-secondary' },
+    { id: 'reading', label: 'Leyendo', icon: 'auto_stories', color: 'bg-primary' },
+    { id: 'completed', label: 'Completado', icon: 'check_circle', color: 'bg-primary-container' }
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1c1c16]/40 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="bg-white w-full max-w-sm rounded-2xl shadow-[0_20px_60px_rgba(28,28,22,0.2)] overflow-hidden animate-[dropdownIn_0.3s_ease]"
+        className="bg-white w-full max-w-sm rounded-2xl shadow-[0_20px_60px_rgba(24,51,47,0.2)] overflow-hidden animate-[dropdownIn_0.3s_ease]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#d3c3bb]/20 flex items-center justify-between">
-          <h3 className="font-headline text-lg font-bold text-[#412817]">Estado de lectura</h3>
-          <button onClick={onClose} className="text-[#82746d] hover:text-[#412817] transition-colors cursor-pointer">
+        <div className="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
+          <h3 className="font-headline text-lg font-bold text-primary">Estado de lectura</h3>
+          <button onClick={onClose} className="text-outline hover:text-primary transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
@@ -606,12 +606,12 @@ function StatusModal({ onClose, onSelect }) {
             <button
               key={status.id}
               onClick={() => onSelect(status.id)}
-              className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-[#f7f3ea] transition-all duration-200 group cursor-pointer"
+              className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-all duration-200 group cursor-pointer"
             >
               <div className={`w-10 h-10 rounded-lg ${status.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
                 <span className="material-symbols-outlined text-white">{status.icon}</span>
               </div>
-              <span className="font-headline font-bold text-[#412817] flex-1 text-left">{status.label}</span>
+              <span className="font-headline font-bold text-primary flex-1 text-left">{status.label}</span>
             </button>
           ))}
         </div>

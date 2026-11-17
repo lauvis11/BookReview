@@ -132,10 +132,10 @@ export default function AdminBooks() {
       {/* Header */}
       <header className="mb-10 flex justify-between items-end">
         <div>
-          <span className="font-label text-xs uppercase tracking-[0.2em] text-[#50453e] mb-2 block">
+          <span className="font-label text-xs uppercase tracking-[0.2em] text-[#4a615b] mb-2 block">
             Catálogo
           </span>
-          <h2 className="text-4xl font-serif font-black text-[#412817] leading-tight">
+          <h2 className="text-4xl font-serif font-black text-[#0e5146] leading-tight">
             Gestión de Libros
           </h2>
         </div>
@@ -161,8 +161,8 @@ export default function AdminBooks() {
                 onClick={() => { setSearchFilter(f.key); setSearchQuery(''); setDropdownResults([]) }}
                 className={`px-3 py-1.5 text-[10px] font-label uppercase tracking-widest border-b transition-all cursor-pointer ${
                   searchFilter === f.key
-                    ? 'bg-[#412817] text-white border-[#412817]'
-                    : 'bg-[#f7f3ea] text-[#412817] border-[#d3c3bb]/50 hover:bg-[#ece8df]'
+                    ? 'bg-[#0e5146] text-white border-[#0e5146]'
+                    : 'bg-[#f2f5f0] text-[#0e5146] border-[#d2dcd6]/50 hover:bg-[#e3e9e1]'
                 }`}
               >
                 {f.label}
@@ -173,40 +173,40 @@ export default function AdminBooks() {
           {/* Input + clear */}
           <div className="flex gap-3 items-center">
             <form onSubmit={handleSearch} className="relative flex-1 max-w-xl" ref={dropdownRef}>
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#82746d] text-lg">search</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#6c7f7a] text-lg">search</span>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => { if (dropdownResults.length > 0) setShowDropdown(true) }}
                 placeholder={`Buscar por ${filters.find(f => f.key === searchFilter)?.label.toLowerCase()}...`}
-                className="w-full bg-[#f7f3ea] border border-[#d3c3bb]/40 focus:border-[#c2a878] focus:ring-0 rounded pl-10 pr-10 py-2.5 text-sm font-body text-[#412817] placeholder:text-[#82746d]/60 outline-none transition-colors"
+                className="w-full bg-[#f2f5f0] border border-[#d2dcd6]/40 focus:border-[#e9a45e] focus:ring-0 rounded pl-10 pr-10 py-2.5 text-sm font-body text-[#0e5146] placeholder:text-[#6c7f7a]/60 outline-none transition-colors"
               />
-              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#82746d] hover:text-[#412817] cursor-pointer">
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7f7a] hover:text-[#0e5146] cursor-pointer">
                 <span className="material-symbols-outlined text-base">arrow_forward</span>
               </button>
 
               {/* Autocomplete Dropdown */}
               {showDropdown && dropdownResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded shadow-xl border border-[#d3c3bb]/20 overflow-hidden z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded shadow-xl border border-[#d2dcd6]/20 overflow-hidden z-50">
                   <ul>
                     {dropdownResults.map(book => (
                       <li
                         key={book.id}
                         onClick={() => handleDropdownClick(book)}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-[#f7f3ea] cursor-pointer border-b border-[#d3c3bb]/10 last:border-b-0 transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-[#f2f5f0] cursor-pointer border-b border-[#d2dcd6]/10 last:border-b-0 transition-colors"
                       >
-                        <div className="w-8 h-11 bg-[#ece8df] overflow-hidden flex-shrink-0">
+                        <div className="w-8 h-11 bg-[#e3e9e1] overflow-hidden flex-shrink-0">
                           {book.img
                             ? <img src={book.img} alt={book.title} className="w-full h-full object-cover" />
                             : <div className="w-full h-full flex items-center justify-center text-[10px]">📖</div>
                           }
                         </div>
                         <div className="min-w-0">
-                          <p className="font-serif font-bold text-[#412817] text-sm truncate">{book.title}</p>
-                          <p className="font-body text-xs text-[#50453e] truncate">{Array.isArray(book.author) ? book.author.join(', ') : book.author}</p>
+                          <p className="font-serif font-bold text-[#0e5146] text-sm truncate">{book.title}</p>
+                          <p className="font-body text-xs text-[#4a615b] truncate">{Array.isArray(book.author) ? book.author.join(', ') : book.author}</p>
                         </div>
-                        <span className="ml-auto text-[10px] font-label text-[#82746d] uppercase tracking-wider whitespace-nowrap">Editar →</span>
+                        <span className="ml-auto text-[10px] font-label text-[#6c7f7a] uppercase tracking-wider whitespace-nowrap">Editar →</span>
                       </li>
                     ))}
                   </ul>
@@ -217,7 +217,7 @@ export default function AdminBooks() {
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2.5 border border-[#d3c3bb]/50 text-[#50453e] text-[10px] font-label uppercase tracking-widest hover:bg-[#f7f3ea] transition-colors cursor-pointer whitespace-nowrap"
+              className="px-4 py-2.5 border border-[#d2dcd6]/50 text-[#4a615b] text-[10px] font-label uppercase tracking-widest hover:bg-[#f2f5f0] transition-colors cursor-pointer whitespace-nowrap"
             >
               Limpiar
             </button>
@@ -225,30 +225,30 @@ export default function AdminBooks() {
 
           {/* Active filter indicator */}
           {Object.keys(activeParams).length > 0 && (
-            <p className="text-xs font-body text-[#745a34] italic">
+            <p className="text-xs font-body text-[#c9833b] italic">
               Mostrando resultados para: <strong>{Object.values(activeParams)[0]}</strong>
             </p>
           )}
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto bg-[#f7f3ea]/50 rounded">
+        <div className="overflow-x-auto bg-[#f2f5f0]/50 rounded">
           <table className="w-full text-left border-separate border-spacing-0">
             <thead>
-              <tr className="bg-[#f7f3ea]">
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30">
+              <tr className="bg-[#f2f5f0]">
+                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
                   Título
                 </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30">
+                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
                   Autor
                 </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30">
+                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
                   Género
                 </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30">
+                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
                   Editorial
                 </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#50453e] uppercase border-b border-[#d3c3bb]/30 text-right">
+                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 text-right">
                   Acciones
                 </th>
               </tr>
@@ -259,10 +259,10 @@ export default function AdminBooks() {
                   <tr key={i}>
                     <td colSpan={5} className="px-6 py-6">
                       <div className="animate-pulse flex items-center gap-4">
-                        <div className="w-10 h-14 bg-[#ece8df] rounded"></div>
+                        <div className="w-10 h-14 bg-[#e3e9e1] rounded"></div>
                         <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-[#ece8df] rounded w-3/4"></div>
-                          <div className="h-3 bg-[#ece8df] rounded w-1/4"></div>
+                          <div className="h-4 bg-[#e3e9e1] rounded w-3/4"></div>
+                          <div className="h-3 bg-[#e3e9e1] rounded w-1/4"></div>
                         </div>
                       </div>
                     </td>
@@ -271,10 +271,10 @@ export default function AdminBooks() {
               ) : books.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center">
-                    <span className="material-symbols-outlined text-4xl text-[#d3c3bb] mb-4 block">
+                    <span className="material-symbols-outlined text-4xl text-[#d2dcd6] mb-4 block">
                       menu_book
                     </span>
-                    <p className="font-body text-[#50453e]">No se encontraron libros</p>
+                    <p className="font-body text-[#4a615b]">No se encontraron libros</p>
                   </td>
                 </tr>
               ) : (
@@ -283,9 +283,9 @@ export default function AdminBooks() {
                     key={book.id}
                     className="group hover:bg-white transition-colors"
                   >
-                    <td className="px-6 py-5 border-b border-[#d3c3bb]/10">
+                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-14 bg-[#ece8df] shadow-sm overflow-hidden flex-shrink-0">
+                        <div className="w-10 h-14 bg-[#e3e9e1] shadow-sm overflow-hidden flex-shrink-0">
                           {book.img ? (
                             <img
                               src={book.img}
@@ -294,49 +294,49 @@ export default function AdminBooks() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <span className="material-symbols-outlined text-[#d3c3bb] text-sm">
+                              <span className="material-symbols-outlined text-[#d2dcd6] text-sm">
                                 menu_book
                               </span>
                             </div>
                           )}
                         </div>
                         <div>
-                          <p className="font-serif font-bold text-[#412817] group-hover:text-[#745a34] transition-colors">
+                          <p className="font-serif font-bold text-[#0e5146] group-hover:text-[#c9833b] transition-colors">
                             {book.title}
                           </p>
-                          <p className="text-[10px] font-label text-[#50453e] uppercase mt-1">
+                          <p className="text-[10px] font-label text-[#4a615b] uppercase mt-1">
                             ID: {String(book.id).slice(0, 8).toUpperCase()}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5 border-b border-[#d3c3bb]/10">
+                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
                       <p className="font-body text-sm text-[#1c1c16]">
                         {Array.isArray(book.author) ? book.author.join(', ') : book.author}
                       </p>
                     </td>
-                    <td className="px-6 py-5 border-b border-[#d3c3bb]/10">
+                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
                       <div className="flex flex-wrap gap-1">
                         {(Array.isArray(book.genre) ? book.genre : [book.genre])
                           .filter(Boolean)
                           .map((g, i) => (
                             <span
                               key={i}
-                              className="inline-block px-3 py-1 bg-[#fedaaa] text-[#795e38] text-[10px] font-label uppercase tracking-wider rounded-b-sm"
+                              className="inline-block px-3 py-1 bg-[#f7e4cd] text-[#7a4d16] text-[10px] font-label uppercase tracking-wider rounded-b-sm"
                             >
                               {g}
                             </span>
                           ))}
                       </div>
                     </td>
-                    <td className="px-6 py-5 border-b border-[#d3c3bb]/10">
+                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
                       <p className="font-body text-sm text-[#1c1c16]">{book.editorial}</p>
                     </td>
-                    <td className="px-6 py-5 border-b border-[#d3c3bb]/10 text-right">
+                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleEdit(book)}
-                          className="text-[#412817]/60 hover:text-[#412817] hover:bg-[#f7f3ea] p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer"
+                          className="text-[#0e5146]/60 hover:text-[#0e5146] hover:bg-[#f2f5f0] p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer"
                           title="Editar"
                         >
                           <span className="material-symbols-outlined">edit</span>
@@ -360,25 +360,25 @@ export default function AdminBooks() {
         {/* Pagination */}
         {books.length > 0 && (
           <div className="flex justify-between items-center px-4 pt-4">
-            <p className="text-xs font-body text-[#50453e] italic">
+            <p className="text-xs font-body text-[#4a615b] italic">
               Mostrando {books.length} libros
             </p>
             <div className="flex items-center gap-8">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#50453e] hover:text-[#412817] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#4a615b] hover:text-[#0e5146] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <span className="material-symbols-outlined text-sm">chevron_left</span>
                 Anterior
               </button>
-              <span className="text-xs font-serif font-bold text-[#412817]">
+              <span className="text-xs font-serif font-bold text-[#0e5146]">
                 {String(page).padStart(2, '0')}
               </span>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!hasMore}
-                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#50453e] hover:text-[#412817] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#4a615b] hover:text-[#0e5146] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 Siguiente
                 <span className="material-symbols-outlined text-sm">chevron_right</span>
@@ -415,16 +415,16 @@ export default function AdminBooks() {
               </div>
               <div>
                 <h3 className="font-serif font-bold text-[#1c1c16] text-lg">Eliminar libro</h3>
-                <p className="font-body text-sm text-[#50453e]">Esta acción no se puede deshacer</p>
+                <p className="font-body text-sm text-[#4a615b]">Esta acción no se puede deshacer</p>
               </div>
             </div>
-            <p className="font-body text-[#50453e] mb-8">
+            <p className="font-body text-[#4a615b] mb-8">
               ¿Estás seguro de que querés eliminar "{deleteConfirm.title}"?
             </p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="px-6 py-3 text-[#412817] font-body font-semibold text-sm hover:underline cursor-pointer"
+                className="px-6 py-3 text-[#0e5146] font-body font-semibold text-sm hover:underline cursor-pointer"
               >
                 Cancelar
               </button>

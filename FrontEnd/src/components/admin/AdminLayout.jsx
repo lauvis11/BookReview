@@ -19,13 +19,13 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf9f0] text-[#1c1c16] flex">
+    <div className="min-h-screen bg-surface text-on-surface flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-[#f7f3ea] h-screen fixed left-0 top-0 py-8 px-4 z-30">
+      <aside className="hidden md:flex flex-col w-64 bg-surface-container-low h-screen fixed left-0 top-0 py-8 px-4 z-30 border-r border-outline-variant/30">
         {/* Logo */}
         <div className="mb-10 px-4">
-          <h1 className="text-2xl font-serif italic text-[#412817]">BookReview</h1>
-          <p className="font-serif text-sm opacity-60 text-[#412817] mt-1 uppercase tracking-widest">
+          <h1 className="text-2xl font-serif italic text-primary">BookReview</h1>
+          <p className="font-serif text-sm opacity-70 text-primary mt-1 uppercase tracking-widest">
             Panel de Administracion
           </p>
         </div>
@@ -38,8 +38,8 @@ export default function AdminLayout() {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 font-serif text-lg tracking-tight font-bold transition-all duration-200 ${
                 isActive(item.path)
-                  ? 'text-[#412817] border-r-4 border-[#412817] bg-[#fdf9f0]/50'
-                  : 'text-[#5a3e2b]/70 hover:bg-[#fdf9f0] hover:text-[#412817]'
+                  ? 'text-primary border-r-4 border-primary bg-primary-fixed/60'
+                  : 'text-on-surface-variant hover:bg-surface hover:text-primary'
               }`}
             >
               <span className="material-symbols-outlined">{item.icon}</span>
@@ -49,24 +49,24 @@ export default function AdminLayout() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="mt-auto pt-8 border-t border-[#d3c3bb]/20 space-y-1">
+        <div className="mt-auto pt-8 border-t border-outline-variant/30 space-y-1">
           <Link
             to="/admin/books"
-            className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded font-body font-medium mb-6 shadow-sm hover:opacity-90 transition-opacity"
+            className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-white py-3 rounded font-body font-medium mb-6 shadow-sm transition-colors"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Añadir Libro
           </Link>
           <Link
             to="/"
-            className="flex items-center gap-3 px-4 py-2 text-[#5a3e2b]/70 font-serif text-md hover:text-[#412817] transition-colors"
+            className="flex items-center gap-3 px-4 py-2 text-on-surface-variant font-serif text-md hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">home</span>
             <span>Back to Site</span>
           </Link>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-2 text-[#5a3e2b]/70 font-serif text-md hover:text-[#ba1a1a] transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2 text-on-surface-variant font-serif text-md hover:text-[#ba1a1a] transition-colors"
           >
             <span className="material-symbols-outlined">logout</span>
             <span>Exit</span>
@@ -75,12 +75,12 @@ export default function AdminLayout() {
       </aside>
 
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#fdf9f0]/80 backdrop-blur-xl shadow-sm">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-surface/85 backdrop-blur-xl shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <h1 className="text-xl font-serif italic text-[#412817]">BookReview</h1>
+          <h1 className="text-xl font-serif italic text-primary">BookReview</h1>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-[#412817]"
+            className="text-primary"
           >
             <span className="material-symbols-outlined">
               {mobileMenuOpen ? 'close' : 'menu'}
@@ -90,7 +90,7 @@ export default function AdminLayout() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="bg-[#f7f3ea] border-t border-[#d3c3bb]/20 py-4 px-4 space-y-2">
+          <div className="bg-surface-container-low border-t border-outline-variant/30 py-4 px-4 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -98,8 +98,8 @@ export default function AdminLayout() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 font-serif text-lg font-bold rounded ${
                   isActive(item.path)
-                    ? 'text-[#412817] bg-[#fdf9f0]'
-                    : 'text-[#5a3e2b]/70'
+                    ? 'text-primary bg-primary-fixed'
+                    : 'text-on-surface-variant'
                 }`}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>

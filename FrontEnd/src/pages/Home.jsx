@@ -46,9 +46,9 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="pb-16 md:pb-24 max-w-[1440px] mx-auto min-h-screen flex flex-col">
+    <main className="pb-16 md:pb-24 w-full min-h-screen flex flex-col">
       <Hero />
-      <div className="px-6 md:px-12">
+      <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12">
       {/* Bot Chat Suggestions */}
       <section className="mb-16">
         <div className="mb-6">
@@ -62,9 +62,9 @@ export default function Home() {
             <button 
               key={i}
               onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: prompt } }))}
-              className="w-full md:w-auto flex items-center justify-start gap-3 px-5 py-4 rounded-2xl border border-primary/10 bg-surface-container-lowest hover:bg-primary hover:border-primary text-primary hover:text-white font-body text-sm transition-all duration-300 cursor-pointer shadow-sm hover:shadow-lg group"
+              className="w-full md:w-auto flex items-center justify-start gap-3 px-5 py-4 rounded-2xl border border-primary bg-primary hover:bg-[#166e5e] hover:border-[#166e5e] text-white font-body text-sm transition-all duration-300 cursor-pointer shadow-sm hover:shadow-lg group"
             >
-              <span className="material-symbols-outlined text-lg text-secondary group-hover:text-[#e7bea5] transition-colors shrink-0">auto_awesome</span>
+              <span className="material-symbols-outlined text-lg text-secondary group-hover:text-secondary-hover transition-colors shrink-0">auto_awesome</span>
               <span className="flex-1 text-left leading-tight">{prompt}</span>
             </button>
           ))}
