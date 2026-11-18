@@ -70,6 +70,7 @@
   --color-on-error-container: #93000a;
 
   --font-headline: 'Noto Serif', serif;
+  --font-epigraph: 'Playfair Display', 'Noto Serif', Georgia, serif;
   --font-body: 'Work Sans', sans-serif;
   --font-label: 'Work Sans', sans-serif;
 
@@ -432,3 +433,217 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ==========================================================================
+   Auth Book 3D Flexible Page Turn (Seamless 16-segment continuous curve)
+   ========================================================================== */
+.auth-book-spread {
+  box-shadow:
+    -3px 2px 0 #ebe5d8,
+    3px 2px 0 #ebe5d8,
+    -6px 5px 0 #ded6c6,
+    6px 5px 0 #ded6c6,
+    0 8px 0 #d1c7b5,
+    0 24px 48px rgba(7, 35, 30, 0.32);
+}
+
+/* Dedicated 3D perspective stage above the static form pages (z-30) */
+.auth-3d-stage {
+  perspective: 1600px;
+}
+
+/* Root strip (Strip 0) anchored at the center spine */
+.auth-fold-root {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 800ms cubic-bezier(0.52, 0.04, 0.24, 1);
+  will-change: transform;
+}
+
+.auth-fold-root[data-login="true"] {
+  transform: rotateY(-180deg);
+}
+
+.auth-fold-root[data-login="false"] {
+  transform: rotateY(0deg);
+}
+
+/* Harmonious counter-rotating curves keep inter-strip angles < 1.8deg so the
+   sheet bends smoothly like supple paper with zero visible facet seams. */
+.auth-fold-lead {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 800ms cubic-bezier(0.22, 0.68, 0.24, 1);
+  will-change: transform;
+}
+
+.auth-fold-lead[data-login="true"] {
+  transform: rotateY(calc(var(--fold-deg, 5deg) * -1));
+}
+
+.auth-fold-lead[data-login="false"] {
+  transform: rotateY(0deg);
+}
+
+.auth-fold-lag {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 800ms cubic-bezier(0.52, 0.04, 0.24, 1);
+  will-change: transform;
+}
+
+.auth-fold-lag[data-login="true"] {
+  transform: rotateY(var(--fold-deg, 5deg));
+}
+
+.auth-fold-lag[data-login="false"] {
+  transform: rotateY(0deg);
+}
+
+.auth-strip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--color-primary);
+}
+
+.auth-strip-face-back {
+  transform: rotateY(180deg);
+}
+
+/* Dynamic specular & ambient shading as the page turns through 3D space */
+.auth-leaf-sheen-front {
+  background: linear-gradient(
+    90deg,
+    rgba(6, 26, 22, 0.42) 0%,
+    rgba(14, 81, 70, 0.08) 12%,
+    rgba(237, 189, 121, 0.07) 52%,
+    rgba(6, 26, 22, 0.22) 100%
+  );
+  transition: opacity 780ms cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.auth-leaf-sheen-back {
+  background: linear-gradient(
+    270deg,
+    rgba(6, 26, 22, 0.42) 0%,
+    rgba(14, 81, 70, 0.08) 12%,
+    rgba(237, 189, 121, 0.07) 52%,
+    rgba(6, 26, 22, 0.22) 100%
+  );
+  transition: opacity 780ms cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* Central book spine crease & paper gutter curvature */
+.auth-spine-gutter {
+  background: linear-gradient(
+    90deg,
+    rgba(14, 81, 70, 0) 0%,
+    rgba(14, 81, 70, 0.05) 28%,
+    rgba(7, 35, 30, 0.16) 46%,
+    rgba(7, 35, 30, 0.32) 50%,
+    rgba(7, 35, 30, 0.16) 54%,
+    rgba(14, 81, 70, 0.05) 72%,
+    rgba(14, 81, 70, 0) 100%
+  );
+}
+
+/* Paper page inner curvature shadow toward center spine */
+.auth-page-left-curve {
+  background: linear-gradient(
+    90deg,
+    rgba(237, 189, 121, 0.04) 0%,
+    transparent 12%,
+    transparent 86%,
+    rgba(14, 81, 70, 0.07) 96%,
+    rgba(7, 35, 30, 0.14) 100%
+  );
+}
+
+.auth-page-right-curve {
+  background: linear-gradient(
+    270deg,
+    rgba(237, 189, 121, 0.04) 0%,
+    transparent 12%,
+    transparent 86%,
+    rgba(14, 81, 70, 0.07) 96%,
+    rgba(7, 35, 30, 0.14) 100%
+  );
+}
+
+/* ==========================================================================
+   Animate UI — Step transition & Success Check Pop + Draw (tokens.md)
+   ========================================================================== */
+@keyframes animateUiPanelIn {
+  from {
+    opacity: 0;
+    transform: translate3d(12px, 0, 0);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0px);
+  }
+}
+
+/* spring.checkPop (stiffness: 500, damping: 24 -> ~13% overshoot at ~170ms, from scale.icon 0.5 & blur.icon 2px) */
+@keyframes animateUiCheckBadgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+    filter: blur(2px);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(1.13);
+    filter: blur(0px);
+  }
+  74% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* transition.check: { duration: 0.3s, delay: 0.18s, ease: ease.draw cubic-bezier(0, 0, 0.58, 1) } */
+@keyframes animateUiCheckDraw {
+  from {
+    stroke-dashoffset: 30;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes animateUiSuccessRing {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.82);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+.animate-ui-step-panel {
+  animation: animateUiPanelIn 300ms cubic-bezier(0.25, 0.1, 0.35, 1) both;
+}
+
+.animate-ui-check-badge {
+  animation: animateUiCheckBadgePop 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-ui-check-path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: animateUiCheckDraw 300ms cubic-bezier(0, 0, 0.58, 1) 180ms both;
+}
+
+.animate-ui-check-ring {
+  animation: animateUiSuccessRing 720ms cubic-bezier(0.23, 1, 0.32, 1) 120ms both;
+}
+
