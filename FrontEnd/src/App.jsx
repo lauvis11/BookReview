@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect, Suspense, lazy } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -13,6 +13,7 @@ const Home = lazy(() => import('./pages/Home'))
 const Catalog = lazy(() => import('./pages/Catalog'))
 const BookDetail = lazy(() => import('./pages/BookDetail'))
 const Auth = lazy(() => import('./pages/Auth'))
+const RecoverPassword = lazy(() => import('./pages/RecoverPassword'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
 const Library = lazy(() => import('./pages/Library'))
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
@@ -52,8 +53,10 @@ function App() {
         <ScrollToTop />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            {/* Auth Route (No Navbar/Footer) */}
+            {/* Auth Routes (No Navbar/Footer) */}
             <Route path="/auth" element={<Auth />} />
+            <Route path="/recuperar-contraseña" element={<RecoverPassword />} />
+            <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
 
             {/* Admin Routes */}
             <Route
