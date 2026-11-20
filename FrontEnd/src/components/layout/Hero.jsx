@@ -127,7 +127,7 @@ export default function Hero() {
                 className="hero-from-left font-hero-sans text-[14.5px] sm:text-[15.5px] leading-[1.7] tracking-[-0.005em] text-on-surface-variant/90"
                 style={{ animationDelay: '260ms' }}
               >
-                Encuentra tu próxima lectura, lleva el registro de lo que lees y recibe recomendaciones personalizadas con la ayuda de un asistente de IA.
+                Lleva el registro de lo que lees, opina sobre tus libros favoritos y recibe recomendaciones personalizadas con la ayuda de un asistente de IA.
               </p>
             </div>
           </div>
