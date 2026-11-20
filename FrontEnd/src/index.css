@@ -71,6 +71,8 @@
 
   --font-headline: 'Noto Serif', serif;
   --font-epigraph: 'Playfair Display', 'Noto Serif', Georgia, serif;
+  --font-hero-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-hero-sans: 'Plus Jakarta Sans', 'Work Sans', sans-serif;
   --font-body: 'Work Sans', sans-serif;
   --font-label: 'Work Sans', sans-serif;
 
