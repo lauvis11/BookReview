@@ -1,10 +1,26 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
 import { getBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
 import Hero from '../components/layout/Hero'
 import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
+
+const AI_PROMPTS = [
+  {
+    text: 'Recomendame un género nuevo para explorar',
+    icon: Compass,
+  },
+  {
+    text: '¿Cuáles son los clásicos imprescindibles?',
+    icon: BookMarked,
+  },
+  {
+    text: 'Busco un libro corto para leer hoy',
+    icon: Clock,
+  },
+]
 
 
 export default function Home() {
@@ -49,25 +65,73 @@ export default function Home() {
     <main className="pb-16 md:pb-24 w-full min-h-screen flex flex-col">
       <Hero />
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12">
-      {/* Bot Chat Suggestions */}
-      <section className="mb-16">
-        <div className="mb-6">
-          <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-2 block">Asistente de Lectura</span>
-          <h2 className="text-3xl font-black tracking-tight text-primary font-headline">
-            ¿No sabes cual es tu proxima lectura? Prueba el Asistente de IA
-          </h2>
+      {/* Bot Chat Suggestions — Editorial Strip integrada con Hero y Nav */}
+      <section className="mb-16 md:mb-20 border-y border-outline-variant/55 py-7 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+          <div className="flex items-center gap-3">
+            <Sparkles
+              size={18}
+              strokeWidth={1.85}
+              absoluteStrokeWidth
+              aria-hidden="true"
+              className="text-secondary-dark shrink-0"
+            />
+            <h2 className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-[-0.015em] text-primary leading-tight">
+              ¿No sabés qué leer?{' '}
+              <span className="italic font-medium text-secondary-dark">Preguntale a Lib</span>
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: '' } }))}
+            className="group self-start sm:self-auto inline-flex items-center gap-1.5 font-hero-sans text-xs font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer"
+          >
+            <span>Abrir asistente</span>
+            <ArrowRight
+              size={14}
+              strokeWidth={2}
+              absoluteStrokeWidth
+              aria-hidden="true"
+              className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+            />
+          </button>
         </div>
-        <div className="grid grid-cols-1 gap-3 md:flex md:flex-wrap md:gap-4">
-          {['Recomendame un género nuevo para explorar', '¿Cuáles son los clásicos imprescindibles?', 'Busco un libro corto para leer hoy'].map((prompt, i) => (
-            <button 
-              key={i}
-              onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: prompt } }))}
-              className="w-full md:w-auto flex items-center justify-start gap-3 px-5 py-4 rounded-2xl border border-primary bg-primary hover:bg-[#166e5e] hover:border-[#166e5e] text-white font-body text-sm transition-all duration-300 cursor-pointer shadow-sm hover:shadow-lg group"
-            >
-              <span className="material-symbols-outlined text-lg text-secondary group-hover:text-secondary-hover transition-colors shrink-0">auto_awesome</span>
-              <span className="flex-1 text-left leading-tight">{prompt}</span>
-            </button>
-          ))}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          {AI_PROMPTS.map((prompt) => {
+            const PromptIcon = prompt.icon
+            return (
+              <button
+                key={prompt.text}
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent('open-ai-chat', { detail: { message: prompt.text } })
+                  )
+                }
+                className="group w-full flex items-center gap-2.5 px-4 py-3.5 rounded-xl bg-white/80 hover:bg-white border border-outline-variant/65 hover:border-primary/30 text-left shadow-[0_2px_10px_-4px_rgba(14,81,70,0.06)] hover:shadow-[0_10px_24px_-8px_rgba(14,81,70,0.12)] transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <PromptIcon
+                  size={18}
+                  strokeWidth={1.8}
+                  absoluteStrokeWidth
+                  aria-hidden="true"
+                  className="shrink-0 text-primary/80 group-hover:text-secondary-dark transition-colors duration-200"
+                />
+                <span className="flex-1 font-hero-sans text-[13.5px] font-medium text-on-surface group-hover:text-primary leading-snug transition-colors">
+                  {prompt.text}
+                </span>
+                <ChevronRight
+                  size={16}
+                  strokeWidth={1.9}
+                  absoluteStrokeWidth
+                  aria-hidden="true"
+                  className="shrink-0 text-outline group-hover:text-primary transition-[color,transform] duration-150 ease-out group-hover:translate-x-0.5"
+                />
+              </button>
+            )
+          })}
         </div>
       </section>
 
