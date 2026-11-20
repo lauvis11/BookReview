@@ -84,7 +84,14 @@ function App() {
                       <Route path="/catalog" element={<Catalog />} />
                       <Route path="/books/:id" element={<BookDetail />} />
                       <Route path="/user/:id" element={<UserProfile />} />
-                      <Route path="/library" element={<Library />} />
+                      <Route
+                        path="/library"
+                        element={
+                          <ProtectedRoute>
+                            <Library />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>
