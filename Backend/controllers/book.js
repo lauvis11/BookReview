@@ -8,13 +8,28 @@ export class BookController{
     static async getAll(req, res, next){
         try {
             const {q, genre, editorial, title, author} = req.query;
-            const page = req.query.page ?? 1;
-            const limit = 10;
+            const page = Math.max(1, Number(req.query.page) || 1);
+            const limit = Math.min(Math.max(1, Number(req.query.limit) || 10), 50);
             const offset = (page - 1) * limit;
             const book = await BookModel.getAll({q, genre, editorial, title, author, limit, offset})
             if(!book) return res.status(404).json({message: 'Books Not Found'});
             const bookWhitGenre = book.map(b => ({ ...b, genre: b.genre ? b.genre.split(',') : [], author: b.author ? b.author.split(',') : []}))
             res.status(200).json(bookWhitGenre)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    static async getFeatured(req, res, next){
+        try {
+            const limit = Math.min(Math.max(1, Number(req.query.limit) || 10), 20);
+            const books = await BookModel.getFeatured({ limit })
+            const formatted = (books || []).map(b => ({
+                ...b,
+                genre: b.genre ? b.genre.split(',') : [],
+                author: b.author ? b.author.split(',') : []
+            }))
+            res.status(200).json(formatted)
         } catch (e) {
             next(e)
         }

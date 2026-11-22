@@ -5,6 +5,7 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import { verifyAdmin } from '../middleware/verifyAdmin.js';
 
 bookRouter.get('/', BookController.getAll)
+bookRouter.get('/featured', BookController.getFeatured)
 bookRouter.get('/search', verifyToken, verifyAdmin, BookController.searchBooks)
 bookRouter.get('/:id', BookController.getById)
 bookRouter.post('/', verifyToken, verifyAdmin, BookController.createBook)
