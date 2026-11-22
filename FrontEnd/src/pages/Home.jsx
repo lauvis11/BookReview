@@ -5,6 +5,7 @@ import { getBooks, getFeaturedBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
 import BookRowSlider from '../components/books/BookRowSlider'
 import Hero from '../components/layout/Hero'
+import GenresSection from '../components/layout/GenresSection'
 import SeccionAbout from '../components/layout/SeccionAbout'
 import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
@@ -211,6 +212,9 @@ export default function Home() {
           <BookRowSlider books={featuredBooks} loading={false} />
         </section>
       )}
+
+      {/* Géneros Section */}
+      <GenresSection />
 
       {/* Novedades Section */}
       {recentBooks.length > 0 && (
