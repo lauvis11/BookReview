@@ -34,16 +34,16 @@ export default function BookCard({ book, showRating = false }) {
       </div>
 
       {/* Información limpia debajo de la portada */}
-      <div className="mt-3 px-0.5">
+      <div className="mt-2.5 sm:mt-3 px-0.5">
         <h3
-          className="font-hero-sans text-[15.5px] sm:text-[16px] font-semibold text-primary leading-snug line-clamp-1 transition-colors duration-150 group-hover:text-secondary-dark"
+          className="font-hero-sans text-[13px] sm:text-[14px] lg:text-[15px] font-semibold text-primary leading-snug line-clamp-3 transition-colors duration-150 group-hover:text-secondary-dark"
           title={book.title}
         >
           {book.title}
         </h3>
 
         <p
-          className="mt-0.5 font-hero-sans text-[13px] font-normal text-on-surface-variant/85 line-clamp-1"
+          className="mt-0.5 font-hero-sans text-[11.5px] sm:text-[12.5px] lg:text-[13px] font-normal text-on-surface-variant/85 line-clamp-1"
           title={authorLabel}
         >
           {authorLabel}
@@ -52,36 +52,56 @@ export default function BookCard({ book, showRating = false }) {
         {/* Rating de estrellas — exclusivo del diseño de recomendaciones en Home */}
         {showRating && (
           <div
-            className="mt-1.5 flex items-center gap-1"
+            className="mt-1.5"
             aria-label={
               numericRate > 0
                 ? `Calificación ${numericRate.toFixed(1)} de 5 estrellas`
                 : 'Sin calificaciones todavía'
             }
           >
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((star) => {
-                const isFilled = star <= roundedStars
-                return (
-                  <Star
-                    key={star}
-                    size={12.5}
-                    strokeWidth={1.75}
-                    aria-hidden="true"
-                    className={
-                      isFilled
-                        ? 'fill-[#d9973b] text-[#d9973b]'
-                        : 'fill-[#e0dbd0] text-[#e0dbd0]'
-                    }
-                  />
-                )
-              })}
-            </div>
-            {numericRate > 0 && (
-              <span className="ml-1 font-hero-sans text-[11.5px] font-medium text-on-surface-variant/75 tabular-nums">
+            {/* Responsive (< lg): 1 estrella + número del rate para evitar choques */}
+            <div className="flex lg:hidden items-center gap-1">
+              <Star
+                size={12.5}
+                strokeWidth={1.75}
+                aria-hidden="true"
+                className={
+                  numericRate > 0
+                    ? 'fill-[#d9973b] text-[#d9973b]'
+                    : 'fill-[#e0dbd0] text-[#e0dbd0]'
+                }
+              />
+              <span className="font-hero-sans text-[12px] font-semibold text-on-surface-variant tabular-nums">
                 {numericRate.toFixed(1)}
               </span>
-            )}
+            </div>
+
+            {/* Desktop (lg+): 5 estrellas completas + número */}
+            <div className="hidden lg:flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isFilled = star <= roundedStars
+                  return (
+                    <Star
+                      key={star}
+                      size={12.5}
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                      className={
+                        isFilled
+                          ? 'fill-[#d9973b] text-[#d9973b]'
+                          : 'fill-[#e0dbd0] text-[#e0dbd0]'
+                      }
+                    />
+                  )
+                })}
+              </div>
+              {numericRate > 0 && (
+                <span className="ml-1 font-hero-sans text-[11.5px] font-medium text-on-surface-variant/75 tabular-nums">
+                  {numericRate.toFixed(1)}
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>

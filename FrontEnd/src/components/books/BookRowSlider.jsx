@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from './BookCard'
 
@@ -6,10 +6,44 @@ const ITEMS_PER_SLIDE = 5
 
 export default function BookRowSlider({ books = [], loading = false }) {
   const [slideIndex, setSlideIndex] = useState(0)
+  const scrollRef = useRef(null)
+  const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0, dragged: false })
+
+  const handleMouseDown = (e) => {
+    const el = scrollRef.current
+    if (!el) return
+    dragStateRef.current = {
+      active: true,
+      startX: e.pageX,
+      startScrollLeft: el.scrollLeft,
+      dragged: false,
+    }
+  }
+
+  const handleMouseMove = (e) => {
+    const state = dragStateRef.current
+    const el = scrollRef.current
+    if (!state.active || !el) return
+    const delta = e.pageX - state.startX
+    if (Math.abs(delta) > 5) state.dragged = true
+    el.scrollLeft = state.startScrollLeft - delta
+  }
+
+  const handleMouseUpOrLeave = () => {
+    dragStateRef.current.active = false
+  }
+
+  const handleClickCapture = (e) => {
+    if (dragStateRef.current.dragged) {
+      e.preventDefault()
+      e.stopPropagation()
+      dragStateRef.current.dragged = false
+    }
+  }
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-5 gap-y-9 sm:gap-x-6">
+      <div className="grid grid-cols-3 lg:grid-cols-5 gap-x-3.5 sm:gap-x-4 lg:gap-x-6 gap-y-8">
         {Array.from({ length: ITEMS_PER_SLIDE }).map((_, i) => (
           <div key={i} className="animate-pulse">
             <div className="aspect-[2/3] rounded-[6px] bg-[#eae6da]/75" />
@@ -24,7 +58,7 @@ export default function BookRowSlider({ books = [], loading = false }) {
 
   if (!books || books.length === 0) return null
 
-  // Dividir los libros en páginas de 5 (ej. 10 libros -> 2 páginas de 5)
+  // Desktop (lg+): dividir en páginas de 5 (ej. 10 libros -> 2 páginas de 5)
   const pages = []
   for (let i = 0; i < books.length; i += ITEMS_PER_SLIDE) {
     pages.push(books.slice(i, i + ITEMS_PER_SLIDE))
@@ -37,17 +71,30 @@ export default function BookRowSlider({ books = [], loading = false }) {
 
   return (
     <div className="relative">
-      {/* Móvil: carrusel táctil horizontal básico */}
-      <div className="flex md:hidden overflow-x-auto hide-scrollbar snap-x snap-mandatory gap-4 pb-3 -mx-6 px-6">
-        {books.map((book) => (
-          <div key={book.id} className="min-w-[152px] w-[152px] shrink-0 snap-start">
-            <BookCard book={book} showRating={true} />
-          </div>
-        ))}
+      {/* Responsive (< lg): Slide libre con 3 libros completos + el 4.º recortado a la mitad */}
+      <div className="lg:hidden">
+        <div
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
+          onClickCapture={handleClickCapture}
+          className="flex overflow-x-auto hide-scrollbar gap-4 sm:gap-5 -mx-3 px-3 md:-mx-6 md:px-6 pt-2 pb-3 cursor-grab active:cursor-grabbing select-none"
+        >
+          {books.map((book) => (
+            <div
+              key={book.id}
+              className="shrink-0 w-[calc((100%-48px)/3.45)] sm:w-[calc((100%-60px)/3.45)]"
+            >
+              <BookCard book={book} showRating={true} />
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Desktop (md+): Slide horizontal de a 5 libros con flechas laterales flotantes */}
-      <div className="hidden md:block relative">
+      {/* Desktop (lg+): Slide horizontal de a 5 libros con flechas laterales flotantes */}
+      <div className="hidden lg:block relative">
         <div className="overflow-hidden -mx-3 px-3 -my-3 py-3">
           <div
             className="flex will-change-transform"
