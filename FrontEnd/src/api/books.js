@@ -2,6 +2,7 @@ import API from './config'
 
 // Public endpoints
 export const getBooks = (params = {}) => API.get('/books', { params })
+export const getFeaturedBooks = (params = {}) => API.get('/books/featured', { params })
 export const getBookById = (id) => API.get(`/books/${id}`)
 
 // Admin endpoints (require verifyToken + verifyAdmin)

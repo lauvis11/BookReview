@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Search, X } from 'lucide-react'
 import { getBooks } from '../../api/books'
+
+const FILTERS = [
+  { key: 'title', label: 'Título' },
+  { key: 'author', label: 'Autor' },
+  { key: 'genre', label: 'Género' },
+  { key: 'editorial', label: 'Editorial' },
+]
 
 export default function SearchBar({ onSearch, initialQuery = '', initialFilter = 'title' }) {
   const [query, setQuery] = useState(initialQuery)
@@ -11,23 +19,28 @@ export default function SearchBar({ onSearch, initialQuery = '', initialFilter =
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Debounce logic (1 second)
-    const timeoutId = setTimeout(async () => {
-      if (query.trim().length > 0) {
-        try {
-          const res = await getBooks({ [filterType]: query.trim() })
-          setResults(res.data.slice(0, 4))
-          setShowDropdown(true)
-        } catch (e) {
-          setResults([])
-        }
-      } else {
-        setResults([])
-        setShowDropdown(false)
-      }
-    }, 1000)
+    const trimmed = query.trim()
+    if (!trimmed) {
+      return
+    }
 
-    return () => clearTimeout(timeoutId)
+    let cancelled = false
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await getBooks({ [filterType]: trimmed })
+        if (!cancelled) {
+          setResults(Array.isArray(res.data) ? res.data.slice(0, 4) : [])
+          setShowDropdown(true)
+        }
+      } catch {
+        if (!cancelled) setResults([])
+      }
+    }, 350)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
   }, [query, filterType])
 
   useEffect(() => {
@@ -36,8 +49,15 @@ export default function SearchBar({ onSearch, initialQuery = '', initialFilter =
         setShowDropdown(false)
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setShowDropdown(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [])
 
   const handleSubmit = (e) => {
@@ -50,94 +70,128 @@ export default function SearchBar({ onSearch, initialQuery = '', initialFilter =
     }
   }
 
-  const handleResultClick = (bookId) => {
-    navigate(`/book/${bookId}`)
+  const handleClear = () => {
+    setQuery('')
+    setResults([])
+    setShowDropdown(false)
+    onSearch({})
   }
 
-  const filters = [
-    { key: 'title', label: 'Título' },
-    { key: 'author', label: 'Autor' },
-    { key: 'genre', label: 'Género' },
-    { key: 'editorial', label: 'Editorial' },
-  ]
+  const handleResultClick = (bookId) => {
+    setShowDropdown(false)
+    navigate(`/books/${bookId}`)
+  }
+
+  const activeFilterLabel =
+    FILTERS.find((f) => f.key === filterType)?.label.toLowerCase() || 'título'
 
   return (
-    <div className="space-y-4">
-      {/* Filter chips */}
-      <div className="flex flex-wrap gap-2">
-        {filters.map(f => (
-          <button
-            key={f.key}
-            type="button"
-            onClick={() => {
-              setFilterType(f.key)
-              setQuery('')
-              setResults([])
-            }}
-            className={`px-4 py-2 text-xs font-label uppercase tracking-widest rounded-sm border-b transition-all cursor-pointer ${
-              filterType === f.key
-                ? 'bg-primary text-on-primary border-primary'
-                : 'bg-surface-container-lowest text-primary border-outline-variant/50 hover:bg-primary hover:text-on-primary'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      {/* Chips de filtrado editorial */}
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar búsqueda por">
+        {FILTERS.map((f) => {
+          const isActive = filterType === f.key
+          return (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => {
+                setFilterType(f.key)
+                setQuery('')
+                setResults([])
+                setShowDropdown(false)
+              }}
+              style={{ borderRadius: '9999px' }}
+              className={`px-4 py-2 font-hero-sans text-xs font-semibold transition-[background-color,color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer [-webkit-tap-highlight-color:transparent] ${
+                isActive
+                  ? 'bg-primary text-white shadow-[0_4px_12px_-2px_rgba(14,81,70,0.28)]'
+                  : 'bg-[#eae6da]/75 text-on-surface-variant hover:bg-[#eae6da] hover:text-primary'
+              }`}
+            >
+              {f.label}
+            </button>
+          )
+        })}
       </div>
-      {/* Search input and clear button */}
-      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-2xl items-stretch sm:items-center">
+
+      {/* Buscador limpio coherente con el Hero */}
+      <div className="flex items-center gap-2.5 w-full lg:max-w-[460px]">
         <form onSubmit={handleSubmit} className="relative flex-1" ref={dropdownRef}>
-          <input
-            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary rounded-full px-6 py-3 text-sm placeholder:text-stone-400 font-body"
-            placeholder={`Buscar por ${filters.find(f => f.key === filterType)?.label.toLowerCase()}...`}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => {
-              if (results.length > 0) setShowDropdown(true)
-            }}
-          />
-          <button type="submit" className="absolute right-4 top-3 cursor-pointer">
-            <span className="material-symbols-outlined text-stone-400">search</span>
-          </button>
+          <div className="flex items-center rounded-xl bg-white border border-outline-variant/80 px-3.5 h-11 shadow-[0_6px_20px_-6px_rgba(14,81,70,0.08)] transition-[border-color,box-shadow] duration-200 focus-within:border-primary/45 focus-within:shadow-[0_10px_26px_-6px_rgba(14,81,70,0.14)]">
+            <Search
+              size={16}
+              strokeWidth={1.9}
+              absoluteStrokeWidth
+              aria-hidden="true"
+              className="text-outline shrink-0"
+            />
+            <input
+              className="min-w-0 flex-1 bg-transparent hover:bg-transparent! px-2.5 font-hero-sans text-sm text-primary outline-none! focus:outline-none! focus-visible:outline-none! focus:translate-y-0! placeholder:text-outline"
+              placeholder={`Buscar por ${activeFilterLabel}...`}
+              type="text"
+              value={query}
+              onChange={(e) => {
+                const next = e.target.value
+                setQuery(next)
+                if (!next.trim()) {
+                  setResults([])
+                  setShowDropdown(false)
+                }
+              }}
+              onFocus={() => {
+                if (query.trim() && results.length > 0) setShowDropdown(true)
+              }}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={handleClear}
+                aria-label="Limpiar búsqueda"
+                className="p-1 text-outline hover:text-primary transition-colors cursor-pointer"
+              >
+                <X size={15} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+              </button>
+            )}
+          </div>
 
           {/* Autocomplete Dropdown */}
           {showDropdown && results.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-surface-container-high overflow-hidden z-50">
-              <ul className="max-h-80 overflow-y-auto">
-                {results.map(book => (
-                  <li 
-                    key={book.id} 
-                    className="px-4 py-3 hover:bg-[#fdf9f0] cursor-pointer border-b border-surface-container-low last:border-b-0 transition-colors flex items-center gap-4"
-                    onClick={() => handleResultClick(book.id)}
-                  >
-                    <div className="w-10 h-14 bg-surface-container rounded-sm overflow-hidden flex-shrink-0">
-                      {book.img ? (
-                        <img src={book.img} alt={book.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs">📖</div>
-                      )}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-headline font-bold text-primary truncate text-sm">{book.title}</span>
-                      <span className="font-body text-xs text-secondary truncate">{Array.isArray(book.author) ? book.author.join(', ') : book.author}</span>
-                    </div>
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_18px_40px_rgba(24,51,47,0.16)] border border-outline-variant/50 overflow-hidden z-50 animate-[dropdownIn_180ms_var(--ease-out-strong)_both]">
+              <ul className="divide-y divide-surface-container-low max-h-80 overflow-y-auto">
+                {results.map((book) => (
+                  <li key={book.id}>
+                    <button
+                      type="button"
+                      onClick={() => handleResultClick(book.id)}
+                      className="w-full px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors flex items-center gap-3.5 text-left"
+                    >
+                      <div className="w-9 h-12 bg-[#eae6da] rounded-[4px] overflow-hidden shrink-0">
+                        {book.img ? (
+                          <img src={book.img} alt={book.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs">📖</div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-hero-sans font-semibold text-primary truncate text-sm">
+                          {book.title}
+                        </p>
+                        <p className="font-hero-sans text-xs text-on-surface-variant truncate">
+                          {Array.isArray(book.author) ? book.author.join(', ') : book.author}
+                        </p>
+                      </div>
+                    </button>
                   </li>
                 ))}
               </ul>
             </div>
           )}
         </form>
-        
+
         <button
           type="button"
-          onClick={() => {
-            setQuery('')
-            setResults([])
-            setShowDropdown(false)
-            onSearch({})
-          }}
-          className="px-6 py-3 border border-outline-variant text-secondary rounded-full font-label font-bold uppercase tracking-widest text-xs hover:bg-surface-container-low transition-colors cursor-pointer text-center whitespace-nowrap"
+          onClick={handleClear}
+          className="h-11 px-4 rounded-xl border border-outline-variant/80 bg-white hover:border-primary/40 hover:bg-surface-container-low/60 text-on-surface-variant hover:text-primary font-hero-sans text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
         >
           Limpiar
         </button>
