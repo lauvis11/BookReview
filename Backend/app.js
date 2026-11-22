@@ -86,20 +86,16 @@ app.use('/ai', aiRouter)
 
 app.use(errorHandler)
 
-if(process.env.NODE_ENV !== 'production'){
-    const server = app.listen(PORT, ()=>{
-    console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`)
+if (!process.env.VERCEL) {
+    const server = app.listen(PORT, () => {
+        console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`)
     })
 
     process.on('SIGTERM', () => {
-        server.close(() => {
-            connection.end()
-        })
+        server.close(() => process.exit(0))
     })
     process.on('SIGINT', () => {
-        server.close(() => {
-            connection.end()
-        })
+        server.close(() => process.exit(0))
     })
 }
 
