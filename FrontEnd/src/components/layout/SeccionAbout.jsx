@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const STATS = [
-  { value: '1K+', label: 'Libros' },
-  { value: '10K+', label: 'Lectores' },
-  { value: '35K+', label: 'Reseñas' },
-]
+import { frases } from '../../utils/frases'
 
 export default function SeccionAbout() {
   const sectionRef = useRef(null)
   const [visible, setVisible] = useState(() => typeof IntersectionObserver === 'undefined')
+  const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
 
   useEffect(() => {
     const node = sectionRef.current
@@ -22,7 +18,7 @@ export default function SeccionAbout() {
           observer.disconnect()
         }
       },
-      { threshold: 0.32 }
+      { threshold: 0.25 }
     )
 
     observer.observe(node)
@@ -34,7 +30,7 @@ export default function SeccionAbout() {
       transitionDelay: `${delayMs}ms`,
       transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
     },
-    className: `transition-[opacity,transform] duration-1000 ${
+    className: `transition-[opacity,translate,transform] duration-1000 ${
       visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
     }`,
   })
@@ -53,7 +49,7 @@ export default function SeccionAbout() {
             transitionDelay: '160ms',
             transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
           }}
-          className={`flex items-center justify-center transition-[opacity,transform] duration-1000 ${
+          className={`flex items-center justify-center transition-[opacity,translate,scale,transform] duration-1000 ${
             visible ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-6 scale-[0.97]'
           }`}
         >
@@ -65,7 +61,7 @@ export default function SeccionAbout() {
           />
         </div>
 
-        {/* Columna Derecha: Titular, descripción, acciones y métricas */}
+        {/* Columna Derecha: Titular, descripción y acciones */}
         <div className="text-center lg:text-left">
           <div {...revealUp(220)}>
             <h2
@@ -90,36 +86,37 @@ export default function SeccionAbout() {
             <div className="mt-7 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
               <Link
                 to="/catalog"
-                className="inline-flex items-center justify-center h-11 px-6 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-sm font-semibold shadow-[0_6px_18px_-4px_rgba(14,81,70,0.28)] hover:shadow-[0_10px_24px_-4px_rgba(14,81,70,0.34)] transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex items-center justify-center h-11 px-6 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-sm font-semibold shadow-[0_6px_18px_-4px_rgba(14,81,70,0.28)] hover:shadow-[0_10px_24px_-4px_rgba(14,81,70,0.34)] transition-[background-color,box-shadow,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 Explorar libros
               </Link>
 
               <Link
                 to="/library"
-                className="inline-flex items-center justify-center h-11 px-6 rounded-[10px] bg-transparent border border-primary/40 hover:border-primary hover:bg-primary/[0.05] text-primary font-hero-sans text-sm font-semibold transition-[background-color,border-color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex items-center justify-center h-11 px-6 rounded-[10px] bg-transparent border border-primary/40 hover:border-primary hover:bg-primary/[0.05] text-primary font-hero-sans text-sm font-semibold transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 Mis guardados
               </Link>
             </div>
           </div>
-
-          {/* Métricas de la plataforma */}
-          <div {...revealUp(520)}>
-            <dl className="mt-10 grid grid-cols-3 gap-6 sm:gap-10 max-w-[440px] mx-auto lg:mx-0">
-              {STATS.map((stat) => (
-                <div key={stat.label}>
-                  <dt className="font-hero-sans text-2xl sm:text-[32px] font-bold tracking-tight text-primary tabular-nums leading-none">
-                    {stat.value}
-                  </dt>
-                  <dd className="mt-1.5 font-hero-sans text-xs sm:text-sm font-medium text-on-surface-variant">
-                    {stat.label}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
         </div>
+      </div>
+
+      {/* Frase literaria centrada como epígrafe de cierre de About */}
+      <div {...revealUp(520)}>
+        <blockquote className="mt-14 md:mt-16 max-w-3xl mx-auto text-center px-2">
+          <span
+            aria-hidden="true"
+            className="block mx-auto mb-4 h-[2px] w-12 bg-secondary-dark/65"
+            style={{ borderRadius: '9999px' }}
+          />
+          <p className="font-hero-display italic font-semibold text-2xl sm:text-[28px] md:text-[34px] leading-[1.24] tracking-[-0.01em] text-primary text-balance">
+            “{quote.frase}”
+          </p>
+          <cite className="mt-3.5 block font-hero-sans not-italic text-xs sm:text-[13px] uppercase tracking-[0.24em] text-secondary-dark font-bold">
+            — {quote.autor} —
+          </cite>
+        </blockquote>
       </div>
     </section>
   )

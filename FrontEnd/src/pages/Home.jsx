@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
 import { getBooks, getFeaturedBooks } from '../api/books'
-import BookGrid from '../components/books/BookGrid'
 import BookShelfReveal from '../components/books/BookShelfReveal'
 import Hero from '../components/layout/Hero'
 import GenresSection from '../components/layout/GenresSection'
 import BestSellersSection from '../components/layout/BestSellersSection'
 import SeccionAbout from '../components/layout/SeccionAbout'
-import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
 
 const AI_PROMPTS = [
@@ -31,8 +28,6 @@ export default function Home() {
   const [featuredBooks, setFeaturedBooks] = useState([])
   const [recentBooks, setRecentBooks] = useState([])
   const [fantasyBooks, setFantasyBooks] = useState([])
-  const [selfHelpBooks, setSelfHelpBooks] = useState([])
-  const [quote] = useState(() => frases[Math.floor(Math.random() * frases.length)])
   const aiSectionRef = useRef(null)
   const [aiVisible, setAiVisible] = useState(() => typeof IntersectionObserver === 'undefined')
 
@@ -71,16 +66,14 @@ export default function Home() {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const [featuredRes, recentRes, fantasyRes, selfHelpRes] = await Promise.all([
+        const [featuredRes, recentRes, fantasyRes] = await Promise.all([
           getFeaturedBooks({ limit: 10 }),
           getBooks({ limit: 50 }),
-          getBooks({ genre: 'FANTASY' }),
-          getBooks({ genre: 'SELF-HELP' })
+          getBooks({ genre: 'FANTASY', limit: 10 }),
         ])
         setFeaturedBooks(Array.isArray(featuredRes.data) ? featuredRes.data.slice(0, 10) : [])
         setRecentBooks(Array.isArray(recentRes.data) ? recentRes.data.slice(-10).reverse() : [])
-        setFantasyBooks(fantasyRes.data.slice(0, 5))
-        setSelfHelpBooks(selfHelpRes.data.slice(0, 5))
+        setFantasyBooks(Array.isArray(fantasyRes.data) ? fantasyRes.data.slice(0, 10) : [])
       } catch (err) {
         console.error(err)
       }
@@ -215,73 +208,20 @@ export default function Home() {
       {/* Best Sellers Section */}
       <BestSellersSection />
 
-      {/* Fantasía Section */}
+      {/* Fantasía Section (10 libros con slider y animación editorial compartida) */}
       {fantasyBooks.length > 0 && (
-        <section className="mb-16 md:mb-20 flex-1">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45">
-            <div>
-              <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary leading-tight">
-                Fantasía
-              </h2>
-              <p className="mt-1 font-hero-sans text-sm text-on-surface-variant/85">
-                Mundos extraordinarios, magia y aventuras inolvidables.
-              </p>
-            </div>
-            <Link
-              to="/catalog?genre=FANTASY"
-              className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
-            >
-              <span>Explorar género</span>
-              <ArrowRight
-                size={14}
-                strokeWidth={2}
-                absoluteStrokeWidth
-                aria-hidden="true"
-                className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-          <BookGrid books={fantasyBooks} loading={false} horizontalOnMobile={true} variant="home" />
-        </section>
+        <BookShelfReveal
+          title="Género:"
+          accent="Fantasía"
+          subtitle="Mundos extraordinarios, magia y aventuras inolvidables."
+          ctaTo="/catalog?genre=FANTASY"
+          ctaLabel="Explorar género"
+          books={fantasyBooks}
+          loading={false}
+        />
       )}
 
-      {/* Auto Ayuda Section */}
-      {selfHelpBooks.length > 0 && (
-        <section className="mb-16 md:mb-20 flex-1">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45">
-            <div>
-              <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary leading-tight">
-                Autoayuda
-              </h2>
-              <p className="mt-1 font-hero-sans text-sm text-on-surface-variant/85">
-                Hábitos, enfoque y lecturas prácticas para crecer cada día.
-              </p>
-            </div>
-            <Link
-              to="/catalog?genre=SELF-HELP"
-              className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
-            >
-              <span>Explorar género</span>
-              <ArrowRight
-                size={14}
-                strokeWidth={2}
-                absoluteStrokeWidth
-                aria-hidden="true"
-                className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-          <BookGrid books={selfHelpBooks} loading={false} horizontalOnMobile={true} variant="home" />
-        </section>
-      )}
-
-      {/* Sidebar-style quote */}
-      <div className="border-l-4 border-secondary/30 pl-6 md:pl-10 italic font-headline text-on-surface-variant max-w-2xl mx-auto mt-12 md:mt-20">
-        <p className="text-xl md:text-3xl leading-relaxed md:leading-snug mb-6">"{quote.frase}"</p>
-        <cite className="block font-label not-italic text-xs md:text-sm uppercase tracking-[0.3em] text-primary font-bold">— {quote.autor}</cite>
-      </div>
-
-      {/* Sección final About */}
+      {/* Sección final About (incluye frase literaria debajo) */}
       <SeccionAbout />
       </div>
     </main>
