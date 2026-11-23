@@ -7,7 +7,6 @@ export default function BookCard({ book, showRating = false }) {
     : book.author || 'Autor desconocido'
 
   const numericRate = Number(book.rate) || 0
-  const roundedStars = Math.round(numericRate)
 
   return (
     <Link to={`/books/${book.id}`} className="group block cursor-pointer focus-visible:outline-none">
@@ -49,59 +48,34 @@ export default function BookCard({ book, showRating = false }) {
           {authorLabel}
         </p>
 
-        {/* Rating de estrellas — exclusivo del diseño de recomendaciones en Home */}
+        {/* Rating compacto: 1 estrella + número destacado */}
         {showRating && (
           <div
-            className="mt-1.5"
+            className="mt-1.5 inline-flex items-center gap-1"
             aria-label={
               numericRate > 0
                 ? `Calificación ${numericRate.toFixed(1)} de 5 estrellas`
                 : 'Sin calificaciones todavía'
             }
           >
-            {/* Responsive (< lg): 1 estrella + número del rate para evitar choques */}
-            <div className="flex lg:hidden items-center gap-1">
-              <Star
-                size={12.5}
-                strokeWidth={1.75}
-                aria-hidden="true"
-                className={
-                  numericRate > 0
-                    ? 'fill-[#d9973b] text-[#d9973b]'
-                    : 'fill-[#e0dbd0] text-[#e0dbd0]'
-                }
-              />
-              <span className="font-hero-sans text-[12px] font-semibold text-on-surface-variant tabular-nums">
-                {numericRate.toFixed(1)}
-              </span>
-            </div>
-
-            {/* Desktop (lg+): 5 estrellas completas + número */}
-            <div className="hidden lg:flex items-center gap-1">
-              <div className="flex items-center gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const isFilled = star <= roundedStars
-                  return (
-                    <Star
-                      key={star}
-                      size={12.5}
-                      strokeWidth={1.75}
-                      aria-hidden="true"
-                      className={
-                        isFilled
-                          ? 'fill-[#d9973b] text-[#d9973b]'
-                          : 'fill-[#e0dbd0] text-[#e0dbd0]'
-                      }
-                    />
-                  )
-                })}
-              </div>
-              {numericRate > 0 && (
-                <span className="ml-1 font-hero-sans text-[11.5px] font-medium text-on-surface-variant/75 tabular-nums">
-                  {numericRate.toFixed(1)}
-                </span>
-              )}
-            </div>
+            <Star
+              strokeWidth={1.75}
+              aria-hidden="true"
+              className={`size-[13px] lg:size-[14px] shrink-0 ${
+                numericRate > 0
+                  ? 'fill-[#d9973b] text-[#d9973b]'
+                  : 'fill-[#e0dbd0] text-[#e0dbd0]'
+              }`}
+            />
+            <span
+              className={`font-hero-sans text-[12.5px] lg:text-[13.5px] tabular-nums leading-none ${
+                numericRate > 0
+                  ? 'font-bold text-primary'
+                  : 'font-semibold text-on-surface-variant/65'
+              }`}
+            >
+              {numericRate.toFixed(1)}
+            </span>
           </div>
         )}
       </div>
