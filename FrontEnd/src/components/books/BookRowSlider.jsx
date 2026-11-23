@@ -3,8 +3,29 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from './BookCard'
 
 const ITEMS_PER_SLIDE = 5
+const MOBILE_REVEAL_COUNT = 4
+const CARD_REVEAL_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'
+const CARD_REVEAL_DURATION = '640ms'
+const DESKTOP_STAGGER_BASE_MS = 110
+const MOBILE_STAGGER_BASE_MS = 100
+const STAGGER_STEP_MS = 65
+const ARROW_REVEAL_EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
 
-export default function BookRowSlider({ books = [], loading = false }) {
+function getCardRevealStyle(revealed, delayMs) {
+  return {
+    opacity: revealed ? 1 : 0,
+    transform: revealed
+      ? 'translate3d(0, 0, 0) scale(1)'
+      : 'translate3d(0, 18px, 0) scale(0.97)',
+    filter: revealed ? 'blur(0px)' : 'blur(3px)',
+    transitionProperty: 'opacity, transform, filter',
+    transitionDuration: CARD_REVEAL_DURATION,
+    transitionTimingFunction: CARD_REVEAL_EASE,
+    transitionDelay: revealed ? `${delayMs}ms` : '0ms',
+  }
+}
+
+export default function BookRowSlider({ books = [], loading = false, revealed = true }) {
   const [slideIndex, setSlideIndex] = useState(0)
   const scrollRef = useRef(null)
   const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0, dragged: false })
@@ -80,14 +101,22 @@ export default function BookRowSlider({ books = [], loading = false }) {
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
           onClickCapture={handleClickCapture}
-          className="flex overflow-x-auto hide-scrollbar gap-4 sm:gap-5 -mx-3 px-3 md:-mx-6 md:px-6 pt-2 pb-3 cursor-grab active:cursor-grabbing select-none"
+          className="flex overflow-x-auto hide-scrollbar gap-4 sm:gap-5 -mx-3 px-3 md:-mx-6 md:px-6 pt-2 pb-5 -mb-2 cursor-grab active:cursor-grabbing select-none"
         >
-          {books.map((book) => (
+          {books.map((book, idx) => (
             <div
               key={book.id}
               className="shrink-0 w-[calc((100%-48px)/3.45)] sm:w-[calc((100%-60px)/3.45)]"
             >
-              <BookCard book={book} showRating={true} />
+              <div
+                style={
+                  idx < MOBILE_REVEAL_COUNT
+                    ? getCardRevealStyle(revealed, MOBILE_STAGGER_BASE_MS + idx * STAGGER_STEP_MS)
+                    : undefined
+                }
+              >
+                <BookCard book={book} showRating={true} />
+              </div>
             </div>
           ))}
         </div>
@@ -95,7 +124,7 @@ export default function BookRowSlider({ books = [], loading = false }) {
 
       {/* Desktop (lg+): Slide horizontal de a 5 libros con flechas laterales flotantes */}
       <div className="hidden lg:block relative">
-        <div className="overflow-hidden -mx-3 px-3 -my-3 py-3">
+        <div className="overflow-hidden -mx-3 px-3 -my-5 py-5">
           <div
             className="flex will-change-transform"
             style={{
@@ -110,8 +139,18 @@ export default function BookRowSlider({ books = [], loading = false }) {
                 className="w-full shrink-0 px-3"
               >
                 <div className="grid grid-cols-5 gap-x-5 lg:gap-x-6">
-                  {pageBooks.map((book) => (
-                    <div key={book.id}>
+                  {pageBooks.map((book, bookIdx) => (
+                    <div
+                      key={book.id}
+                      style={
+                        pageIdx === 0
+                          ? getCardRevealStyle(
+                              revealed,
+                              DESKTOP_STAGGER_BASE_MS + bookIdx * STAGGER_STEP_MS
+                            )
+                          : undefined
+                      }
+                    >
                       <BookCard book={book} showRating={true} />
                     </div>
                   ))}
@@ -121,40 +160,54 @@ export default function BookRowSlider({ books = [], loading = false }) {
           </div>
         </div>
 
-        {/* Flecha flotante izquierda (dentro del margen de 48px para no desbordar el DOM) */}
+        {/* Flechas flotantes laterales (fade-in independiente al revelar la sección para no afectar los toggles normales) */}
         {totalPages > 1 && (
-          <button
-            type="button"
-            onClick={() => setSlideIndex((prev) => Math.max(0, prev - 1))}
-            disabled={!canPrev}
-            aria-label="Ver 5 libros anteriores"
-            style={{ borderRadius: '9999px' }}
-            className={`absolute -left-10 lg:-left-11 top-[38%] -translate-y-1/2 z-20 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-              canPrev
-                ? 'opacity-100'
-                : 'opacity-0 pointer-events-none'
-            }`}
+          <div
+            className="pointer-events-none absolute inset-0 z-20"
+            style={{
+              opacity: revealed ? 1 : 0,
+              transitionProperty: 'opacity',
+              transitionDuration: '420ms',
+              transitionTimingFunction: ARROW_REVEAL_EASE,
+              transitionDelay: revealed ? '320ms' : '0ms',
+            }}
           >
-            <ChevronLeft size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
-          </button>
-        )}
+            {/* Flecha flotante izquierda (dentro del margen de 48px para no desbordar el DOM) */}
+            <button
+              type="button"
+              onClick={() => setSlideIndex((prev) => Math.max(0, prev - 1))}
+              disabled={!canPrev || !revealed}
+              aria-label="Ver 5 libros anteriores"
+              style={{ borderRadius: '9999px' }}
+              className={`absolute -left-10 lg:-left-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                canPrev
+                  ? revealed
+                    ? 'opacity-100 pointer-events-auto'
+                    : 'opacity-100 pointer-events-none'
+                  : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <ChevronLeft size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+            </button>
 
-        {/* Flecha flotante derecha (dentro del margen de 48px para no desbordar el DOM) */}
-        {totalPages > 1 && (
-          <button
-            type="button"
-            onClick={() => setSlideIndex((prev) => Math.min(totalPages - 1, prev + 1))}
-            disabled={!canNext}
-            aria-label="Ver siguientes 5 libros"
-            style={{ borderRadius: '9999px' }}
-            className={`absolute -right-10 lg:-right-11 top-[38%] -translate-y-1/2 z-20 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-              canNext
-                ? 'opacity-100'
-                : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <ChevronRight size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
-          </button>
+            {/* Flecha flotante derecha (dentro del margen de 48px para no desbordar el DOM) */}
+            <button
+              type="button"
+              onClick={() => setSlideIndex((prev) => Math.min(totalPages - 1, prev + 1))}
+              disabled={!canNext || !revealed}
+              aria-label="Ver siguientes 5 libros"
+              style={{ borderRadius: '9999px' }}
+              className={`absolute -right-10 lg:-right-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                canNext
+                  ? revealed
+                    ? 'opacity-100 pointer-events-auto'
+                    : 'opacity-100 pointer-events-none'
+                  : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <ChevronRight size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+            </button>
+          </div>
         )}
       </div>
     </div>

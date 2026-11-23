@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
 import { getBooks, getFeaturedBooks } from '../api/books'
 import BookGrid from '../components/books/BookGrid'
-import BookRowSlider from '../components/books/BookRowSlider'
+import BookShelfReveal from '../components/books/BookShelfReveal'
 import Hero from '../components/layout/Hero'
 import GenresSection from '../components/layout/GenresSection'
 import BestSellersSection from '../components/layout/BestSellersSection'
@@ -73,12 +73,12 @@ export default function Home() {
       try {
         const [featuredRes, recentRes, fantasyRes, selfHelpRes] = await Promise.all([
           getFeaturedBooks({ limit: 10 }),
-          getBooks(),
+          getBooks({ limit: 50 }),
           getBooks({ genre: 'FANTASY' }),
           getBooks({ genre: 'SELF-HELP' })
         ])
         setFeaturedBooks(Array.isArray(featuredRes.data) ? featuredRes.data.slice(0, 10) : [])
-        setRecentBooks(recentRes.data.slice(-5).reverse())
+        setRecentBooks(Array.isArray(recentRes.data) ? recentRes.data.slice(-10).reverse() : [])
         setFantasyBooks(fantasyRes.data.slice(0, 5))
         setSelfHelpBooks(selfHelpRes.data.slice(0, 5))
       } catch (err) {
@@ -185,33 +185,15 @@ export default function Home() {
 
       {/* Destacados Section (10 libros: 5 visibles por pantalla + 5 al deslizar) */}
       {featuredBooks.length > 0 && (
-        <section className="mb-16 md:mb-20">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45">
-            <div>
-              <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary leading-tight">
-                Libros{' '}
-                <span className="italic font-medium text-secondary-dark">destacados</span>
-              </h2>
-              <p className="mt-1 font-hero-sans text-sm text-on-surface-variant/85">
-                Las obras mejor valoradas y más elegidas por los lectores de la comunidad.
-              </p>
-            </div>
-            <Link
-              to="/catalog"
-              className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
-            >
-              <span>Ver catálogo</span>
-              <ArrowRight
-                size={14}
-                strokeWidth={2}
-                absoluteStrokeWidth
-                aria-hidden="true"
-                className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-          <BookRowSlider books={featuredBooks} loading={false} />
-        </section>
+        <BookShelfReveal
+          title="Libros"
+          accent="destacados"
+          subtitle="Las obras mejor valoradas y más elegidas por los lectores de la comunidad."
+          ctaTo="/catalog"
+          ctaLabel="Ver catálogo"
+          books={featuredBooks}
+          loading={false}
+        />
       )}
 
       {/* Géneros Section */}
@@ -219,33 +201,15 @@ export default function Home() {
 
       {/* Novedades Section */}
       {recentBooks.length > 0 && (
-        <section className="mb-16 md:mb-20">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45">
-            <div>
-              <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary leading-tight">
-                Agregados{' '}
-                <span className="italic font-medium text-secondary-dark">recientemente</span>
-              </h2>
-              <p className="mt-1 font-hero-sans text-sm text-on-surface-variant/85">
-                Las últimas incorporaciones que llegaron a nuestra colección.
-              </p>
-            </div>
-            <Link
-              to="/catalog"
-              className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
-            >
-              <span>Ver catálogo</span>
-              <ArrowRight
-                size={14}
-                strokeWidth={2}
-                absoluteStrokeWidth
-                aria-hidden="true"
-                className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-          <BookGrid books={recentBooks} loading={false} horizontalOnMobile={true} variant="home" />
-        </section>
+        <BookShelfReveal
+          title="Agregados"
+          accent="recientemente"
+          subtitle="Las últimas incorporaciones que llegaron a nuestra colección."
+          ctaTo="/catalog"
+          ctaLabel="Ver catálogo"
+          books={recentBooks}
+          loading={false}
+        />
       )}
 
       {/* Best Sellers Section */}
