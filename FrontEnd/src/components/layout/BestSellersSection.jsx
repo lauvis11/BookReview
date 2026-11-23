@@ -106,25 +106,24 @@ function StarRow({ rate }) {
   const filled = Math.round(rate)
   return (
     <div
-      className="inline-flex items-center gap-1.5"
+      className="inline-flex items-center gap-1 sm:gap-1.5"
       aria-label={`Calificación ${rate.toFixed(1)} de 5`}
     >
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((n) => (
           <Star
             key={n}
-            size={13}
             strokeWidth={1.75}
             aria-hidden="true"
-            className={
+            className={`size-[10.5px] sm:size-[12.5px] lg:size-[13px] ${
               n <= filled
                 ? 'fill-[#d9973b] text-[#d9973b]'
                 : 'fill-outline-variant/40 text-outline-variant/40'
-            }
+            }`}
           />
         ))}
       </div>
-      <span className="font-hero-sans text-xs font-semibold tabular-nums text-on-surface-variant">
+      <span className="font-hero-sans text-[10.5px] sm:text-xs font-semibold tabular-nums text-on-surface-variant leading-none">
         {rate.toFixed(1)}
       </span>
     </div>
@@ -200,38 +199,40 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
       }`}
     >
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45">
+      <div className="mb-6 sm:mb-7 pb-4 border-b border-outline-variant/45">
         <h2
           id="bestsellers-section-title"
-          className="font-bestseller-display text-[32px] sm:text-[38px] md:text-[42px] font-semibold tracking-[-0.02em] text-primary leading-none"
+          className="font-bestseller-display text-[28px] sm:text-[38px] md:text-[42px] font-semibold tracking-[-0.02em] text-primary leading-none"
         >
           Los{' '}
           <span className="italic font-medium text-secondary-dark">“Best Sellers”</span>
         </h2>
-
-        <Link
-          to="/catalog"
-          className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
-        >
-          <span>Explorar catálogo</span>
-          <ArrowRight
-            size={14}
-            strokeWidth={2}
-            absoluteStrokeWidth
-            aria-hidden="true"
-            className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-          />
-        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-6 lg:gap-10 items-stretch">
-        {/* Lista numerada 01–05 con focus deslizante */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-4 sm:gap-5 lg:gap-10 items-stretch">
+        {/* Lista numerada 01–05: fila horizontal de números arriba en < lg, lista completa vertical a la izquierda en lg+ */}
         <div
           role="tablist"
           aria-label="Lista de Best Sellers"
-          className="relative flex flex-col lg:h-[400px] border-y border-outline-variant/45 overflow-hidden"
+          className="relative grid grid-cols-5 h-[50px] sm:h-[54px] lg:flex lg:flex-col lg:h-[400px] border-y border-outline-variant/45 overflow-hidden"
         >
-          {/* Indicador de focus deslizante que acompaña la posición activa */}
+          {/* Indicador de focus deslizante horizontal (< lg) */}
+          <div
+            aria-hidden="true"
+            style={{
+              width: `${100 / books.length}%`,
+              transform: `translate3d(${selectedIdx * 100}%, 0, 0)`,
+              transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+            className="lg:hidden pointer-events-none absolute inset-y-0 left-0 z-0 bg-[#eae6da]/90"
+          >
+            <span
+              className="absolute bottom-0 inset-x-2.5 h-[2.5px] bg-primary"
+              style={{ borderRadius: '9999px 9999px 0 0' }}
+            />
+          </div>
+
+          {/* Indicador de focus deslizante vertical (lg+) */}
           <div
             aria-hidden="true"
             style={{
@@ -239,7 +240,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
               transform: `translate3d(0, ${selectedIdx * 100}%, 0)`,
               transition: 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
-            className="pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90"
+            className="hidden lg:block pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90"
           >
             <span
               className="absolute left-0 inset-y-2.5 w-[3px] bg-primary"
@@ -255,13 +256,14 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 type="button"
                 role="tab"
                 aria-selected={isSelected}
+                aria-label={`Puesto ${book.rank}: ${book.title}`}
                 onClick={() => handleSelect(idx)}
-                className={`group relative z-10 w-full h-[72px] lg:h-auto lg:flex-1 flex items-center gap-4 px-4 text-left border-b border-outline-variant/45 last:border-b-0 transition-colors duration-200 cursor-pointer ${
+                className={`group relative z-10 w-full h-full lg:h-auto lg:flex-1 flex items-center justify-center lg:justify-start lg:gap-4 px-1 lg:px-4 text-center lg:text-left border-r border-outline-variant/45 last:border-r-0 lg:border-r-0 lg:border-b lg:last:border-b-0 transition-colors duration-200 cursor-pointer [-webkit-tap-highlight-color:transparent] ${
                   isSelected ? 'bg-transparent' : 'hover:bg-[#eae6da]/40'
                 }`}
               >
                 <span
-                  className={`font-bestseller-display italic text-[24px] font-medium w-9 shrink-0 leading-none transition-colors duration-300 ${
+                  className={`font-bestseller-display italic text-[20px] sm:text-[22px] lg:text-[24px] font-medium lg:w-9 shrink-0 leading-none transition-colors duration-300 ${
                     isSelected
                       ? 'text-secondary-dark'
                       : 'text-primary/40 group-hover:text-primary/75'
@@ -269,7 +271,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 >
                   {book.rank}
                 </span>
-                <div className="min-w-0 flex-1">
+                <div className="hidden lg:block min-w-0 flex-1">
                   <p
                     className={`font-hero-sans text-[15px] font-semibold truncate transition-colors duration-300 ${
                       isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary'
@@ -281,7 +283,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                     {book.author}
                   </p>
                 </div>
-                <span className="inline-flex items-center gap-1 shrink-0 font-hero-sans text-xs font-semibold text-on-surface-variant tabular-nums">
+                <span className="hidden lg:inline-flex items-center gap-1 shrink-0 font-hero-sans text-xs font-semibold text-on-surface-variant tabular-nums">
                   <Star size={12} className="fill-[#d9973b] text-[#d9973b]" aria-hidden="true" />
                   {book.rate.toFixed(1)}
                 </span>
@@ -293,48 +295,139 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         {/* Vista previa editorial con dimensiones fijas y transición suave entre posiciones */}
         <div
           role="tabpanel"
-          className="h-[590px] sm:h-[400px] rounded-2xl bg-[#eae6da]/75 border border-[#d6d0c0]/80 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 overflow-hidden"
+          className="h-[495px] sm:h-[535px] lg:h-[400px] lg:rounded-2xl lg:bg-[#eae6da]/75 lg:border lg:border-[#d6d0c0]/80 lg:p-8 overflow-hidden"
         >
-          <div key={`cover-${active.rank}`} className="w-[155px] sm:w-[186px] shrink-0 bestseller-cover-in">
-            <BookCoverFrame book={active} />
+          {/* Responsive (< lg): Slide horizontal direccional sincronizado con los números 01–05 */}
+          <div className="lg:hidden h-full overflow-hidden">
+            <div
+              className="flex h-full will-change-transform"
+              style={{
+                transform: `translate3d(-${selectedIdx * 100}%, 0, 0)`,
+                transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              {books.map((book, idx) => {
+                const isCurrent = idx === selectedIdx
+                const bookHref = book.bookId
+                  ? `/books/${book.bookId}`
+                  : `/catalog?q=${encodeURIComponent(book.query)}`
+
+                return (
+                  <div
+                    key={book.rank}
+                    aria-hidden={!isCurrent}
+                    className="w-full h-full shrink-0 px-2 py-4 sm:px-4 sm:py-5 flex flex-col items-center justify-between text-center"
+                  >
+                    <div className="w-full flex flex-col items-center">
+                      <div className="w-[136px] sm:w-[152px] shrink-0">
+                        <BookCoverFrame book={book} />
+                      </div>
+
+                      <div className="mt-4 w-full flex flex-col items-center">
+                        <h3 className="font-bestseller-display text-[24px] sm:text-[28px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2 max-w-[20ch]">
+                          {book.title}
+                        </h3>
+
+                        <p className="mt-1.5 font-hero-sans text-[10.5px] sm:text-[11px] font-bold uppercase tracking-[0.15em] text-secondary-dark">
+                          Best Seller #{book.rank} · {book.genre}
+                        </p>
+
+                        <div className="mt-2 flex items-center justify-center gap-2 max-w-full px-2">
+                          <span className="truncate font-hero-sans text-[13px] sm:text-sm font-medium text-on-surface-variant">
+                            {book.author}
+                          </span>
+                          <span aria-hidden="true" className="text-outline-variant shrink-0">
+                            ·
+                          </span>
+                          <span
+                            className="inline-flex items-center gap-1 shrink-0"
+                            aria-label={`Calificación ${book.rate.toFixed(1)} de 5`}
+                          >
+                            <Star
+                              strokeWidth={1.75}
+                              aria-hidden="true"
+                              className="size-[13px] fill-[#d9973b] text-[#d9973b]"
+                            />
+                            <span className="font-hero-sans text-[13px] font-bold text-primary tabular-nums leading-none">
+                              {book.rate.toFixed(1)}
+                            </span>
+                          </span>
+                        </div>
+
+                        <p className="mt-3 font-hero-sans text-[13px] sm:text-[13.5px] leading-relaxed text-on-surface-variant line-clamp-3 max-w-[44ch]">
+                          {book.synopsis}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4">
+                      <Link
+                        to={bookHref}
+                        tabIndex={isCurrent ? 0 : -1}
+                        className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
+                      >
+                        <span>Descubrir este libro</span>
+                        <ArrowRight
+                          size={14}
+                          strokeWidth={2}
+                          absoluteStrokeWidth
+                          aria-hidden="true"
+                          className="transition-transform duration-150 group-hover/btn:translate-x-0.5"
+                        />
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
-          <div
-            key={`info-${active.rank}`}
-            className="min-w-0 min-h-0 flex-1 w-full sm:h-full flex flex-col justify-between text-center sm:text-left py-1 bestseller-text-in"
-          >
-            <div>
-              <span className="font-hero-sans text-[11px] font-bold uppercase tracking-[0.16em] text-secondary-dark">
-                Best Seller #{active.rank} · {active.genre}
-              </span>
-              <h3 className="mt-2 font-bestseller-display text-[26px] sm:text-[31px] lg:text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2">
-                {active.title}
-              </h3>
-              <p className="mt-1.5 font-hero-sans text-sm font-medium text-on-surface-variant truncate">
-                {active.author}
-              </p>
-              <div className="mt-2.5 flex justify-center sm:justify-start">
-                <StarRow rate={active.rate} />
-              </div>
-              <p className="mt-3.5 font-hero-sans text-[13.5px] sm:text-[14px] leading-relaxed text-on-surface-variant line-clamp-4">
-                {active.synopsis}
-              </p>
+          {/* Desktop (lg+): Portada a la izquierda + ficha editorial a la derecha */}
+          <div className="hidden lg:flex h-full flex-row items-center gap-8">
+            <div
+              key={`cover-${active.rank}`}
+              className="w-[186px] shrink-0 bestseller-cover-in"
+            >
+              <BookCoverFrame book={active} />
             </div>
 
-            <div className="pt-4">
-              <Link
-                to={activeHref}
-                className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
-              >
-                <span>Descubrir este libro</span>
-                <ArrowRight
-                  size={14}
-                  strokeWidth={2}
-                  absoluteStrokeWidth
-                  aria-hidden="true"
-                  className="transition-transform duration-150 group-hover/btn:translate-x-0.5"
-                />
-              </Link>
+            <div
+              key={`info-${active.rank}`}
+              className="min-w-0 min-h-0 flex-1 h-full flex flex-col justify-between text-left py-1 bestseller-text-in"
+            >
+              <div className="min-w-0">
+                <span className="block truncate font-hero-sans text-[11px] font-bold uppercase tracking-[0.16em] text-secondary-dark">
+                  Best Seller #{active.rank} · {active.genre}
+                </span>
+                <h3 className="mt-2 font-bestseller-display text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2">
+                  {active.title}
+                </h3>
+                <p className="mt-1.5 font-hero-sans text-sm font-medium text-on-surface-variant truncate">
+                  {active.author}
+                </p>
+                <div className="mt-2.5 flex justify-start">
+                  <StarRow rate={active.rate} />
+                </div>
+                <p className="mt-3.5 font-hero-sans text-[14px] leading-relaxed text-on-surface-variant line-clamp-4">
+                  {active.synopsis}
+                </p>
+              </div>
+
+              <div className="pt-4">
+                <Link
+                  to={activeHref}
+                  className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
+                >
+                  <span>Descubrir este libro</span>
+                  <ArrowRight
+                    size={14}
+                    strokeWidth={2}
+                    absoluteStrokeWidth
+                    aria-hidden="true"
+                    className="transition-transform duration-150 group-hover/btn:translate-x-0.5"
+                  />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
