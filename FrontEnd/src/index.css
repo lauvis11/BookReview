@@ -72,6 +72,7 @@
   --font-headline: 'Noto Serif', serif;
   --font-epigraph: 'Playfair Display', 'Noto Serif', Georgia, serif;
   --font-hero-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-bestseller-display: 'Bodoni Moda', 'Playfair Display', Georgia, serif;
   --font-hero-sans: 'Plus Jakarta Sans', 'Work Sans', sans-serif;
   --font-body: 'Work Sans', sans-serif;
   --font-label: 'Work Sans', sans-serif;
@@ -647,5 +648,35 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
 
 .animate-ui-check-ring {
   animation: animateUiSuccessRing 720ms cubic-bezier(0.23, 1, 0.32, 1) 120ms both;
+}
+
+@keyframes bestsellerCoverIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes bestsellerTextIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.bestseller-cover-in {
+  animation: bestsellerCoverIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bestseller-text-in {
+  animation: bestsellerTextIn 420ms cubic-bezier(0.22, 1, 0.36, 1) 50ms both;
 }
 

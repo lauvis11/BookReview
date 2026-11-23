@@ -6,6 +6,7 @@ import BookGrid from '../components/books/BookGrid'
 import BookRowSlider from '../components/books/BookRowSlider'
 import Hero from '../components/layout/Hero'
 import GenresSection from '../components/layout/GenresSection'
+import BestSellersSection from '../components/layout/BestSellersSection'
 import SeccionAbout from '../components/layout/SeccionAbout'
 import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
@@ -246,6 +247,9 @@ export default function Home() {
           <BookGrid books={recentBooks} loading={false} horizontalOnMobile={true} variant="home" />
         </section>
       )}
+
+      {/* Best Sellers Section */}
+      <BestSellersSection />
 
       {/* Fantasía Section */}
       {fantasyBooks.length > 0 && (
