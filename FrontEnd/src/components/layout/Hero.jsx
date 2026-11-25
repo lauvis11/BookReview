@@ -88,24 +88,24 @@ export default function Hero() {
         <div className="order-2 lg:order-1 relative z-20 flex flex-col lg:justify-between text-center lg:text-left">
           <div>
             {isAuthenticated && user?.name ? (
-              <h1 className="font-hero-display max-w-170 mx-auto lg:mx-0 text-4xl sm:text-5xl lg:text-[50px] xl:text-[58px] font-semibold leading-[1.02] tracking-[-0.02em] text-primary lg:-mt-2">
+              <h1 className="font-hero-display max-w-170 mx-auto lg:mx-0 text-[34px] min-[400px]:text-4xl sm:text-5xl lg:text-[50px] xl:text-[58px] font-semibold leading-[1.04] tracking-[-0.02em] text-primary lg:-mt-2">
                 <span className="hero-slide-track">
-                  <span className="hero-from-left" style={{ animationDelay: '40ms' }}>
+                  <span className="hero-from-left whitespace-nowrap" style={{ animationDelay: '40ms' }}>
                     ¡Hola, {user.name}!
                   </span>
                 </span>
                 <span className="hero-slide-track">
                   <span className="hero-from-left" style={{ animationDelay: '150ms' }}>
                     ¿Qué vamos a{' '}
-                    <span className="italic font-medium text-secondary-dark">descubrir hoy?</span>
+                    <span className="italic font-medium text-secondary-dark whitespace-nowrap">descubrir hoy?</span>
                   </span>
                 </span>
               </h1>
             ) : (
-              <h1 className="font-hero-display font-semibold text-primary leading-[0.98] tracking-[-0.02em] lg:-mt-2">
+              <h1 className="font-hero-display font-semibold text-primary leading-[1.02] tracking-[-0.02em] lg:-mt-2">
                 <span className="hero-slide-track">
                   <span
-                    className="hero-from-left text-5xl sm:text-[56px] lg:text-[54px] xl:text-[66px] sm:whitespace-nowrap"
+                    className="hero-from-left text-[40px] min-[400px]:text-[44px] sm:text-[56px] lg:text-[54px] xl:text-[66px] whitespace-nowrap"
                     style={{ animationDelay: '40ms' }}
                   >
                     Encuentra tu
@@ -113,7 +113,7 @@ export default function Hero() {
                 </span>
                 <span className="hero-slide-track">
                   <span
-                    className="hero-from-left italic font-medium text-5xl sm:text-[56px] lg:text-[54px] xl:text-[66px] text-secondary-dark sm:whitespace-nowrap"
+                    className="hero-from-left italic font-medium text-[40px] min-[400px]:text-[44px] sm:text-[56px] lg:text-[54px] xl:text-[66px] text-secondary-dark whitespace-nowrap"
                     style={{ animationDelay: '150ms' }}
                   >
                     próxima lectura
@@ -139,13 +139,13 @@ export default function Hero() {
           >
             <form
               onSubmit={handleSubmit}
-              className="flex rounded-2xl bg-white p-1.5 border border-outline-variant/80 shadow-[0_12px_32px_-8px_rgba(14,81,70,0.09),0_2px_8px_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-200 ease-out focus-within:border-primary/40 focus-within:shadow-[0_16px_38px_-8px_rgba(14,81,70,0.16)]"
+              className="flex items-center rounded-xl sm:rounded-2xl bg-white p-1 sm:p-1.5 border border-outline-variant/80 shadow-[0_12px_32px_-8px_rgba(14,81,70,0.09),0_2px_8px_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-200 ease-out focus-within:border-primary/40 focus-within:shadow-[0_16px_38px_-8px_rgba(14,81,70,0.16)]"
             >
               <label htmlFor="hero-book-search" className="sr-only">
                 Buscar en el catálogo
               </label>
-              <span className="grid w-10 shrink-0 place-items-center text-on-surface-variant">
-                <span className="material-symbols-outlined text-[20px]">search</span>
+              <span className="grid w-7 sm:w-10 shrink-0 place-items-center text-on-surface-variant">
+                <span className="material-symbols-outlined text-[16px] sm:text-[20px]">search</span>
               </span>
               <input
                 id="hero-book-search"
@@ -158,7 +158,7 @@ export default function Hero() {
                   }
                 }}
                 autoComplete="off"
-                className="min-w-0 flex-1 bg-transparent hover:bg-transparent! px-1 font-hero-sans text-sm text-primary outline-none! focus:outline-none! focus-visible:outline-none! focus:translate-y-0! placeholder:text-outline"
+                className="min-w-0 flex-1 bg-transparent hover:bg-transparent! px-1 font-hero-sans text-xs sm:text-sm text-primary outline-none! focus:outline-none! focus-visible:outline-none! focus:translate-y-0! placeholder:text-[11.5px] sm:placeholder:text-sm placeholder:text-outline"
                 placeholder="Busca por título, autor o género..."
               />
               {query && (
@@ -170,14 +170,14 @@ export default function Hero() {
                     setShowDropdown(false)
                   }}
                   aria-label="Limpiar búsqueda"
-                  className="grid w-8 shrink-0 place-items-center text-outline hover:text-primary transition-colors duration-150 cursor-pointer"
+                  className="grid w-6 sm:w-8 shrink-0 place-items-center text-outline hover:text-primary transition-colors duration-150 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[18px]">close</span>
+                  <span className="material-symbols-outlined text-[15px] sm:text-[18px]">close</span>
                 </button>
               )}
               <button
                 type="submit"
-                className="hero-btn-sheen rounded-xl bg-secondary px-5 py-3 font-hero-sans text-xs uppercase tracking-[0.16em] font-semibold text-on-secondary transition-[background-color,transform] duration-150 ease-out hover:bg-secondary-hover active:scale-[0.97] sm:px-6 cursor-pointer"
+                className="hero-btn-sheen shrink-0 rounded-lg sm:rounded-xl bg-secondary px-3 sm:px-6 py-2 sm:py-3 font-hero-sans text-[10.5px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.16em] font-semibold text-on-secondary transition-[background-color,transform] duration-150 ease-out hover:bg-secondary-hover active:scale-[0.97] cursor-pointer"
               >
                 Buscar
               </button>
