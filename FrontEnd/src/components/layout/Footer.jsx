@@ -34,12 +34,12 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full bg-[#eae6da]/75 text-on-surface border-t border-[#d6d0c0]/90 mt-16 md:mt-24">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12 pt-12 sm:pt-14 pb-8">
+    <footer className="w-full bg-[#eae6da]/75 text-on-surface border-t border-[#d6d0c0]/90 mt-14 sm:mt-16 md:mt-24">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12 pt-10 sm:pt-14 pb-7 sm:pb-8">
         {/* Main Editorial Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 lg:gap-12 pb-11">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-x-6 sm:gap-x-8 gap-y-7 sm:gap-y-10 lg:gap-12 pb-8 sm:pb-11">
           {/* Columna 1: Marca e Identidad Editorial */}
-          <div className="col-span-2 md:col-span-6 lg:col-span-4">
+          <div className="col-span-2 md:col-span-6 lg:col-span-4 text-center md:text-left">
             <Link
               to="/"
               className="inline-flex items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
@@ -47,7 +47,7 @@ export default function Footer() {
               <BrandLogo variant="light" className="h-9 sm:h-10 w-auto" />
             </Link>
 
-            <p className="mt-4 max-w-sm font-hero-sans text-[14px] leading-[1.68] text-on-surface-variant">
+            <p className="mt-3.5 sm:mt-4 max-w-sm mx-auto md:mx-0 font-hero-sans text-[13.5px] sm:text-[14px] leading-[1.65] text-on-surface-variant">
               Tu espacio editorial para descubrir nuevas lecturas, registrar tu avance diario y compartir reseñas reales con nuestra comunidad de lectores.
             </p>
           </div>
@@ -55,17 +55,17 @@ export default function Footer() {
           {/* Columna 2: Navegación */}
           <nav
             aria-label="Navegación del pie de página"
-            className="col-span-1 md:col-span-3 lg:col-span-2"
+            className="col-span-1 md:col-span-3 lg:col-span-2 text-center sm:text-left"
           >
-            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-3.5">
+            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-2.5 sm:mb-3.5">
               Navegación
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5 sm:space-y-2">
               {navLinks.map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="inline-flex items-center py-0.5 font-hero-sans text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
+                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                   >
                     {item.label}
                   </Link>
@@ -77,17 +77,17 @@ export default function Footer() {
           {/* Columna 3: Géneros */}
           <nav
             aria-label="Géneros destacados"
-            className="col-span-1 md:col-span-3 lg:col-span-2"
+            className="col-span-1 md:col-span-3 lg:col-span-2 text-center sm:text-left"
           >
-            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-3.5">
+            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-2.5 sm:mb-3.5">
               Géneros
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5 sm:space-y-2">
               {GENRE_LINKS.map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="inline-flex items-center py-0.5 font-hero-sans text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
+                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                   >
                     {item.label}
                   </Link>
@@ -97,19 +97,19 @@ export default function Footer() {
           </nav>
 
           {/* Columna 4: Bloque abierto del Asistente Lib (sin fondo de tarjeta) */}
-          <div className="col-span-2 md:col-span-12 lg:col-span-4 flex items-start lg:justify-end">
-            <div className="w-full lg:max-w-md">
+          <div className="col-span-2 md:col-span-12 lg:col-span-4 border-t border-[#d6d0c0]/75 pt-6 lg:border-t-0 lg:pt-0 flex items-start justify-center md:justify-start lg:justify-end text-center md:text-left">
+            <div className="w-full max-w-sm lg:max-w-md">
               <div className="inline-flex items-center gap-1.5 text-secondary-dark font-hero-sans text-xs font-semibold">
                 <Sparkles size={14} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
                 <span>Asistente literario Lib</span>
               </div>
 
-              <h3 className="mt-2 font-hero-display text-2xl font-semibold tracking-[-0.015em] text-primary leading-[1.12]">
+              <h3 className="mt-1.5 sm:mt-2 font-hero-display text-2xl font-semibold tracking-[-0.015em] text-primary leading-[1.12]">
                 ¿No sabés qué{' '}
                 <span className="italic font-medium text-secondary-dark">leer ahora?</span>
               </h3>
 
-              <p className="mt-2 font-hero-sans text-[13.5px] leading-relaxed text-on-surface-variant">
+              <p className="mt-1.5 sm:mt-2 font-hero-sans text-[13.5px] leading-relaxed text-on-surface-variant">
                 Contale a Lib qué género, ritmo o historia buscás y recibí recomendaciones personalizadas al instante.
               </p>
 
@@ -134,7 +134,7 @@ export default function Footer() {
         </div>
 
         {/* Barra inferior centrada */}
-        <div className="border-t border-[#d6d0c0]/85 pt-6 flex items-center justify-center">
+        <div className="border-t border-[#d6d0c0]/85 pt-5 sm:pt-6 flex items-center justify-center">
           <p className="font-hero-sans text-xs text-on-surface-variant text-center tabular-nums">
             © {new Date().getFullYear()} BookReview. Desarrollado por{' '}
             <a
