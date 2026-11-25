@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-const SITE_NAME = 'BookReview — The Digital Scriptorium'
+const SITE_NAME = 'BookReview'
 const SITE_URL = 'https://book-review-six-rho.vercel.app'
 const DEFAULT_IMAGE = `${SITE_URL}/Book-review.webp`
-const DEFAULT_DESCRIPTION = 'The Digital Scriptorium: descubrí, calificá y discutí libros con una comunidad de lectores. Reseñas, catálogo, favoritos y un asistente de IA para tu próxima lectura.'
+const DEFAULT_DESCRIPTION = 'BookReview: descubrí, calificá y discutí libros con una comunidad de lectores. Reseñas, catálogo, favoritos y un asistente de IA para tu próxima lectura.'
 
 /**
  * Hook de SEO dinámico. Actualiza el <head> del documento con:
