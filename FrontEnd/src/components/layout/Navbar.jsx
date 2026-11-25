@@ -83,17 +83,17 @@ export default function Navbar() {
             : 'bg-surface/85 backdrop-blur-md border-b border-transparent'
         }`}
       >
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-4 h-16 md:h-20">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12">
+          <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 h-16 md:h-20">
             {/* Left Section: Mobile Menu Toggle + Logo */}
-            <div className="flex items-center gap-2.5 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                 aria-expanded={mobileMenuOpen}
                 style={{ borderRadius: '9999px' }}
-                className="md:hidden size-9 -ml-1.5 text-primary hover:bg-primary/[0.06] transition-colors cursor-pointer flex items-center justify-center active:scale-[0.96] [-webkit-tap-highlight-color:transparent]"
+                className="md:hidden size-8 sm:size-9 -ml-1 text-primary hover:bg-primary/[0.06] transition-colors cursor-pointer flex items-center justify-center active:scale-[0.96] [-webkit-tap-highlight-color:transparent]"
               >
                 {mobileMenuOpen ? (
                   <X size={20} strokeWidth={1.9} absoluteStrokeWidth aria-hidden="true" />
@@ -107,7 +107,7 @@ export default function Navbar() {
                 className="flex items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <BrandLogo variant="light" className="h-8 sm:h-9 md:h-10 w-auto" />
+                <BrandLogo variant="light" className="h-7 sm:h-9 md:h-10 w-auto" />
               </Link>
             </div>
 
@@ -128,7 +128,7 @@ export default function Navbar() {
             </div>
 
             {/* Right Section: Theme Toggle + Avatar Bubble / Login Button */}
-            <div className="flex items-center justify-end gap-3 md:gap-4">
+            <div className="flex items-center justify-end gap-1.5 sm:gap-3 md:gap-4 shrink-0">
               {/* Theme Mode Toggle (Visual placeholder — sin funcionalidad real por ahora) */}
               <button
                 type="button"
@@ -136,7 +136,7 @@ export default function Navbar() {
                 aria-label={darkModePreview ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
                 title={darkModePreview ? 'Modo claro (próximamente)' : 'Modo oscuro (próximamente)'}
                 style={{ borderRadius: '9999px' }}
-                className="size-9 md:size-10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/[0.06] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [-webkit-tap-highlight-color:transparent]"
+                className="size-8 sm:size-9 md:size-10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/[0.06] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [-webkit-tap-highlight-color:transparent]"
               >
                 {darkModePreview ? (
                   <Sun size={18} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" />
@@ -270,7 +270,7 @@ export default function Navbar() {
                 <Link
                   to="/auth"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex items-center justify-center px-4 sm:px-5 h-9 md:h-10 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs sm:text-[13px] font-semibold tracking-wide whitespace-nowrap shadow-[0_2px_8px_rgba(14,81,70,0.18)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="inline-flex items-center justify-center px-2.5 sm:px-4 md:px-5 h-[30px] sm:h-9 md:h-10 rounded-lg sm:rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[11px] sm:text-xs md:text-[13px] font-semibold tracking-normal sm:tracking-wide whitespace-nowrap shadow-[0_2px_8px_rgba(14,81,70,0.18)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   Iniciar sesión
                 </Link>
