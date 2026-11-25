@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from './BookCard'
+import BookSkeletonCard from './BookSkeletonCard'
 
 const ITEMS_PER_SLIDE = 5
 const MOBILE_REVEAL_COUNT = 4
@@ -64,15 +65,25 @@ export default function BookRowSlider({ books = [], loading = false, revealed = 
 
   if (loading) {
     return (
-      <div className="grid grid-cols-3 lg:grid-cols-5 gap-x-3.5 sm:gap-x-4 lg:gap-x-6 gap-y-8">
-        {Array.from({ length: ITEMS_PER_SLIDE }).map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="aspect-[2/3] rounded-[6px] bg-[#eae6da]/75" />
-            <div className="mt-3 h-4 w-4/5 rounded bg-[#eae6da]/75" />
-            <div className="mt-1.5 h-3 w-3/5 rounded bg-[#eae6da]/55" />
-            <div className="mt-2 h-3 w-20 rounded bg-[#eae6da]/55" />
-          </div>
-        ))}
+      <div aria-busy="true" aria-label="Cargando libros">
+        {/* Responsive (< lg): coincide con los 3 libros completos + 4.º recortado */}
+        <div className="lg:hidden flex overflow-hidden gap-4 sm:gap-5 -mx-3 px-3 md:-mx-6 md:px-6 pt-2 pb-5 -mb-2">
+          {Array.from({ length: MOBILE_REVEAL_COUNT }).map((_, i) => (
+            <div
+              key={i}
+              className="shrink-0 w-[calc((100%-48px)/3.45)] sm:w-[calc((100%-60px)/3.45)]"
+            >
+              <BookSkeletonCard />
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop (lg+): 5 tarjetas alineadas en fila */}
+        <div className="hidden lg:grid grid-cols-5 gap-x-5 lg:gap-x-6 px-3 py-2">
+          {Array.from({ length: ITEMS_PER_SLIDE }).map((_, i) => (
+            <BookSkeletonCard key={i} />
+          ))}
+        </div>
       </div>
     )
   }

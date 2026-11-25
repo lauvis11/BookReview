@@ -1,4 +1,5 @@
 import BookCard from './BookCard'
+import BookSkeletonCard from './BookSkeletonCard'
 
 export default function BookGrid({
   books,
@@ -16,20 +17,17 @@ export default function BookGrid({
 
   if (loading) {
     return (
-      <div className={gridClasses}>
+      <div className={gridClasses} aria-busy="true" aria-label="Cargando libros">
         {Array.from({ length: variant === 'home' ? 5 : 10 }).map((_, i) => (
           <div
             key={i}
-            className={`animate-pulse ${
+            className={
               horizontalOnMobile
                 ? 'min-w-[152px] w-[152px] shrink-0 snap-start md:min-w-0 md:w-auto md:shrink'
                 : ''
-            }`}
+            }
           >
-            <div className="aspect-[2/3] rounded-[6px] bg-[#eae6da]/75" />
-            <div className="mt-3 h-4 w-4/5 rounded bg-[#eae6da]/75" />
-            <div className="mt-1.5 h-3 w-3/5 rounded bg-[#eae6da]/55" />
-            {showRating && <div className="mt-2 h-3 w-20 rounded bg-[#eae6da]/55" />}
+            <BookSkeletonCard />
           </div>
         ))}
       </div>

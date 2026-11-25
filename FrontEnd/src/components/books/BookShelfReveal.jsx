@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, BookX } from 'lucide-react'
 import BookRowSlider from './BookRowSlider'
 
 // Animate UI ease.out token: cubic-bezier(0.23, 1, 0.32, 1)
@@ -15,6 +15,8 @@ export default function BookShelfReveal({
   ctaLabel = 'Ver catálogo',
   books = [],
   loading = false,
+  error = false,
+  onRetry,
 }) {
   const sectionRef = useRef(null)
   const [isVisible, setIsVisible] = useState(() => typeof IntersectionObserver === 'undefined')
@@ -68,7 +70,7 @@ export default function BookShelfReveal({
         </div>
         <Link
           to={ctaTo}
-          className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer pb-0.5"
+          className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-[color] duration-150 ease-out cursor-pointer pb-0.5"
         >
           <span>{ctaLabel}</span>
           <ArrowRight
@@ -80,7 +82,53 @@ export default function BookShelfReveal({
           />
         </Link>
       </div>
-      <BookRowSlider books={books} loading={loading} revealed={isVisible} />
+
+      {error && !loading ? (
+        <div
+          role="alert"
+          className="rounded-2xl bg-[#eae6da]/55 border border-transparent shadow-[0_0_0_1px_oklch(0_0_0/0.06)] px-6 py-9 sm:py-11 flex flex-col items-center justify-center text-center"
+        >
+          <div
+            className="flex items-center justify-center text-secondary-dark"
+            aria-hidden="true"
+          >
+            <BookX size={26} strokeWidth={1.75} absoluteStrokeWidth />
+          </div>
+
+          <h3 className="mt-3 font-hero-display text-2xl sm:text-[26px] font-semibold text-primary leading-tight">
+            No pudimos cargar estos libros
+          </h3>
+
+          <p className="mt-1.5 max-w-md font-hero-sans text-[13.5px] leading-relaxed text-on-surface-variant">
+            Ocurrió un inconveniente al conectar con el catálogo.
+          </p>
+
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="mt-5 group inline-flex items-center gap-2 h-9 ps-3.5 pe-4 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="size-3.5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-45"
+              >
+                <path vectorEffect="non-scaling-stroke" d="M20.1 14.5A8.5 8.5 0 1 1 18 6" />
+                <path vectorEffect="non-scaling-stroke" d="M18 2.3V6H14.3" />
+              </svg>
+              <span>Reintentar</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <BookRowSlider books={books} loading={loading} revealed={isVisible} />
+      )}
     </section>
   )
 }

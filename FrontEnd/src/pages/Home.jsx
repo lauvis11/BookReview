@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
 import { getBooks, getFeaturedBooks } from '../api/books'
 import BookShelfReveal from '../components/books/BookShelfReveal'
@@ -25,9 +25,9 @@ const AI_PROMPTS = [
 
 
 export default function Home() {
-  const [featuredBooks, setFeaturedBooks] = useState([])
-  const [recentBooks, setRecentBooks] = useState([])
-  const [fantasyBooks, setFantasyBooks] = useState([])
+  const [featuredState, setFeaturedState] = useState({ books: [], loading: true, error: false })
+  const [recentState, setRecentState] = useState({ books: [], loading: true, error: false })
+  const [fantasyState, setFantasyState] = useState({ books: [], loading: true, error: false })
   const aiSectionRef = useRef(null)
   const [aiVisible, setAiVisible] = useState(() => typeof IntersectionObserver === 'undefined')
 
@@ -62,24 +62,59 @@ export default function Home() {
     },
   })
 
+  const loadFeatured = useCallback(async () => {
+    setFeaturedState((prev) => ({ ...prev, loading: true, error: false }))
+    try {
+      const { data } = await getFeaturedBooks({ limit: 10 })
+      setFeaturedState({
+        books: Array.isArray(data) ? data.slice(0, 10) : [],
+        loading: false,
+        error: false,
+      })
+    } catch (err) {
+      console.error(err)
+      setFeaturedState({ books: [], loading: false, error: true })
+    }
+  }, [])
+
+  const loadRecent = useCallback(async () => {
+    setRecentState((prev) => ({ ...prev, loading: true, error: false }))
+    try {
+      const { data } = await getBooks({ limit: 50 })
+      setRecentState({
+        books: Array.isArray(data) ? data.slice(-10).reverse() : [],
+        loading: false,
+        error: false,
+      })
+    } catch (err) {
+      console.error(err)
+      setRecentState({ books: [], loading: false, error: true })
+    }
+  }, [])
+
+  const loadFantasy = useCallback(async () => {
+    setFantasyState((prev) => ({ ...prev, loading: true, error: false }))
+    try {
+      const { data } = await getBooks({ genre: 'FANTASY', limit: 10 })
+      setFantasyState({
+        books: Array.isArray(data) ? data.slice(0, 10) : [],
+        loading: false,
+        error: false,
+      })
+    } catch (err) {
+      console.error(err)
+      setFantasyState({ books: [], loading: false, error: true })
+    }
+  }, [])
 
   useEffect(() => {
-    const fetchHomeData = async () => {
-      try {
-        const [featuredRes, recentRes, fantasyRes] = await Promise.all([
-          getFeaturedBooks({ limit: 10 }),
-          getBooks({ limit: 50 }),
-          getBooks({ genre: 'FANTASY', limit: 10 }),
-        ])
-        setFeaturedBooks(Array.isArray(featuredRes.data) ? featuredRes.data.slice(0, 10) : [])
-        setRecentBooks(Array.isArray(recentRes.data) ? recentRes.data.slice(-10).reverse() : [])
-        setFantasyBooks(Array.isArray(fantasyRes.data) ? fantasyRes.data.slice(0, 10) : [])
-      } catch (err) {
-        console.error(err)
-      }
-    }
-    fetchHomeData()
-  }, [])
+    const id = setTimeout(() => {
+      loadFeatured()
+      loadRecent()
+      loadFantasy()
+    }, 0)
+    return () => clearTimeout(id)
+  }, [loadFeatured, loadRecent, loadFantasy])
 
   return (
     <main className="pb-16 md:pb-24 w-full min-h-screen flex flex-col">
@@ -177,15 +212,17 @@ export default function Home() {
       </section>
 
       {/* Destacados Section (10 libros: 5 visibles por pantalla + 5 al deslizar) */}
-      {featuredBooks.length > 0 && (
+      {(featuredState.loading || featuredState.error || featuredState.books.length > 0) && (
         <BookShelfReveal
           title="Libros"
           accent="destacados"
           subtitle="Las obras mejor valoradas y más elegidas por los lectores de la comunidad."
           ctaTo="/catalog"
           ctaLabel="Ver catálogo"
-          books={featuredBooks}
-          loading={false}
+          books={featuredState.books}
+          loading={featuredState.loading}
+          error={featuredState.error}
+          onRetry={loadFeatured}
         />
       )}
 
@@ -193,15 +230,17 @@ export default function Home() {
       <GenresSection />
 
       {/* Novedades Section */}
-      {recentBooks.length > 0 && (
+      {(recentState.loading || recentState.error || recentState.books.length > 0) && (
         <BookShelfReveal
           title="Agregados"
           accent="recientemente"
           subtitle="Las últimas incorporaciones que llegaron a nuestra colección."
           ctaTo="/catalog"
           ctaLabel="Ver catálogo"
-          books={recentBooks}
-          loading={false}
+          books={recentState.books}
+          loading={recentState.loading}
+          error={recentState.error}
+          onRetry={loadRecent}
         />
       )}
 
@@ -209,15 +248,17 @@ export default function Home() {
       <BestSellersSection />
 
       {/* Fantasía Section (10 libros con slider y animación editorial compartida) */}
-      {fantasyBooks.length > 0 && (
+      {(fantasyState.loading || fantasyState.error || fantasyState.books.length > 0) && (
         <BookShelfReveal
           title="Género:"
           accent="Fantasía"
           subtitle="Mundos extraordinarios, magia y aventuras inolvidables."
           ctaTo="/catalog?genre=FANTASY"
           ctaLabel="Explorar género"
-          books={fantasyBooks}
-          loading={false}
+          books={fantasyState.books}
+          loading={fantasyState.loading}
+          error={fantasyState.error}
+          onRetry={loadFantasy}
         />
       )}
 
