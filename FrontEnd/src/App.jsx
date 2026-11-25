@@ -23,7 +23,10 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin w-10 h-10 border-4 border-outline-variant/40 border-t-primary rounded-full"></div>
+    <div
+      style={{ borderRadius: '9999px' }}
+      className="animate-spin w-10 h-10 border-4 border-outline-variant/40 border-t-primary"
+    />
   </div>
 )
 
