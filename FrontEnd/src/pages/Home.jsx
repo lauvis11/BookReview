@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
-import { getBooks, getFeaturedBooks } from '../api/books'
+import { getBooks, getFeaturedBooks, getRecentBooks } from '../api/books'
 import BookShelfReveal from '../components/books/BookShelfReveal'
 import Hero from '../components/layout/Hero'
 import GenresSection from '../components/layout/GenresSection'
@@ -80,9 +80,9 @@ export default function Home() {
   const loadRecent = useCallback(async () => {
     setRecentState((prev) => ({ ...prev, loading: true, error: false }))
     try {
-      const { data } = await getBooks({ limit: 50 })
+      const { data } = await getRecentBooks({ limit: 10 })
       setRecentState({
-        books: Array.isArray(data) ? data.slice(-10).reverse() : [],
+        books: Array.isArray(data) ? data.slice(0, 10) : [],
         loading: false,
         error: false,
       })

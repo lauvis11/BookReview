@@ -35,6 +35,21 @@ export class BookController{
         }
     }
 
+    static async getRecent(req, res, next){
+        try {
+            const limit = Math.min(Math.max(1, Number(req.query.limit) || 10), 20);
+            const books = await BookModel.getRecent({ limit })
+            const formatted = (books || []).map(b => ({
+                ...b,
+                genre: b.genre ? b.genre.split(',') : [],
+                author: b.author ? b.author.split(',') : []
+            }))
+            res.status(200).json(formatted)
+        } catch (e) {
+            next(e)
+        }
+    }
+
     static async getById(req, res, next){
         try {
             const {id} = req.params
