@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import AiSparkleIcon from '../ui/AiSparkleIcon'
 import { useAuth } from '../../context/AuthContext'
 import BrandLogo from '../ui/BrandLogo'
 
@@ -100,7 +101,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-12 lg:col-span-4 border-t border-[#d6d0c0]/75 pt-6 lg:border-t-0 lg:pt-0 flex items-start justify-center md:justify-start lg:justify-end text-center md:text-left">
             <div className="w-full max-w-sm lg:max-w-md">
               <div className="inline-flex items-center gap-1.5 text-secondary-dark font-hero-sans text-xs font-semibold">
-                <Sparkles size={14} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+                <AiSparkleIcon size={15} />
                 <span>Asistente literario Lib</span>
               </div>
 

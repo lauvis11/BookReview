@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Sparkles, Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
+import { Compass, BookMarked, Clock, ChevronRight, ArrowRight } from 'lucide-react'
+import AiSparkleIcon from '../components/ui/AiSparkleIcon'
 import { getBooks, getFeaturedBooks, getRecentBooks } from '../api/books'
 import BookShelfReveal from '../components/books/BookShelfReveal'
 import Hero from '../components/layout/Hero'
@@ -135,11 +136,8 @@ export default function Home() {
           }`}
         >
           <div className="flex items-center gap-3">
-            <Sparkles
-              size={18}
-              strokeWidth={1.85}
-              absoluteStrokeWidth
-              aria-hidden="true"
+            <AiSparkleIcon
+              size={19}
               className="text-secondary-dark shrink-0"
             />
             <h2 className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-[-0.015em] text-primary leading-tight">

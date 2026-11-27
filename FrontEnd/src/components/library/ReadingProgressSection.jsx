@@ -8,10 +8,10 @@ import {
   Flame,
   History,
   Plus,
-  Sparkles,
   Trophy,
   X,
 } from 'lucide-react'
+import AiSparkleIcon from '../ui/AiSparkleIcon'
 import { getBooks } from '../../api/books'
 import {
   DEFAULT_PAGES_PER_HOUR,
@@ -845,7 +845,7 @@ export default function ReadingProgressSection({
             {feedback.type === 'completed' ? (
               <Trophy size={18} strokeWidth={2} absoluteStrokeWidth className="shrink-0" aria-hidden="true" />
             ) : (
-              <Sparkles size={18} strokeWidth={2} absoluteStrokeWidth className="shrink-0" aria-hidden="true" />
+              <AiSparkleIcon size={18} className="shrink-0" />
             )}
             <p className="font-hero-sans text-xs sm:text-sm font-semibold leading-snug">
               {feedback.message}

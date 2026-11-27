@@ -8,6 +8,7 @@ import { saveStatus } from '../api/status'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 import ReadingTimeCalculator from '../components/book-detail/ReadingTimeCalculator'
+import AiSparkleIcon from '../components/ui/AiSparkleIcon'
 import { syncReadingTracker } from '../utils/readingTrackerStore'
 
 export default function BookDetail() {
@@ -337,7 +338,7 @@ export default function BookDetail() {
           {/* Ask AI Banner */}
           <div className="bg-primary rounded-xl p-5 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 md:gap-6 shadow-xl relative overflow-hidden group">
             <div className="w-16 h-16 shrink-0 rounded-full bg-white/10 flex items-center justify-center border border-white/20 relative z-10">
-              <span className="material-symbols-outlined text-3xl text-secondary-light">auto_awesome</span>
+              <AiSparkleIcon size={30} className="text-secondary-light" />
             </div>
             <div className="flex-1 text-center sm:text-left relative z-10">
               <h3 className="font-headline font-bold text-xl text-white mb-2">¿Dudas sobre este libro?</h3>
