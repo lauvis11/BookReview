@@ -1,15 +1,37 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+  X,
+  Search,
+  BookOpen,
+  Plus,
+  Loader2,
+  AlertCircle,
+  RotateCcw,
+} from 'lucide-react'
 import { createBook, updateBook, searchGoogleBooks } from '../../api/books'
 
-export default function BookModal({ book, onClose, onSave }) {
+export default function BookModal({
+  book,
+  onClose,
+  onSave,
+  initialFocusSearch = false,
+}) {
   const isEditing = !!book
 
   const getInitialFormData = () => {
     if (book) {
       return {
         title: book.title || '',
-        author: Array.isArray(book.author) ? book.author : book.author ? [book.author] : [],
-        genre: Array.isArray(book.genre) ? book.genre : book.genre ? [book.genre] : [],
+        author: Array.isArray(book.author)
+          ? book.author
+          : book.author
+            ? [book.author]
+            : [],
+        genre: Array.isArray(book.genre)
+          ? book.genre
+          : book.genre
+            ? [book.genre]
+            : [],
         editorial: book.editorial || '',
         pages: book.pages || '',
         year: book.year || '',
@@ -37,32 +59,62 @@ export default function BookModal({ book, onClose, onSave }) {
   const [error, setError] = useState(null)
   const [previewImg, setPreviewImg] = useState(book?.img || '')
 
-  // Google Search State
+  // Google Books search state
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
+  const searchInputRef = useRef(null)
 
-  // Debounce search
   useEffect(() => {
+    if (initialFocusSearch && !isEditing && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [initialFocusSearch, isEditing])
+
+  // Escape key closes dropdown first, then modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Escape') return
+      if (showDropdown) {
+        setShowDropdown(false)
+      } else {
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showDropdown, onClose])
+
+  // Debounced Google Books search
+  useEffect(() => {
+    let cancelled = false
     const id = setTimeout(async () => {
-      if (searchQuery.trim().length > 3 && !isEditing) {
+      if (searchQuery.trim().length > 2 && !isEditing) {
         setIsSearching(true)
         try {
           const res = await searchGoogleBooks(searchQuery.trim())
-          setSearchResults(res.data || [])
-          setShowDropdown(true)
+          if (!cancelled) {
+            setSearchResults(res.data || [])
+            setShowDropdown(true)
+          }
         } catch {
-          setSearchResults([])
+          if (!cancelled) {
+            setSearchResults([])
+          }
+        } finally {
+          if (!cancelled) setIsSearching(false)
         }
-        setIsSearching(false)
       } else {
         setSearchResults([])
         setShowDropdown(false)
       }
-    }, 1000)
-    return () => clearTimeout(id)
+    }, 550)
+    return () => {
+      cancelled = true
+      clearTimeout(id)
+    }
   }, [searchQuery, isEditing])
 
   // Click outside to close dropdown
@@ -87,11 +139,12 @@ export default function BookModal({ book, onClose, onSave }) {
       pages: gBook.pages || '',
       year: gBook.publishedYear || '',
       sinopsis: gBook.synopsis || '',
-      img: gBook.coverUrl || ''
+      img: gBook.coverUrl || '',
     })
     setPreviewImg(gBook.coverUrl || '')
     setShowDropdown(false)
     setSearchQuery('')
+    setError(null)
   }
 
   const handleChange = (e) => {
@@ -104,10 +157,11 @@ export default function BookModal({ book, onClose, onSave }) {
 
   const handleAddAuthor = (e) => {
     e.preventDefault()
-    if (authorInput.trim() && !formData.author.includes(authorInput.trim())) {
+    const trimmed = authorInput.trim()
+    if (trimmed && !formData.author.includes(trimmed)) {
       setFormData((prev) => ({
         ...prev,
-        author: [...prev.author, authorInput.trim()],
+        author: [...prev.author, trimmed],
       }))
       setAuthorInput('')
     }
@@ -122,10 +176,11 @@ export default function BookModal({ book, onClose, onSave }) {
 
   const handleAddGenre = (e) => {
     e.preventDefault()
-    if (genreInput.trim() && !formData.genre.includes(genreInput.trim())) {
+    const trimmed = genreInput.trim()
+    if (trimmed && !formData.genre.includes(trimmed)) {
       setFormData((prev) => ({
         ...prev,
-        genre: [...prev.genre, genreInput.trim()],
+        genre: [...prev.genre, trimmed],
       }))
       setGenreInput('')
     }
@@ -142,6 +197,8 @@ export default function BookModal({ book, onClose, onSave }) {
     setFormData(getInitialFormData())
     setPreviewImg(book?.img || '')
     setSearchQuery('')
+    setSearchResults([])
+    setShowDropdown(false)
     setAuthorInput('')
     setGenreInput('')
     setError(null)
@@ -152,37 +209,36 @@ export default function BookModal({ book, onClose, onSave }) {
     setLoading(true)
     setError(null)
 
-    // Validate required fields
-    const pages = parseInt(formData.pages) || 1
-    const year = parseInt(formData.year) || new Date().getFullYear()
+    const pages = parseInt(formData.pages, 10) || 1
+    const year = parseInt(formData.year, 10) || new Date().getFullYear()
 
     if (!formData.title || formData.title.length < 2) {
-      setError('El título debe tener al menos 2 caracteres')
+      setError('El título debe tener al menos 2 caracteres.')
       setLoading(false)
       return
     }
     if (pages < 1) {
-      setError('Las páginas deben ser un número positivo')
+      setError('Las páginas deben ser un número positivo.')
       setLoading(false)
       return
     }
     if (!formData.editorial || formData.editorial.length < 2) {
-      setError('La editorial debe tener al menos 2 caracteres')
+      setError('La editorial debe tener al menos 2 caracteres.')
       setLoading(false)
       return
     }
     if (!formData.sinopsis || formData.sinopsis.length < 2) {
-      setError('La sinopsis debe tener al menos 2 caracteres')
+      setError('La sinopsis debe tener al menos 2 caracteres.')
       setLoading(false)
       return
     }
     if (formData.author.length === 0) {
-      setError('Al menos un autor es requerido')
+      setError('Agregá al menos un autor para guardar el libro.')
       setLoading(false)
       return
     }
     if (formData.genre.length === 0) {
-      setError('Al menos un género es requerido')
+      setError('Agregá al menos un género para guardar el libro.')
       setLoading(false)
       return
     }
@@ -207,7 +263,7 @@ export default function BookModal({ book, onClose, onSave }) {
           author: formData.author.join(', '),
           genres: formData.genre,
           publisher: formData.editorial,
-          pages: pages,
+          pages,
           publishedYear: year,
           synopsis: formData.sinopsis,
           coverUrl: formData.img || undefined,
@@ -217,189 +273,302 @@ export default function BookModal({ book, onClose, onSave }) {
       onSave()
     } catch (err) {
       console.error(err)
-      setError(err.response?.data?.message || 'Error al guardar el libro')
+      setError(err.response?.data?.message || 'No se pudo guardar el libro. Intentá nuevamente.')
     }
     setLoading(false)
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-[#1c1c16]/30 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-[0_20px_60px_rgba(28,28,22,0.15)] flex flex-col md:flex-row relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-[#6c7f7a] hover:text-[#0e5146] z-10"
-        >
-          <span className="material-symbols-outlined">close</span>
-        </button>
+  const inputBaseClass =
+    'w-full h-10 rounded-xl bg-white dark:bg-[#192824] border border-[#18332f]/15 dark:border-[#293e38] px-3.5 text-sm text-[#18332f] dark:text-[#f0ede6] placeholder:text-[#5d726c]/70 dark:placeholder:text-[#a6b7b1]/60 focus:outline-none focus:border-[#0e5146] dark:focus:border-[#edbd79] focus:ring-2 focus:ring-[#0e5146]/15 dark:focus:ring-[#edbd79]/20 transition-[border-color,box-shadow] duration-150 ease-out'
 
-        {/* Sidebar Preview */}
-        <div className="hidden md:block w-1/3 bg-[#f2f5f0] p-10 space-y-8">
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0c1412]/45 dark:bg-black/65 font-hero-sans"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="book-modal-title"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div className="bg-[#fdfcf9] dark:bg-[#131f1c] w-full max-w-4xl max-h-[90vh] rounded-[20px] border border-[#18332f]/[0.09] dark:border-white/[0.1] shadow-[0_24px_64px_rgba(12,20,18,0.22)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.55)] overflow-hidden flex flex-col md:flex-row relative">
+        {/* Left Cover Preview Pane (Desktop) */}
+        <aside className="hidden md:flex md:w-[272px] shrink-0 flex-col justify-between bg-[#f3f4ef] dark:bg-[#101a17] border-r border-[#18332f]/[0.08] dark:border-white/[0.08] p-6">
           <div className="space-y-4">
-            <p className="font-label text-[10px] uppercase tracking-[0.3em] text-[#6c7f7a]">
-              Vista Previa
+            <p className="text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1]">
+              Vista previa de portada
             </p>
-            <div className="aspect-[3/4] bg-[#e3e9e1] relative overflow-hidden shadow-md">
+            <div className="w-full aspect-[2/3] rounded-xl bg-[#e7ece5] dark:bg-[#192824] relative overflow-hidden">
               {previewImg ? (
                 <img
                   src={previewImg}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
+                  alt={formData.title || 'Vista previa de portada'}
+                  className="w-full h-full object-cover rounded-xl outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
                   onError={() => setPreviewImg('')}
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#d2dcd6] p-6 text-center">
-                  <span className="material-symbols-outlined text-4xl mb-2">
-                    auto_stories
-                  </span>
-                  <p className="text-xs font-body">
-                    La portada aparecerá aquí cuando ingreses la URL
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#5d726c] dark:text-[#a6b7b1] p-6 text-center gap-2.5">
+                  <BookOpen size={28} strokeWidth={1.5} absoluteStrokeWidth />
+                  <p className="text-xs leading-relaxed">
+                    Pegá una URL de portada o elegí un libro de Google Books.
                   </p>
                 </div>
               )}
-              {/* Book spine effect */}
-              <div className="absolute left-0 inset-y-0 w-2 bg-black/5"></div>
             </div>
-          </div>
-          <div className="space-y-1">
-            <h4 className="font-serif font-bold text-[#0e5146] italic">
-              Notas Editoriales
-            </h4>
-            <p className="font-body text-sm text-[#4a615b] leading-relaxed">
-              Asegurate de que todos los metadatos coincidan. Se requiere verificación manual de la portada para evitar enlaces rotos.
-            </p>
-          </div>
-        </div>
 
-        {/* Form Content */}
-        <div className="flex-1 overflow-y-auto p-8 md:p-12">
-          <header className="mb-10">
-            <h3 className="text-3xl font-serif font-black text-[#0e5146] leading-tight">
-              {isEditing ? 'Editar Libro' : 'Añadir Nuevo Libro'}
-            </h3>
-            <p className="text-[#4a615b] font-body mt-2">
-              Actualizá el catálogo digital con nuevas adquisiciones.
-            </p>
-          </header>
-
-          {error && (
-            <div className="mb-6 p-4 bg-[#ffdad6] text-[#93000a] rounded text-sm font-body">
-              {error}
-            </div>
-          )}
-
-          {!isEditing && (
-            <div className="mb-8 relative" ref={dropdownRef}>
-              <div className="flex items-center bg-[#0e5146] text-white rounded shadow-md px-4 py-3 gap-3">
-                <span className="material-symbols-outlined text-lg">search</span>
-                <input
-                  type="text"
-                  placeholder="Buscar en Google Books para autocompletar..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => { if (searchResults.length > 0) setShowDropdown(true) }}
-                  className="bg-transparent border-none text-white placeholder:text-white/60 focus:ring-0 w-full font-body text-sm outline-none"
-                />
-                {isSearching && (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                )}
-              </div>
-
-              {/* Google Books Dropdown */}
-              {showDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full mt-2 left-0 right-0 bg-white shadow-xl border border-[#d2dcd6]/30 rounded max-h-64 overflow-y-auto z-50">
-                  <ul className="divide-y divide-[#d2dcd6]/10">
-                    {searchResults.map((gBook) => (
-                      <li
-                        key={gBook.googleBooksId}
-                        onClick={() => handleSelectGoogleBook(gBook)}
-                        className="flex gap-4 p-3 hover:bg-[#f2f5f0] cursor-pointer transition-colors"
-                      >
-                        <div className="w-10 h-14 bg-[#e3e9e1] flex-shrink-0">
-                          {gBook.coverUrl ? (
-                            <img src={gBook.coverUrl} alt={gBook.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[#d2dcd6] text-[10px]">Sin<br/>Imagen</div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-serif font-bold text-sm text-[#0e5146] truncate">{gBook.title}</p>
-                          <p className="text-xs font-body text-[#4a615b] truncate">{gBook.author}</p>
-                          <p className="text-[10px] font-label text-[#6c7f7a] uppercase mt-1">Año: {gBook.publishedYear || 'N/A'}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="space-y-1 pt-1">
+              <p className="font-hero-display text-lg font-semibold leading-snug text-[#18332f] dark:text-[#f0ede6] line-clamp-2">
+                {formData.title || 'Sin título'}
+              </p>
+              <p className="text-xs text-[#4a615b] dark:text-[#a6b7b1] truncate">
+                {formData.author.length > 0 ? formData.author.join(', ') : 'Autor por definir'}
+              </p>
+              {(formData.year || formData.pages) && (
+                <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums pt-0.5">
+                  {[
+                    formData.year ? `${formData.year}` : null,
+                    formData.pages ? `${formData.pages} págs.` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
               )}
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Main Info */}
-            <div className="space-y-6">
-              <div className="relative group">
-                <label className="block font-serif font-bold text-[#0e5146] mb-2 italic transition-colors duration-200 group-focus-within:text-[#c9833b]">
+          <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] leading-relaxed border-t border-[#18332f]/[0.08] dark:border-white/[0.08] pt-4">
+            Revisá el título, los autores y la portada antes de publicar en el catálogo de BookReview.
+          </p>
+        </aside>
+
+        {/* Right Scrollable Form Column */}
+        <div className="flex-1 min-w-0 flex flex-col max-h-[90vh]">
+          {/* Sticky Header */}
+          <div className="flex items-start justify-between gap-4 px-6 sm:px-8 pt-6 pb-4 border-b border-[#18332f]/[0.08] dark:border-white/[0.08] shrink-0">
+            <div>
+              <h2
+                id="book-modal-title"
+                className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-tight text-[#0e5146] dark:text-[#f0ede6] leading-tight"
+              >
+                {isEditing ? 'Editar libro' : 'Nuevo libro'}
+              </h2>
+              <p className="text-sm text-[#4a615b] dark:text-[#a6b7b1] mt-0.5">
+                {isEditing
+                  ? 'Actualizá los metadatos de esta edición en el catálogo.'
+                  : 'Importá los datos desde Google Books o cargalos manualmente.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Cerrar ventana"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5d726c] hover:text-[#18332f] hover:bg-[#18332f]/[0.06] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-white/[0.08] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40"
+            >
+              <X size={18} strokeWidth={1.75} absoluteStrokeWidth />
+            </button>
+          </div>
+
+          {/* Scrollable Form Body */}
+          <form
+            id="book-modal-form"
+            onSubmit={handleSubmit}
+            className="flex-1 overflow-y-auto overscroll-contain px-6 sm:px-8 py-6 space-y-6"
+          >
+            {error && (
+              <div
+                role="alert"
+                className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#ffedea] dark:bg-[#3a181c] border border-[#ba1a1a]/20 dark:border-[#f87171]/25 text-[#93000a] dark:text-[#fca5a5] text-sm"
+              >
+                <AlertCircle
+                  size={16}
+                  strokeWidth={2}
+                  absoluteStrokeWidth
+                  className="shrink-0 mt-0.5"
+                />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Google Books Quick Import */}
+            {!isEditing && (
+              <div className="relative" ref={dropdownRef}>
+                <div className="rounded-2xl bg-[#f3f4ef] dark:bg-[#192824]/70 border border-[#18332f]/[0.08] dark:border-white/[0.08] p-3">
+                  <label
+                    htmlFor="google-books-search"
+                    className="block text-xs font-medium text-[#4a615b] dark:text-[#a6b7b1] mb-2 px-0.5"
+                  >
+                    Autocompletar desde Google Books
+                  </label>
+                  <div className="relative">
+                    <Search
+                      size={15}
+                      strokeWidth={1.75}
+                      absoluteStrokeWidth
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5d726c] dark:text-[#a6b7b1] pointer-events-none"
+                    />
+                    <input
+                      ref={searchInputRef}
+                      id="google-books-search"
+                      type="text"
+                      placeholder="Buscá por título, autor o ISBN..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => {
+                        if (searchResults.length > 0) setShowDropdown(true)
+                      }}
+                      className="w-full h-10 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] pl-9 pr-9 text-sm text-[#18332f] dark:text-[#f0ede6] placeholder:text-[#5d726c]/70 dark:placeholder:text-[#a6b7b1]/60 focus:outline-none focus:border-[#0e5146] dark:focus:border-[#edbd79] focus:ring-2 focus:ring-[#0e5146]/15 dark:focus:ring-[#edbd79]/20 transition-[border-color,box-shadow] duration-150"
+                    />
+                    {isSearching ? (
+                      <Loader2
+                        size={16}
+                        strokeWidth={2}
+                        absoluteStrokeWidth
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0e5146] dark:text-[#edbd79] animate-spin"
+                      />
+                    ) : (
+                      searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSearchQuery('')
+                            setSearchResults([])
+                            setShowDropdown(false)
+                          }}
+                          aria-label="Limpiar búsqueda de Google Books"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-[#5d726c] hover:text-[#18332f] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] cursor-pointer"
+                        >
+                          <X size={14} strokeWidth={1.75} absoluteStrokeWidth />
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Results Dropdown */}
+                {showDropdown && searchResults.length > 0 && (
+                  <div className="absolute top-full mt-2 inset-x-0 bg-white dark:bg-[#131f1c] rounded-2xl border border-[#18332f]/[0.1] dark:border-white/[0.12] shadow-[0_16px_40px_rgba(12,20,18,0.16)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] max-h-64 overflow-y-auto overscroll-contain p-1.5 z-50">
+                    <ul className="space-y-0.5">
+                      {searchResults.map((gBook) => (
+                        <li key={gBook.googleBooksId}>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectGoogleBook(gBook)}
+                            className="w-full text-left flex items-center gap-3 p-2 rounded-[10px] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] transition-colors duration-150 cursor-pointer"
+                          >
+                            <div className="w-9 aspect-[2/3] rounded-md bg-[#e7ece5] dark:bg-[#192824] shrink-0 overflow-hidden">
+                              {gBook.coverUrl ? (
+                                <img
+                                  src={gBook.coverUrl}
+                                  alt={gBook.title}
+                                  className="w-full h-full object-cover rounded-md outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[#5d726c] dark:text-[#a6b7b1]">
+                                  <BookOpen size={14} strokeWidth={1.5} absoluteStrokeWidth />
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] truncate">
+                                {gBook.title}
+                              </p>
+                              <p className="text-xs text-[#4a615b] dark:text-[#a6b7b1] truncate">
+                                {gBook.author || 'Autor desconocido'}
+                              </p>
+                              <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums mt-0.5">
+                                {[
+                                  gBook.publisher,
+                                  gBook.publishedYear ? String(gBook.publishedYear) : null,
+                                ]
+                                  .filter(Boolean)
+                                  .join(' · ') || 'Metadatos básicos'}
+                              </p>
+                            </div>
+                            <span className="text-xs font-medium text-[#0e5146] dark:text-[#edbd79] shrink-0 pr-1">
+                              Importar
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Form Fields */}
+            <div className="space-y-5">
+              {/* Title */}
+              <div>
+                <label
+                  htmlFor="book-title"
+                  className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                >
                   Título
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-serif text-xl py-3 px-1 placeholder:text-[#d2dcd6] transition-all duration-300"
-                    placeholder="Harry Potter y la piedra filosofal"
-                  />
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                </div>
+                <input
+                  id="book-title"
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                  placeholder="Ej. Cien años de soledad"
+                  className={`${inputBaseClass} h-11 text-base font-medium`}
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Author with chips */}
-                <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
-                    Autor
+              {/* Authors & Genres */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {/* Authors */}
+                <div>
+                  <label
+                    htmlFor="book-author-input"
+                    className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                  >
+                    Autores
                   </label>
-                  <div className="flex gap-2 mb-2">
-                    <div className="flex-1 relative">
-                      <input
-                        type="text"
-                        value={authorInput}
-                        onChange={(e) => setAuthorInput(e.target.value)}
-                        onKeyDown={(e) =>
-                          e.key === 'Enter' && (e.preventDefault(), handleAddAuthor(e))
+                  <div className="flex gap-2">
+                    <input
+                      id="book-author-input"
+                      type="text"
+                      value={authorInput}
+                      onChange={(e) => setAuthorInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          handleAddAuthor(e)
                         }
-                        className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
-                        placeholder="J.K. Rowling"
-                      />
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                    </div>
+                      }}
+                      placeholder="Nombre del autor"
+                      className={inputBaseClass}
+                    />
                     <button
                       type="button"
                       onClick={handleAddAuthor}
-                      className="text-[#0e5146] hover:text-[#e9a45e] active:scale-90 transition-all duration-200"
+                      aria-label="Agregar autor"
+                      className="h-10 w-10 shrink-0 rounded-xl bg-[#f3f4ef] hover:bg-[#e6ece4] dark:bg-[#192824] dark:hover:bg-[#223631] border border-[#18332f]/15 dark:border-[#293e38] text-[#0e5146] dark:text-[#edbd79] flex items-center justify-center transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40"
                     >
-                      <span className="material-symbols-outlined">add_circle</span>
+                      <Plus size={16} strokeWidth={2} absoluteStrokeWidth />
                     </button>
                   </div>
                   {formData.author.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1.5 mt-2.5">
                       {formData.author.map((a) => (
                         <span
                           key={a}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#f7e4cd] hover:bg-[#f5d89a] text-[#7a4d16] text-xs font-label transition-colors duration-200"
+                          style={{ borderRadius: '9999px' }}
+                          className="inline-flex items-center gap-1.5 ps-3 pe-2 py-1 text-xs font-medium bg-[#0e5146]/[0.08] text-[#0e5146] dark:bg-[#166e5e]/25 dark:text-[#a8e2d4]"
                         >
-                          {a}
+                          <span>{a}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveAuthor(a)}
-                            className="hover:text-[#ba1a1a] active:scale-90 transition-all duration-200"
+                            aria-label={`Quitar autor ${a}`}
+                            style={{ borderRadius: '9999px' }}
+                            className="p-0.5 hover:bg-[#0e5146]/15 dark:hover:bg-white/10 transition-colors cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-sm">
-                              close
-                            </span>
+                            <X size={12} strokeWidth={2} absoluteStrokeWidth />
                           </button>
                         </span>
                       ))}
@@ -407,49 +576,55 @@ export default function BookModal({ book, onClose, onSave }) {
                   )}
                 </div>
 
-                {/* Genre with chips */}
-                <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
-                    Género
+                {/* Genres */}
+                <div>
+                  <label
+                    htmlFor="book-genre-input"
+                    className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                  >
+                    Géneros
                   </label>
-                  <div className="flex gap-2 mb-2">
-                    <div className="flex-1 relative">
-                      <input
-                        type="text"
-                        value={genreInput}
-                        onChange={(e) => setGenreInput(e.target.value)}
-                        onKeyDown={(e) =>
-                          e.key === 'Enter' && (e.preventDefault(), handleAddGenre(e))
+                  <div className="flex gap-2">
+                    <input
+                      id="book-genre-input"
+                      type="text"
+                      value={genreInput}
+                      onChange={(e) => setGenreInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          handleAddGenre(e)
                         }
-                        className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
-                        placeholder="Fantasía"
-                      />
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                    </div>
+                      }}
+                      placeholder="Ej. Ficción literaria"
+                      className={inputBaseClass}
+                    />
                     <button
                       type="button"
                       onClick={handleAddGenre}
-                      className="text-[#0e5146] hover:text-[#e9a45e] active:scale-90 transition-all duration-200"
+                      aria-label="Agregar género"
+                      className="h-10 w-10 shrink-0 rounded-xl bg-[#f3f4ef] hover:bg-[#e6ece4] dark:bg-[#192824] dark:hover:bg-[#223631] border border-[#18332f]/15 dark:border-[#293e38] text-[#0e5146] dark:text-[#edbd79] flex items-center justify-center transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40"
                     >
-                      <span className="material-symbols-outlined">add_circle</span>
+                      <Plus size={16} strokeWidth={2} absoluteStrokeWidth />
                     </button>
                   </div>
                   {formData.genre.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1.5 mt-2.5">
                       {formData.genre.map((g) => (
                         <span
                           key={g}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-[#f7e4cd] hover:bg-[#f5d89a] text-[#7a4d16] text-xs font-label transition-colors duration-200"
+                          style={{ borderRadius: '9999px' }}
+                          className="inline-flex items-center gap-1.5 ps-3 pe-2 py-1 text-xs font-medium bg-[#f7e4cd]/75 text-[#7a4d16] dark:bg-[#edbd79]/15 dark:text-[#edbd79]"
                         >
-                          {g}
+                          <span>{g}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveGenre(g)}
-                            className="hover:text-[#ba1a1a] active:scale-90 transition-all duration-200"
+                            aria-label={`Quitar género ${g}`}
+                            style={{ borderRadius: '9999px' }}
+                            className="p-0.5 hover:bg-[#c9833b]/20 dark:hover:bg-white/10 transition-colors cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-sm">
-                              close
-                            </span>
+                            <X size={12} strokeWidth={2} absoluteStrokeWidth />
                           </button>
                         </span>
                       ))}
@@ -458,113 +633,156 @@ export default function BookModal({ book, onClose, onSave }) {
                 </div>
               </div>
 
-              <div className="relative group">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
-                  URL de la Portada
+              {/* Cover URL */}
+              <div>
+                <label
+                  htmlFor="book-img"
+                  className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                >
+                  URL de la portada
                 </label>
-                <div className="relative">
+                <div className="flex items-center gap-3">
                   <input
+                    id="book-img"
                     type="url"
                     name="img"
                     value={formData.img}
                     onChange={handleChange}
-                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 text-sm transition-all duration-300"
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="https://..."
+                    className={inputBaseClass}
                   />
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
+                  {/* Compact preview on mobile */}
+                  {previewImg && (
+                    <img
+                      src={previewImg}
+                      alt="Miniatura"
+                      className="md:hidden w-8 aspect-[2/3] rounded object-cover shrink-0 outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+                      onError={() => setPreviewImg('')}
+                    />
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
+              {/* Pages, Year, Editorial */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div>
+                  <label
+                    htmlFor="book-pages"
+                    className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                  >
                     Páginas
                   </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="pages"
-                      value={formData.pages}
-                      onChange={handleChange}
-                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
-                      placeholder="512"
-                    />
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                  </div>
+                  <input
+                    id="book-pages"
+                    type="number"
+                    name="pages"
+                    min={1}
+                    value={formData.pages}
+                    onChange={handleChange}
+                    placeholder="432"
+                    className={`${inputBaseClass} tabular-nums`}
+                  />
                 </div>
-                <div className="relative group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
+                <div>
+                  <label
+                    htmlFor="book-year"
+                    className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                  >
                     Año
                   </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="year"
-                      value={formData.year}
-                      onChange={handleChange}
-                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
-                      placeholder="1997"
-                    />
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                  </div>
+                  <input
+                    id="book-year"
+                    type="number"
+                    name="year"
+                    value={formData.year}
+                    onChange={handleChange}
+                    placeholder="2024"
+                    className={`${inputBaseClass} tabular-nums`}
+                  />
                 </div>
-                <div className="relative col-span-2 md:col-span-1 group">
-                  <label className="block font-label text-[10px] uppercase tracking-widest text-[#6c7f7a] mb-2 transition-colors duration-200 group-focus-within:text-[#0e5146]">
+                <div className="col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="book-editorial"
+                    className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                  >
                     Editorial
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="editorial"
-                      value={formData.editorial}
-                      onChange={handleChange}
-                      className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-2 px-1 transition-all duration-300"
-                      placeholder="Salamandra"
-                    />
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                  </div>
+                  <input
+                    id="book-editorial"
+                    type="text"
+                    name="editorial"
+                    value={formData.editorial}
+                    onChange={handleChange}
+                    placeholder="Salamandra"
+                    className={inputBaseClass}
+                  />
                 </div>
               </div>
 
-              <div className="relative group">
-                <label className="block font-serif font-bold text-[#0e5146] mb-2 italic transition-colors duration-200 group-focus-within:text-[#c9833b]">
+              {/* Synopsis */}
+              <div>
+                <label
+                  htmlFor="book-sinopsis"
+                  className="block text-sm font-medium text-[#18332f] dark:text-[#f0ede6] mb-1.5"
+                >
                   Sinopsis
                 </label>
-                <div className="relative">
-                  <textarea
-                    name="sinopsis"
-                    value={formData.sinopsis}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full bg-[#f2f5f0] hover:bg-[#f1eee5] focus:bg-[#f1eee5] border-0 border-b-2 border-[#d2dcd6]/50 focus:border-[#e9a45e] focus:ring-0 font-body py-3 px-1 resize-none leading-relaxed transition-all duration-300"
-                  />
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-focus-within:w-full"></span>
-                </div>
+                <textarea
+                  id="book-sinopsis"
+                  name="sinopsis"
+                  value={formData.sinopsis}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Breve descripción editorial del libro..."
+                  className="w-full rounded-xl bg-white dark:bg-[#192824] border border-[#18332f]/15 dark:border-[#293e38] px-3.5 py-2.5 text-sm leading-relaxed text-[#18332f] dark:text-[#f0ede6] placeholder:text-[#5d726c]/70 dark:placeholder:text-[#a6b7b1]/60 focus:outline-none focus:border-[#0e5146] dark:focus:border-[#edbd79] focus:ring-2 focus:ring-[#0e5146]/15 dark:focus:ring-[#edbd79]/20 resize-none transition-[border-color,box-shadow] duration-150"
+                />
               </div>
             </div>
+          </form>
 
-            {/* Actions */}
-            <div className="pt-8 flex items-center justify-end gap-6 border-t border-[#d2dcd6]/20">
+          {/* Sticky Footer */}
+          <div className="px-6 sm:px-8 py-4 border-t border-[#18332f]/[0.08] dark:border-white/[0.08] bg-[#f8f7f2]/80 dark:bg-[#101a17]/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={handleClearForm}
+              className="inline-flex items-center gap-1.5 ps-2.5 pe-3 py-2 rounded-xl text-xs font-medium text-[#5d726c] hover:text-[#18332f] hover:bg-[#18332f]/[0.05] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-white/[0.06] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+            >
+              <RotateCcw size={14} strokeWidth={1.75} absoluteStrokeWidth />
+              <span>Restablecer</span>
+            </button>
+
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
-                onClick={handleClearForm}
-                className="text-[#0e5146] font-body font-semibold text-sm hover:text-[#c9833b] hover:underline underline-offset-4 transition-all duration-200"
+                onClick={onClose}
+                className="h-10 px-4 rounded-xl text-sm font-medium text-[#4a615b] dark:text-[#a6b7b1] bg-white dark:bg-[#192824] border border-[#18332f]/15 dark:border-[#293e38] hover:bg-[#f3f4ef] dark:hover:bg-[#223631] transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
               >
-                Limpiar Formulario
+                Cancelar
               </button>
               <button
                 type="submit"
+                form="book-modal-form"
                 disabled={loading}
-                className="bg-primary text-white px-10 py-4 rounded font-body font-bold text-sm tracking-widest shadow-lg hover:shadow-xl hover:brightness-110 hover:scale-[1.02] active:scale-95 active:brightness-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-5 rounded-xl bg-[#0e5146] hover:bg-[#0c453c] dark:bg-[#166e5e] dark:hover:bg-[#1b806e] text-white text-sm font-semibold inline-flex items-center gap-2 transition-[background-color,transform,opacity] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40 dark:focus-visible:ring-[#edbd79]/40"
               >
-                {loading
-                  ? 'GUARDANDO...'
-                  : isEditing
-                  ? 'ACTUALIZAR LIBRO'
-                  : 'CREAR LIBRO'}
+                {loading && (
+                  <Loader2
+                    size={15}
+                    strokeWidth={2}
+                    absoluteStrokeWidth
+                    className="animate-spin"
+                  />
+                )}
+                <span>
+                  {loading
+                    ? 'Guardando...'
+                    : isEditing
+                      ? 'Guardar cambios'
+                      : 'Crear libro'}
+                </span>
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

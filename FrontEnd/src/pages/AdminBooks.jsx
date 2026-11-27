@@ -1,15 +1,39 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import {
+  Plus,
+  Search,
+  Globe,
+  BookOpen,
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  AlertTriangle,
+  Loader2,
+} from 'lucide-react'
 import { getBooks, deleteBook } from '../api/books'
 import BookModal from '../components/admin/BookModal'
+
+const FILTERS = [
+  { key: 'title', label: 'Título' },
+  { key: 'author', label: 'Autor' },
+  { key: 'genre', label: 'Género' },
+  { key: 'editorial', label: 'Editorial' },
+]
 
 export default function AdminBooks() {
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [refreshTick, setRefreshTick] = useState(0)
+
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalFocusSearch, setModalFocusSearch] = useState(false)
   const [editingBook, setEditingBook] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -19,39 +43,58 @@ export default function AdminBooks() {
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
 
-  const fetchBooks = useCallback(async () => {
-    setLoading(true)
-    try {
-      const { data } = await getBooks({ page, ...activeParams })
-      setBooks(data)
-      setHasMore(data.length === 10)
-    } catch (err) {
-      console.error(err)
-      setBooks([])
+  // Fetch paginated/filtered books
+  useEffect(() => {
+    let cancelled = false
+    getBooks({ page, ...activeParams })
+      .then(({ data }) => {
+        if (cancelled) return
+        const list = Array.isArray(data) ? data : []
+        setBooks(list)
+        setHasMore(list.length === 10)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        console.error(err)
+        setBooks([])
+        setHasMore(false)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
     }
-    setLoading(false)
-  }, [page, activeParams])
+  }, [page, activeParams, refreshTick])
 
   // Debounced autocomplete
   useEffect(() => {
+    let cancelled = false
     const id = setTimeout(async () => {
       if (searchQuery.trim().length > 0) {
         try {
           const res = await getBooks({ [searchFilter]: searchQuery.trim() })
-          setDropdownResults(res.data.slice(0, 4))
-          setShowDropdown(true)
+          if (!cancelled) {
+            const list = Array.isArray(res.data) ? res.data : []
+            setDropdownResults(list.slice(0, 4))
+            setShowDropdown(true)
+          }
         } catch {
-          setDropdownResults([])
+          if (!cancelled) setDropdownResults([])
         }
       } else {
         setDropdownResults([])
         setShowDropdown(false)
       }
-    }, 1000)
-    return () => clearTimeout(id)
+    }, 550)
+    return () => {
+      cancelled = true
+      clearTimeout(id)
+    }
   }, [searchQuery, searchFilter])
 
-  // Close dropdown on outside click
+  // Close autocomplete dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -62,43 +105,64 @@ export default function AdminBooks() {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  // Close delete confirmation on Escape
   useEffect(() => {
-    fetchBooks()
-  }, [fetchBooks])
+    if (!deleteConfirm) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !deleting) setDeleteConfirm(null)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [deleteConfirm, deleting])
 
-  const handleCreate = () => {
+  const handleCreateManual = () => {
     setEditingBook(null)
+    setModalFocusSearch(false)
+    setModalOpen(true)
+  }
+
+  const handleImportGoogle = () => {
+    setEditingBook(null)
+    setModalFocusSearch(true)
     setModalOpen(true)
   }
 
   const handleEdit = (book) => {
     setEditingBook(book)
+    setModalFocusSearch(false)
     setModalOpen(true)
   }
 
   const handleDelete = async (id) => {
+    setDeleting(true)
     try {
       await deleteBook(id)
       setDeleteConfirm(null)
-      fetchBooks()
+      setLoading(true)
+      setRefreshTick((t) => t + 1)
     } catch (err) {
       console.error(err)
+    } finally {
+      setDeleting(false)
     }
   }
 
   const handleModalClose = () => {
     setModalOpen(false)
+    setModalFocusSearch(false)
     setEditingBook(null)
   }
 
   const handleModalSave = () => {
     handleModalClose()
-    fetchBooks()
+    setLoading(true)
+    setRefreshTick((t) => t + 1)
   }
 
   const handleSearch = (e) => {
     e.preventDefault()
     setShowDropdown(false)
+    setLoading(true)
     setPage(1)
     if (searchQuery.trim()) {
       setActiveParams({ [searchFilter]: searchQuery.trim() })
@@ -111,8 +175,11 @@ export default function AdminBooks() {
     setSearchQuery('')
     setDropdownResults([])
     setShowDropdown(false)
-    setActiveParams({})
-    setPage(1)
+    if (Object.keys(activeParams).length > 0 || page !== 1) {
+      setLoading(true)
+      setActiveParams({})
+      setPage(1)
+    }
   }
 
   const handleDropdownClick = (book) => {
@@ -120,93 +187,172 @@ export default function AdminBooks() {
     handleEdit(book)
   }
 
-  const filters = [
-    { key: 'title', label: 'Título' },
-    { key: 'author', label: 'Autor' },
-    { key: 'genre', label: 'Género' },
-    { key: 'editorial', label: 'Editorial' },
-  ]
+  const handleChangePage = (nextPage) => {
+    if (nextPage === page) return
+    setLoading(true)
+    setPage(nextPage)
+  }
+
+  const currentFilterLabel =
+    FILTERS.find((f) => f.key === searchFilter)?.label.toLowerCase() || 'título'
+  const hasActiveFilter = Object.keys(activeParams).length > 0
 
   return (
-    <div className="p-8 md:p-10 max-w-7xl mx-auto">
+    <div className="p-5 sm:p-8 lg:p-10 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <header className="mb-10 flex justify-between items-end">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <span className="font-label text-xs uppercase tracking-[0.2em] text-[#4a615b] mb-2 block">
-            Catálogo
-          </span>
-          <h2 className="text-4xl font-serif font-black text-[#0e5146] leading-tight">
-            Gestión de Libros
-          </h2>
+          <h1 className="font-hero-display text-3xl sm:text-[34px] font-semibold tracking-tight text-[#0e5146] dark:text-[#f0ede6] leading-tight">
+            Libros
+          </h1>
+          <p className="text-sm text-[#4a615b] dark:text-[#a6b7b1] mt-1">
+            Administrá las fichas del catálogo o importá nuevos títulos desde Google Books.
+          </p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="hidden md:flex items-center gap-2 bg-primary text-white px-6 py-3 rounded font-body font-bold text-sm tracking-widest shadow-lg hover:opacity-90 transition-opacity cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          Añadir Libro
-        </button>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleImportGoogle}
+            className="h-9 ps-3 pe-3.5 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] text-sm font-medium text-[#18332f] dark:text-[#f0ede6] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] inline-flex items-center gap-2 transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40"
+          >
+            <Globe
+              size={15}
+              strokeWidth={1.75}
+              absoluteStrokeWidth
+              className="text-[#0e5146] dark:text-[#edbd79]"
+            />
+            <span>Importar de Google Books</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCreateManual}
+            className="h-9 ps-3.5 pe-4 rounded-xl bg-[#0e5146] hover:bg-[#0c453c] dark:bg-[#166e5e] dark:hover:bg-[#1b806e] text-white text-sm font-semibold inline-flex items-center gap-1.5 transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5146]/40 dark:focus-visible:ring-[#edbd79]/40"
+          >
+            <Plus size={16} strokeWidth={2} absoluteStrokeWidth />
+            <span>Nuevo libro</span>
+          </button>
+        </div>
       </header>
 
-      {/* Table Section */}
-      <section className="space-y-6">
-        {/* Search Bar */}
-        <div className="space-y-3">
-          {/* Filter chips */}
-          <div className="flex flex-wrap gap-2">
-            {filters.map(f => (
-              <button
-                key={f.key}
-                type="button"
-                onClick={() => { setSearchFilter(f.key); setSearchQuery(''); setDropdownResults([]) }}
-                className={`px-3 py-1.5 text-[10px] font-label uppercase tracking-widest border-b transition-all cursor-pointer ${
-                  searchFilter === f.key
-                    ? 'bg-[#0e5146] text-white border-[#0e5146]'
-                    : 'bg-[#f2f5f0] text-[#0e5146] border-[#d2dcd6]/50 hover:bg-[#e3e9e1]'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+      {/* Search & Segmented Filter Toolbar */}
+      <section aria-label="Búsqueda y filtros" className="space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+          {/* Segmented Control (Concentric radii: outer 12px, padding 4px, inner 8px) */}
+          <div
+            role="group"
+            aria-label="Campo de búsqueda"
+            className="inline-flex p-1 rounded-xl bg-[#ecefe9] dark:bg-[#131f1c] border border-[#18332f]/[0.07] dark:border-white/[0.08] self-start overflow-x-auto max-w-full"
+          >
+            {FILTERS.map((f) => {
+              const selected = searchFilter === f.key
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => {
+                    setSearchFilter(f.key)
+                    setSearchQuery('')
+                    setDropdownResults([])
+                    setShowDropdown(false)
+                  }}
+                  aria-pressed={selected}
+                  className={`h-8 px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-[color,background-color,box-shadow] duration-150 ease-out cursor-pointer ${
+                    selected
+                      ? 'bg-white text-[#0e5146] shadow-[0_1px_2px_rgba(24,51,47,0.08)] dark:bg-[#192824] dark:text-[#f0ede6] dark:shadow-none'
+                      : 'text-[#4a615b] hover:text-[#18332f] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6]'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              )
+            })}
           </div>
 
-          {/* Input + clear */}
-          <div className="flex gap-3 items-center">
-            <form onSubmit={handleSearch} className="relative flex-1 max-w-xl" ref={dropdownRef}>
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#6c7f7a] text-lg">search</span>
+          {/* Search Input + Actions */}
+          <div className="flex items-center gap-2 flex-1">
+            <form
+              onSubmit={handleSearch}
+              className="relative flex-1"
+              ref={dropdownRef}
+            >
+              <Search
+                size={15}
+                strokeWidth={1.75}
+                absoluteStrokeWidth
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5d726c] dark:text-[#a6b7b1] pointer-events-none"
+              />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => { if (dropdownResults.length > 0) setShowDropdown(true) }}
-                placeholder={`Buscar por ${filters.find(f => f.key === searchFilter)?.label.toLowerCase()}...`}
-                className="w-full bg-[#f2f5f0] border border-[#d2dcd6]/40 focus:border-[#e9a45e] focus:ring-0 rounded pl-10 pr-10 py-2.5 text-sm font-body text-[#0e5146] placeholder:text-[#6c7f7a]/60 outline-none transition-colors"
+                onFocus={() => {
+                  if (dropdownResults.length > 0) setShowDropdown(true)
+                }}
+                placeholder={`Buscar por ${currentFilterLabel}...`}
+                aria-label={`Buscar por ${currentFilterLabel}`}
+                className="w-full h-10 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] pl-9 pr-20 text-sm text-[#18332f] dark:text-[#f0ede6] placeholder:text-[#5d726c]/70 dark:placeholder:text-[#a6b7b1]/60 focus:outline-none focus:border-[#0e5146] dark:focus:border-[#edbd79] focus:ring-2 focus:ring-[#0e5146]/15 dark:focus:ring-[#edbd79]/20 transition-[border-color,box-shadow] duration-150"
               />
-              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7f7a] hover:text-[#0e5146] cursor-pointer">
-                <span className="material-symbols-outlined text-base">arrow_forward</span>
-              </button>
+              <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('')
+                      setDropdownResults([])
+                      setShowDropdown(false)
+                    }}
+                    aria-label="Borrar texto de búsqueda"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-[#5d726c] hover:text-[#18332f] hover:bg-[#f3f4ef] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-[#192824] transition-colors cursor-pointer"
+                  >
+                    <X size={14} strokeWidth={1.75} absoluteStrokeWidth />
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className="h-7 px-2.5 rounded-lg bg-[#f3f4ef] hover:bg-[#e3e9e1] dark:bg-[#192824] dark:hover:bg-[#223631] text-xs font-medium text-[#0e5146] dark:text-[#edbd79] transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                >
+                  Buscar
+                </button>
+              </div>
 
               {/* Autocomplete Dropdown */}
               {showDropdown && dropdownResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded shadow-xl border border-[#d2dcd6]/20 overflow-hidden z-50">
-                  <ul>
-                    {dropdownResults.map(book => (
-                      <li
-                        key={book.id}
-                        onClick={() => handleDropdownClick(book)}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-[#f2f5f0] cursor-pointer border-b border-[#d2dcd6]/10 last:border-b-0 transition-colors"
-                      >
-                        <div className="w-8 h-11 bg-[#e3e9e1] overflow-hidden flex-shrink-0">
-                          {book.img
-                            ? <img src={book.img} alt={book.title} className="w-full h-full object-cover" />
-                            : <div className="w-full h-full flex items-center justify-center text-[10px]">📖</div>
-                          }
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-serif font-bold text-[#0e5146] text-sm truncate">{book.title}</p>
-                          <p className="font-body text-xs text-[#4a615b] truncate">{Array.isArray(book.author) ? book.author.join(', ') : book.author}</p>
-                        </div>
-                        <span className="ml-auto text-[10px] font-label text-[#6c7f7a] uppercase tracking-wider whitespace-nowrap">Editar →</span>
+                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#131f1c] rounded-2xl border border-[#18332f]/[0.1] dark:border-white/[0.12] shadow-[0_16px_40px_rgba(12,20,18,0.14)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.48)] overflow-hidden max-h-72 overflow-y-auto overscroll-contain p-1.5 z-40">
+                  <ul className="space-y-0.5">
+                    {dropdownResults.map((book) => (
+                      <li key={book.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleDropdownClick(book)}
+                          className="w-full text-left flex items-center gap-3 p-2 rounded-[10px] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] transition-colors duration-100 cursor-pointer"
+                        >
+                          <div className="w-8 aspect-[2/3] rounded bg-[#e7ece5] dark:bg-[#192824] overflow-hidden shrink-0">
+                            {book.img ? (
+                              <img
+                                src={book.img}
+                                alt={book.title}
+                                className="w-full h-full object-cover rounded outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[#5d726c] dark:text-[#a6b7b1]">
+                                <BookOpen size={13} strokeWidth={1.5} absoluteStrokeWidth />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] truncate">
+                              {book.title}
+                            </p>
+                            <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] truncate">
+                              {Array.isArray(book.author) ? book.author.join(', ') : book.author}
+                            </p>
+                          </div>
+                          <span className="text-xs font-medium text-[#0e5146] dark:text-[#edbd79] shrink-0 pr-1">
+                            Editar
+                          </span>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -214,225 +360,389 @@ export default function AdminBooks() {
               )}
             </form>
 
-            <button
-              type="button"
-              onClick={handleClear}
-              className="px-4 py-2.5 border border-[#d2dcd6]/50 text-[#4a615b] text-[10px] font-label uppercase tracking-widest hover:bg-[#f2f5f0] transition-colors cursor-pointer whitespace-nowrap"
-            >
-              Limpiar
-            </button>
+            {hasActiveFilter && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="h-10 px-3.5 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] text-xs font-medium text-[#4a615b] dark:text-[#a6b7b1] hover:text-[#18332f] dark:hover:text-[#f0ede6] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer whitespace-nowrap"
+              >
+                Limpiar
+              </button>
+            )}
           </div>
+        </div>
 
-          {/* Active filter indicator */}
-          {Object.keys(activeParams).length > 0 && (
-            <p className="text-xs font-body text-[#c9833b] italic">
-              Mostrando resultados para: <strong>{Object.values(activeParams)[0]}</strong>
-            </p>
+        {/* Active filter pill */}
+        {hasActiveFilter && (
+          <div className="flex items-center gap-2 text-xs text-[#4a615b] dark:text-[#a6b7b1]">
+            <span>Filtrado por {currentFilterLabel}:</span>
+            <span
+              style={{ borderRadius: '9999px' }}
+              className="inline-flex items-center gap-1.5 ps-2.5 pe-2 py-0.5 font-medium bg-[#f7e4cd] text-[#7a4d16] dark:bg-[#edbd79]/15 dark:text-[#edbd79]"
+            >
+              <span>{Object.values(activeParams)[0]}</span>
+              <button
+                type="button"
+                onClick={handleClear}
+                aria-label="Quitar filtro activo"
+                className="hover:opacity-75 cursor-pointer"
+              >
+                <X size={12} strokeWidth={2} absoluteStrokeWidth />
+              </button>
+            </span>
+          </div>
+        )}
+      </section>
+
+      {/* Catalog List / Table */}
+      <section aria-label="Listado de libros">
+        <div className="bg-white dark:bg-[#131f1c] rounded-2xl border border-[#18332f]/[0.08] dark:border-white/[0.08] overflow-hidden">
+          {loading ? (
+            <div className="divide-y divide-[#18332f]/[0.06] dark:divide-white/[0.06]">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-5 py-4 animate-pulse">
+                  <div className="w-10 aspect-[2/3] rounded-md bg-[#ebf0e9] dark:bg-[#192824] shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-56 max-w-[70%] rounded bg-[#ebf0e9] dark:bg-[#192824]" />
+                    <div className="h-3 w-32 rounded bg-[#ebf0e9] dark:bg-[#192824]" />
+                  </div>
+                  <div className="hidden sm:block h-3.5 w-24 rounded bg-[#ebf0e9] dark:bg-[#192824]" />
+                </div>
+              ))}
+            </div>
+          ) : books.length === 0 ? (
+            <div className="px-6 py-14 text-center space-y-3">
+              <div
+                style={{ borderRadius: '9999px' }}
+                className="w-11 h-11 mx-auto bg-[#f3f4ef] dark:bg-[#192824] flex items-center justify-center text-[#5d726c] dark:text-[#a6b7b1]"
+              >
+                <BookOpen size={20} strokeWidth={1.5} absoluteStrokeWidth />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6]">
+                  No se encontraron libros
+                </p>
+                <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] mt-1">
+                  {hasActiveFilter
+                    ? 'Probá con otro término o limpiá el filtro activo.'
+                    : 'Agregá el primer título manualmente o importalo desde Google Books.'}
+                </p>
+              </div>
+              {hasActiveFilter ? (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="text-xs font-semibold text-[#0e5146] dark:text-[#edbd79] hover:underline cursor-pointer"
+                >
+                  Ver todos los libros
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleImportGoogle}
+                  className="h-9 px-4 rounded-xl bg-[#0e5146] hover:bg-[#0c453c] dark:bg-[#166e5e] dark:hover:bg-[#1b806e] text-white text-xs font-semibold transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                >
+                  Importar de Google Books
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#18332f]/[0.08] dark:border-white/[0.08]">
+                      <th className="px-5 py-3 text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1]">
+                        Libro
+                      </th>
+                      <th className="px-5 py-3 text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1]">
+                        Autor
+                      </th>
+                      <th className="px-5 py-3 text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1]">
+                        Géneros
+                      </th>
+                      <th className="px-5 py-3 text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1]">
+                        Editorial
+                      </th>
+                      <th className="px-5 py-3 text-xs font-medium text-[#5d726c] dark:text-[#a6b7b1] text-right">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#18332f]/[0.06] dark:divide-white/[0.06]">
+                    {books.map((book) => {
+                      const genres = (Array.isArray(book.genre) ? book.genre : [book.genre]).filter(Boolean)
+                      return (
+                        <tr
+                          key={book.id}
+                          className="group hover:bg-[#f8f7f2]/80 dark:hover:bg-[#192824]/60 transition-colors duration-100"
+                        >
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              <div className="w-10 aspect-[2/3] rounded-md bg-[#e7ece5] dark:bg-[#192824] overflow-hidden shrink-0">
+                                {book.img ? (
+                                  <img
+                                    src={book.img}
+                                    alt={book.title}
+                                    className="w-full h-full object-cover rounded-md outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[#5d726c] dark:text-[#a6b7b1]">
+                                    <BookOpen size={14} strokeWidth={1.5} absoluteStrokeWidth />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] truncate max-w-[260px]">
+                                  {book.title}
+                                </p>
+                                <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums mt-0.5">
+                                  {[
+                                    book.year ? String(book.year) : null,
+                                    book.pages ? `${book.pages} págs.` : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' · ') || `ID ${String(book.id).slice(0, 8)}`}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-3.5">
+                            <p className="text-sm text-[#4a615b] dark:text-[#a6b7b1] max-w-[200px] truncate">
+                              {Array.isArray(book.author) ? book.author.join(', ') : book.author || '—'}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-3.5">
+                            <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+                              {genres.length > 0 ? (
+                                genres.slice(0, 3).map((g, i) => (
+                                  <span
+                                    key={`${g}-${i}`}
+                                    style={{ borderRadius: '9999px' }}
+                                    className="inline-block px-2.5 py-0.5 text-xs font-medium bg-[#f7e4cd]/70 text-[#7a4d16] dark:bg-[#edbd79]/15 dark:text-[#edbd79]"
+                                  >
+                                    {g}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-xs text-[#5d726c] dark:text-[#a6b7b1]">—</span>
+                              )}
+                              {genres.length > 3 && (
+                                <span className="text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums self-center">
+                                  +{genres.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-3.5">
+                            <p className="text-sm text-[#4a615b] dark:text-[#a6b7b1] max-w-[160px] truncate">
+                              {book.editorial || '—'}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleEdit(book)}
+                                aria-label={`Editar ${book.title}`}
+                                title="Editar libro"
+                                className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[#5d726c] hover:text-[#0e5146] hover:bg-[#e3eee9]/70 dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-white/[0.08] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                              >
+                                <Pencil size={15} strokeWidth={1.75} absoluteStrokeWidth />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirm(book)}
+                                aria-label={`Eliminar ${book.title}`}
+                                title="Eliminar libro"
+                                className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[#5d726c] hover:text-[#ba1a1a] hover:bg-[#ffedea] dark:text-[#a6b7b1] dark:hover:text-[#f87171] dark:hover:bg-[#3a181c] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                              >
+                                <Trash2 size={15} strokeWidth={1.75} absoluteStrokeWidth />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card List */}
+              <ul className="md:hidden divide-y divide-[#18332f]/[0.06] dark:divide-white/[0.06]">
+                {books.map((book) => {
+                  const genres = (Array.isArray(book.genre) ? book.genre : [book.genre]).filter(Boolean)
+                  return (
+                    <li key={book.id} className="p-4 flex items-start gap-3.5">
+                      <div className="w-12 aspect-[2/3] rounded-md bg-[#e7ece5] dark:bg-[#192824] overflow-hidden shrink-0">
+                        {book.img ? (
+                          <img
+                            src={book.img}
+                            alt={book.title}
+                            className="w-full h-full object-cover rounded-md outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[#5d726c] dark:text-[#a6b7b1]">
+                            <BookOpen size={16} strokeWidth={1.5} absoluteStrokeWidth />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] leading-snug">
+                          {book.title}
+                        </p>
+                        <p className="text-xs text-[#4a615b] dark:text-[#a6b7b1] truncate">
+                          {Array.isArray(book.author) ? book.author.join(', ') : book.author || 'Autor sin especificar'}
+                        </p>
+                        {book.editorial && (
+                          <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] truncate">
+                            {book.editorial}
+                            {book.year ? ` · ${book.year}` : ''}
+                          </p>
+                        )}
+                        {genres.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {genres.slice(0, 2).map((g, i) => (
+                              <span
+                                key={`${g}-${i}`}
+                                style={{ borderRadius: '9999px' }}
+                                className="inline-block px-2 py-0.5 text-xs font-medium bg-[#f7e4cd]/70 text-[#7a4d16] dark:bg-[#edbd79]/15 dark:text-[#edbd79]"
+                              >
+                                {g}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(book)}
+                          aria-label={`Editar ${book.title}`}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-[#4a615b] hover:text-[#0e5146] hover:bg-[#f3f4ef] dark:text-[#a6b7b1] dark:hover:bg-[#192824] transition-[color,background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                        >
+                          <Pencil size={16} strokeWidth={1.75} absoluteStrokeWidth />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirm(book)}
+                          aria-label={`Eliminar ${book.title}`}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-[#ba1a1a] dark:text-[#f87171] hover:bg-[#ffedea] dark:hover:bg-[#3a181c] transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] cursor-pointer"
+                        >
+                          <Trash2 size={16} strokeWidth={1.75} absoluteStrokeWidth />
+                        </button>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            </>
           )}
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto bg-[#f2f5f0]/50 rounded">
-          <table className="w-full text-left border-separate border-spacing-0">
-            <thead>
-              <tr className="bg-[#f2f5f0]">
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
-                  Título
-                </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
-                  Autor
-                </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
-                  Género
-                </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30">
-                  Editorial
-                </th>
-                <th className="px-6 py-4 font-label text-[10px] tracking-[0.2em] text-[#4a615b] uppercase border-b border-[#d2dcd6]/30 text-right">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                [...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    <td colSpan={5} className="px-6 py-6">
-                      <div className="animate-pulse flex items-center gap-4">
-                        <div className="w-10 h-14 bg-[#e3e9e1] rounded"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-[#e3e9e1] rounded w-3/4"></div>
-                          <div className="h-3 bg-[#e3e9e1] rounded w-1/4"></div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : books.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center">
-                    <span className="material-symbols-outlined text-4xl text-[#d2dcd6] mb-4 block">
-                      menu_book
-                    </span>
-                    <p className="font-body text-[#4a615b]">No se encontraron libros</p>
-                  </td>
-                </tr>
-              ) : (
-                books.map((book) => (
-                  <tr
-                    key={book.id}
-                    className="group hover:bg-white transition-colors"
-                  >
-                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-14 bg-[#e3e9e1] shadow-sm overflow-hidden flex-shrink-0">
-                          {book.img ? (
-                            <img
-                              src={book.img}
-                              alt={book.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="material-symbols-outlined text-[#d2dcd6] text-sm">
-                                menu_book
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-serif font-bold text-[#0e5146] group-hover:text-[#c9833b] transition-colors">
-                            {book.title}
-                          </p>
-                          <p className="text-[10px] font-label text-[#4a615b] uppercase mt-1">
-                            ID: {String(book.id).slice(0, 8).toUpperCase()}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
-                      <p className="font-body text-sm text-[#1c1c16]">
-                        {Array.isArray(book.author) ? book.author.join(', ') : book.author}
-                      </p>
-                    </td>
-                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
-                      <div className="flex flex-wrap gap-1">
-                        {(Array.isArray(book.genre) ? book.genre : [book.genre])
-                          .filter(Boolean)
-                          .map((g, i) => (
-                            <span
-                              key={i}
-                              className="inline-block px-3 py-1 bg-[#f7e4cd] text-[#7a4d16] text-[10px] font-label uppercase tracking-wider rounded-b-sm"
-                            >
-                              {g}
-                            </span>
-                          ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10">
-                      <p className="font-body text-sm text-[#1c1c16]">{book.editorial}</p>
-                    </td>
-                    <td className="px-6 py-5 border-b border-[#d2dcd6]/10 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(book)}
-                          className="text-[#0e5146]/60 hover:text-[#0e5146] hover:bg-[#f2f5f0] p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer"
-                          title="Editar"
-                        >
-                          <span className="material-symbols-outlined">edit</span>
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(book)}
-                          className="text-[#ba1a1a]/60 hover:text-[#ba1a1a] hover:bg-[#ffdad6]/50 p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer"
-                          title="Eliminar"
-                        >
-                          <span className="material-symbols-outlined">delete</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {books.length > 0 && (
-          <div className="flex justify-between items-center px-4 pt-4">
-            <p className="text-xs font-body text-[#4a615b] italic">
-              Mostrando {books.length} libros
+        {/* Pagination Bar */}
+        {!loading && books.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 px-1">
+            <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums">
+              Mostrando {books.length} {books.length === 1 ? 'libro' : 'libros'} en página {page}
             </p>
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                type="button"
+                onClick={() => handleChangePage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#4a615b] hover:text-[#0e5146] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="h-9 ps-2.5 pe-3.5 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] text-xs font-medium text-[#18332f] dark:text-[#f0ede6] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] inline-flex items-center gap-1 transition-[background-color,transform,opacity] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm">chevron_left</span>
-                Anterior
+                <ChevronLeft size={15} strokeWidth={1.75} absoluteStrokeWidth />
+                <span>Anterior</span>
               </button>
-              <span className="text-xs font-serif font-bold text-[#0e5146]">
-                {String(page).padStart(2, '0')}
+
+              <span className="min-w-8 text-center text-xs font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums">
+                {page}
               </span>
+
               <button
-                onClick={() => setPage((p) => p + 1)}
+                type="button"
+                onClick={() => handleChangePage(page + 1)}
                 disabled={!hasMore}
-                className="text-[10px] font-label uppercase tracking-[0.2em] text-[#4a615b] hover:text-[#0e5146] flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="h-9 ps-3.5 pe-2.5 rounded-xl bg-white dark:bg-[#131f1c] border border-[#18332f]/15 dark:border-[#293e38] text-xs font-medium text-[#18332f] dark:text-[#f0ede6] hover:bg-[#f3f4ef] dark:hover:bg-[#192824] inline-flex items-center gap-1 transition-[background-color,transform,opacity] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
-                Siguiente
-                <span className="material-symbols-outlined text-sm">chevron_right</span>
+                <span>Siguiente</span>
+                <ChevronRight size={15} strokeWidth={1.75} absoluteStrokeWidth />
               </button>
             </div>
           </div>
         )}
       </section>
 
-      {/* Mobile Create Button */}
-      <button
-        onClick={handleCreate}
-        className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-30 cursor-pointer"
-      >
-        <span className="material-symbols-outlined">add</span>
-      </button>
-
-      {/* Book Modal */}
+      {/* Book Create/Edit Modal */}
       {modalOpen && (
         <BookModal
           book={editingBook}
+          initialFocusSearch={modalFocusSearch}
           onClose={handleModalClose}
           onSave={handleModalSave}
         />
       )}
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation Dialog */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1c1c16]/30 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md p-8 shadow-xl">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-[#ffdad6] flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#ba1a1a]">warning</span>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0c1412]/45 dark:bg-black/65 font-hero-sans"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-book-title"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !deleting) setDeleteConfirm(null)
+          }}
+        >
+          <div className="bg-white dark:bg-[#131f1c] w-full max-w-md rounded-[20px] border border-[#18332f]/[0.09] dark:border-white/[0.1] shadow-[0_24px_60px_rgba(12,20,18,0.2)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.55)] p-6 space-y-5 max-h-[90vh] overflow-y-auto overscroll-contain">
+            <div className="flex items-start gap-3.5">
+              <div
+                style={{ borderRadius: '9999px' }}
+                className="w-10 h-10 bg-[#ffedea] dark:bg-[#3a181c] text-[#ba1a1a] dark:text-[#f87171] flex items-center justify-center shrink-0"
+              >
+                <AlertTriangle size={18} strokeWidth={1.75} absoluteStrokeWidth />
               </div>
-              <div>
-                <h3 className="font-serif font-bold text-[#1c1c16] text-lg">Eliminar libro</h3>
-                <p className="font-body text-sm text-[#4a615b]">Esta acción no se puede deshacer</p>
+              <div className="min-w-0">
+                <h2
+                  id="delete-book-title"
+                  className="text-base font-semibold text-[#18332f] dark:text-[#f0ede6]"
+                >
+                  Eliminar libro
+                </h2>
+                <p className="text-sm text-[#4a615b] dark:text-[#a6b7b1] mt-1 leading-relaxed">
+                  ¿Querés eliminar <strong className="font-semibold text-[#18332f] dark:text-[#f0ede6]">“{deleteConfirm.title}”</strong> del catálogo? Esta acción no se puede deshacer.
+                </p>
               </div>
             </div>
-            <p className="font-body text-[#4a615b] mb-8">
-              ¿Estás seguro de que querés eliminar "{deleteConfirm.title}"?
-            </p>
-            <div className="flex justify-end gap-4">
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
+                type="button"
+                disabled={deleting}
                 onClick={() => setDeleteConfirm(null)}
-                className="px-6 py-3 text-[#0e5146] font-body font-semibold text-sm hover:underline cursor-pointer"
+                className="h-9 px-4 rounded-xl bg-white dark:bg-[#192824] border border-[#18332f]/15 dark:border-[#293e38] text-sm font-medium text-[#4a615b] dark:text-[#a6b7b1] hover:bg-[#f3f4ef] dark:hover:bg-[#223631] transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] disabled:opacity-50 cursor-pointer"
               >
                 Cancelar
               </button>
               <button
+                type="button"
+                disabled={deleting}
                 onClick={() => handleDelete(deleteConfirm.id)}
-                className="px-6 py-3 bg-[#ba1a1a] text-white font-body font-bold text-sm rounded hover:opacity-90 transition-opacity cursor-pointer"
+                className="h-9 px-4 rounded-xl bg-[#ba1a1a] hover:bg-[#9e1616] text-white text-sm font-semibold inline-flex items-center gap-2 transition-[background-color,transform,opacity] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] disabled:opacity-50 cursor-pointer"
               >
-                Eliminar
+                {deleting && (
+                  <Loader2 size={14} strokeWidth={2} absoluteStrokeWidth className="animate-spin" />
+                )}
+                <span>{deleting ? 'Eliminando...' : 'Eliminar'}</span>
               </button>
             </div>
           </div>
