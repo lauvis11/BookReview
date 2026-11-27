@@ -1,66 +1,76 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from 'react'
 
 export function useAiChat() {
-    const apiUrl = import.meta.env.VITE_API_URL
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
-    const [messages, setMessages] = useState([])
-    const [history, setHistory] = useState([])
+  const apiUrl = import.meta.env.VITE_API_URL
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [history, setHistory] = useState([])
+  const historyRef = useRef(history)
 
-    const sendMessage = useCallback(async (userMessage) => {
-        if (!userMessage.trim()) return;
+  const clearMessages = useCallback(() => {
+    setMessages([])
+    setHistory([])
+    historyRef.current = []
+    setError(null)
+  }, [])
 
-        setMessages(prev => [...prev, { role: "user", text: userMessage }])
-        setLoading(true)
-        setError(null)
+  const sendMessage = useCallback(
+    async (userMessage) => {
+      const trimmed = String(userMessage || '').trim()
+      if (!trimmed) return
 
-        // Añadir el mensaje vacío del modelo que irá llenándose con los chunks
-        setMessages(prev => [...prev, { role: "model", text: "" }])
+      setMessages((prev) => [...prev, { role: 'user', text: trimmed }])
+      setLoading(true)
+      setError(null)
 
-        try {
-            const response = await fetch(`${apiUrl}/ai`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ message: userMessage, history })
-            })
+      // Mensaje vacío del modelo que se irá completando con los chunks de streaming
+      setMessages((prev) => [...prev, { role: 'model', text: '' }])
 
-            if (!response.ok) throw new Error("Fallo al obtener respuesta")
+      try {
+        const response = await fetch(`${apiUrl}/ai`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ message: trimmed, history: historyRef.current }),
+        })
 
-            const reader = response.body.getReader()
-            const decoder = new TextDecoder()
-            let fullText = ""
+        if (!response.ok) throw new Error('Fallo al obtener respuesta')
 
-            while (true) {
-                const { done, value } = await reader.read()
-                if (done) break
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let fullText = ''
 
-                const chunk = decoder.decode(value, { stream: true })
-                fullText += chunk
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
 
-                // Actualizar el último mensaje (el del modelo) con el texto acumulado
-                setMessages(prev => {
-                    const updated = [...prev]
-                    updated[updated.length - 1] = { role: "model", text: fullText }
-                    return updated
-                })
-            }
+          const chunk = decoder.decode(value, { stream: true })
+          fullText += chunk
 
-            // Guardar en el historial solo cuando ya llegó el texto completo
-            setHistory(prev => [
-                ...prev,
-                { role: "user", parts: [{ text: userMessage }] },
-                { role: "model", parts: [{ text: fullText }] }
-            ])
-
-        } catch (err) {
-            setError("No pude conectarme con el asistente. Intenta de nuevo.")
-            // Eliminar el mensaje vacío del modelo si hubo error
-            setMessages(prev => prev.slice(0, -1))
-        } finally {
-            setLoading(false)
+          setMessages((prev) => {
+            const updated = [...prev]
+            updated[updated.length - 1] = { role: 'model', text: fullText }
+            return updated
+          })
         }
-    }, [history, apiUrl])
 
-    return { messages, loading, error, sendMessage }
-}
+        const nextHistory = [
+          ...historyRef.current,
+          { role: 'user', parts: [{ text: trimmed }] },
+          { role: 'model', parts: [{ text: fullText }] },
+        ]
+        historyRef.current = nextHistory
+        setHistory(nextHistory)
+      } catch {
+        setError('No pude conectarme con el asistente. Intentá nuevamente.')
+        setMessages((prev) => prev.slice(0, -1))
+      } finally {
+        setLoading(false)
+      }
+    },
+    [apiUrl]
+  )
+
+  return { messages, loading, error, sendMessage, clearMessages }
+}

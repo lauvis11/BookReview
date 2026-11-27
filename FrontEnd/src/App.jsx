@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { AIChatProvider, useAIChatContext } from './context/AIChatContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import AdminLayout from './components/admin/AdminLayout'
@@ -48,64 +49,71 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   return children
 }
 
+function PublicLayout() {
+  const { isSideOpen } = useAIChatContext()
+
+  return (
+    <div className="relative min-h-screen w-full">
+      <div className={`ai-split-shell min-h-screen flex flex-col ${isSideOpen ? 'is-side-open' : ''}`}>
+        <Navbar />
+        <main className="flex-1 min-w-0">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/catalog" element={<Catalog />} />
+            <Route path="/books/:id" element={<BookDetail />} />
+            <Route path="/user/:id" element={<UserProfile />} />
+            <Route
+              path="/library"
+              element={
+                <ProtectedRoute>
+                  <Library />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+      <ChatWidget />
+    </div>
+  )
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            {/* Auth Routes (No Navbar/Footer) */}
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/recuperar-contraseña" element={<RecoverPassword />} />
-            <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
+        <AIChatProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {/* Auth Routes (No Navbar/Footer) */}
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/recuperar-contraseña" element={<RecoverPassword />} />
+                <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
 
-            {/* Admin Routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireAdmin>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="books" element={<AdminBooks />} />
-              <Route path="users" element={<AdminUsers />} />
-            </Route>
+                {/* Admin Routes */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="books" element={<AdminBooks />} />
+                  <Route path="users" element={<AdminUsers />} />
+                </Route>
 
-            {/* Public Routes */}
-            <Route
-              path="/*"
-              element={
-                <div className="min-h-screen flex flex-col">
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/catalog" element={<Catalog />} />
-                      <Route path="/books/:id" element={<BookDetail />} />
-                      <Route path="/user/:id" element={<UserProfile />} />
-                      <Route
-                        path="/library"
-                        element={
-                          <ProtectedRoute>
-                            <Library />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                  <ChatWidget />
-                </div>
-              }
-            />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+                {/* Public Routes */}
+                <Route path="/*" element={<PublicLayout />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </AIChatProvider>
       </AuthProvider>
     </ErrorBoundary>
   )

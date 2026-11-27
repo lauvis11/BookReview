@@ -6,14 +6,17 @@ function renderMarkdown(text) {
 
   const flushList = () => {
     if (listItems.length > 0) {
-      result.push(<ul key={`list-${result.length}`} className="list-disc pl-4 space-y-1 my-1">{listItems}</ul>)
+      result.push(
+        <ul key={`list-${result.length}`} className="list-disc pl-4 space-y-1.5 my-2">
+          {listItems}
+        </ul>
+      )
       listItems = []
     }
   }
 
   lines.forEach((line, i) => {
-    // Listas con - o *
-    const listMatch = line.match(/^[\-\*]\s+(.+)/)
+    const listMatch = line.match(/^[-*]\s+(.+)/)
     if (listMatch) {
       const content = parseBold(listMatch[1])
       listItems.push(<li key={i}>{content}</li>)
@@ -22,9 +25,13 @@ function renderMarkdown(text) {
     flushList()
 
     if (line.trim() === '') {
-      result.push(<br key={i} />)
+      result.push(<div key={i} className="h-2" aria-hidden="true" />)
     } else {
-      result.push(<p key={i} className="my-0.5">{parseBold(line)}</p>)
+      result.push(
+        <p key={i} className="my-0.5">
+          {parseBold(line)}
+        </p>
+      )
     }
   })
 
@@ -37,7 +44,11 @@ function parseBold(text) {
   const parts = text.split(/(\*\*[^*]+\*\*)/)
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>
+      return (
+        <strong key={i} className="font-semibold text-primary">
+          {part.slice(2, -2)}
+        </strong>
+      )
     }
     return part
   })
@@ -48,18 +59,13 @@ export default function ChatMessage({ message, isStreaming }) {
 
   return (
     <div className={`chat-msg-row ${message.role}`}>
-      {/* Avatar solo para mensajes de Lib */}
-      {!isUser && (
-        <div className="chat-msg-avatar" aria-hidden="true">
-          <img src="/foto-de-asistente-lib.webp" alt="Lib" className="w-full h-full object-cover rounded-full" />
-        </div>
-      )}
-
       <div className="chat-bubble-text">
         {isUser ? message.text : renderMarkdown(message.text)}
-        {/* Cursor parpadeante mientras hace streaming */}
         {isStreaming && (
-          <span className="inline-block w-0.5 h-4 bg-current ml-0.5 align-middle animate-pulse" />
+          <span
+            className="inline-block w-[2px] h-4 bg-primary/80 ml-1 align-middle animate-pulse"
+            aria-hidden="true"
+          />
         )}
       </div>
     </div>

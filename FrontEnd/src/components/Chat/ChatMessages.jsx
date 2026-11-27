@@ -1,55 +1,111 @@
 import { useEffect, useRef } from 'react'
+import { ArrowUpRight, BookOpen, Compass } from 'lucide-react'
+import AiSparkleIcon from '../ui/AiSparkleIcon'
 import ChatMessage from './ChatMessage'
 
-export default function ChatMessages({ messages, loading }) {
+const QUICK_PROMPTS = [
+  {
+    icon: Compass,
+    label: 'Novela atrapante para empezar hoy',
+    prompt: 'Recomiéndame una novela atrapante y fácil de enganchar para empezar a leer hoy.',
+  },
+  {
+    icon: BookOpen,
+    label: 'Algo parecido a 1984 o distopías',
+    prompt: '¿Qué libros parecidos a 1984 o distopías modernas me recomendás leer?',
+  },
+  {
+    icon: AiSparkleIcon,
+    label: 'Un libro corto para el fin de semana',
+    prompt: 'Busco un libro corto, de menos de 250 páginas, ideal para leer en un fin de semana.',
+  },
+]
+
+export default function ChatMessages({ messages, loading, userName, onSelectPrompt }) {
   const bottomRef = useRef(null)
 
-  // Auto-scroll al último mensaje
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // Mostrar el typing indicator solo si loading=true Y el último mensaje del modelo está vacío
   const lastMsg = messages[messages.length - 1]
   const showTyping = loading && (!lastMsg || lastMsg.role !== 'model' || lastMsg.text === '')
+  const trimmedName = userName?.trim()
 
   return (
-    <div className="chat-messages-area" role="log" aria-label="Conversación con Lib" aria-live="polite">
-      {/* Mensaje de bienvenida cuando no hay mensajes */}
+    <div
+      className="chat-messages-area"
+      role="log"
+      aria-label="Conversación con Lib"
+      aria-live="polite"
+    >
       {messages.length === 0 && !loading && (
         <div className="chat-welcome">
-          <div className="chat-welcome-icon" aria-hidden="true">
-            <img src="/foto-de-asistente-lib.webp" alt="Lib" className="w-full h-full object-cover rounded-full" />
+          <h3 className="chat-welcome-title">
+            <span className="block">
+              {trimmedName ? `¡Hola ${trimmedName}!` : '¡Hola!'}
+            </span>
+            <span className="block mt-1">
+              ¿Qué te gustaría{' '}
+              <span className="italic font-medium text-secondary-dark">leer hoy?</span>
+            </span>
+          </h3>
+
+          <div className="chat-quick-prompts">
+            {QUICK_PROMPTS.map((item) => {
+              const Icon = item.icon
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => onSelectPrompt?.(item.prompt)}
+                  className="chat-quick-prompt-btn"
+                >
+                  <span className="chat-quick-prompt-left">
+                    <Icon
+                      size={15}
+                      strokeWidth={1.85}
+                      absoluteStrokeWidth
+                      aria-hidden="true"
+                      className="text-primary/80 shrink-0"
+                    />
+                    <span>{item.label}</span>
+                  </span>
+                  <ArrowUpRight
+                    size={14}
+                    strokeWidth={1.9}
+                    absoluteStrokeWidth
+                    aria-hidden="true"
+                    className="chat-quick-prompt-arrow shrink-0"
+                  />
+                </button>
+              )
+            })}
           </div>
-          <h3>¡Hola! Soy Lib</h3>
-          <p>
-            El asistente de BookReview. Puedo ayudarte a descubrir libros,
-            hablar de reseñas o recomendarte tu próxima lectura.
-          </p>
         </div>
       )}
 
-      {/* Lista de mensajes — se omiten los del modelo aún sin texto (esperando primer chunk) */}
       {messages.map((msg, index) => {
         if (msg.role === 'model' && msg.text === '') return null
         return (
-          <ChatMessage key={index} message={msg} isStreaming={loading && index === messages.length - 1 && msg.role === 'model'} />
+          <ChatMessage
+            key={index}
+            message={msg}
+            isStreaming={loading && index === messages.length - 1 && msg.role === 'model'}
+          />
         )
       })}
 
-      {/* Indicador de escritura — solo mientras espera el primer chunk */}
       {showTyping && (
         <div className="typing-indicator" aria-label="Lib está escribiendo">
-          <div className="chat-msg-avatar" aria-hidden="true">
-            <img src="/foto-de-asistente-lib.webp" alt="Lib" className="w-full h-full object-cover rounded-full" />
-          </div>
           <div className="typing-dots">
-            <span /><span /><span />
+            <span />
+            <span />
+            <span />
           </div>
         </div>
       )}
 
-      {/* Ancla para el auto-scroll */}
       <div ref={bottomRef} />
     </div>
   )

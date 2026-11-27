@@ -1,15 +1,27 @@
-import { useState, useRef, useEffect } from 'react'
+import { forwardRef, useState, useRef, useEffect, useImperativeHandle } from 'react'
+import { ArrowUp } from 'lucide-react'
 
-export default function ChatInput({ onSend, loading }) {
+const ChatInput = forwardRef(function ChatInput({ onSend, loading }, ref) {
   const [text, setText] = useState('')
   const textareaRef = useRef(null)
 
-  // Auto-resize del textarea según contenido
+  useImperativeHandle(ref, () => ({
+    focus: () => textareaRef.current?.focus(),
+  }))
+
+  // Auto-resize exacto: 22px en una sola línea cuando está vacío; crece solo al escribir
   useEffect(() => {
     const el = textareaRef.current
     if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 100)}px`
+    if (!text) {
+      el.style.height = '22px'
+      el.style.overflowY = 'hidden'
+      return
+    }
+    el.style.height = '22px'
+    const nextHeight = Math.min(el.scrollHeight, 120)
+    el.style.height = `${nextHeight}px`
+    el.style.overflowY = el.scrollHeight > 120 ? 'auto' : 'hidden'
   }, [text])
 
   function handleSend() {
@@ -17,19 +29,17 @@ export default function ChatInput({ onSend, loading }) {
     if (!trimmed || loading) return
     onSend(trimmed)
     setText('')
-    // Resetear altura del textarea
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = '22px'
+      textareaRef.current.style.overflowY = 'hidden'
     }
   }
 
   function handleKeyDown(e) {
-    // Enter sin Shift → enviar
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
-    // Shift+Enter → salto de línea (comportamiento por defecto del textarea)
   }
 
   const canSend = text.trim().length > 0 && !loading
@@ -47,19 +57,22 @@ export default function ChatInput({ onSend, loading }) {
           onKeyDown={handleKeyDown}
           placeholder="Preguntale algo a Lib..."
           disabled={loading}
-          aria-label="Escribe tu mensaje"
+          aria-label="Escribí tu mensaje para Lib"
         />
         <button
           id="chat-send-btn"
+          type="button"
           className="chat-send-btn"
           onClick={handleSend}
           disabled={!canSend}
           aria-label="Enviar mensaje"
           title="Enviar"
         >
-          <span className="material-symbols-outlined">send</span>
+          <ArrowUp size={17} strokeWidth={2.2} absoluteStrokeWidth aria-hidden="true" />
         </button>
       </div>
     </div>
   )
-}
+})
+
+export default ChatInput
