@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Star } from 'lucide-react'
+import { useAIChatContext } from '../../context/AIChatContext'
 import {
   CoverHabitosAtomicos,
   CoverIkigai,
@@ -131,6 +132,7 @@ function StarRow({ rate }) {
 }
 
 export default function BestSellersSection({ books = BEST_SELLERS }) {
+  const { isSideOpen } = useAIChatContext()
   const sectionRef = useRef(null)
   const [isVisible, setIsVisible] = useState(() => typeof IntersectionObserver === 'undefined')
   const [selectedIdx, setSelectedIdx] = useState(0)
@@ -209,14 +211,20 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-4 sm:gap-5 lg:gap-10 items-stretch">
-        {/* Lista numerada 01–05: fila horizontal de números arriba en < lg, lista completa vertical a la izquierda en lg+ */}
+      <div
+        className={`grid grid-cols-1 gap-4 sm:gap-5 items-stretch ${
+          isSideOpen ? '' : 'lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-10'
+        }`}
+      >
+        {/* Lista numerada 01–05: fila horizontal arriba en responsive o con side chat abierto; lista vertical a la izquierda en lg+ */}
         <div
           role="tablist"
           aria-label="Lista de Best Sellers"
-          className="relative grid grid-cols-5 h-[50px] sm:h-[54px] lg:flex lg:flex-col lg:h-[400px] border-y border-outline-variant/45 overflow-hidden"
+          className={`relative grid grid-cols-5 h-[50px] sm:h-[54px] border-y border-outline-variant/45 overflow-hidden ${
+            isSideOpen ? '' : 'lg:flex lg:flex-col lg:h-[400px]'
+          }`}
         >
-          {/* Indicador de focus deslizante horizontal (< lg) */}
+          {/* Indicador de focus deslizante horizontal */}
           <div
             aria-hidden="true"
             style={{
@@ -224,7 +232,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
               transform: `translate3d(${selectedIdx * 100}%, 0, 0)`,
               transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
-            className="lg:hidden pointer-events-none absolute inset-y-0 left-0 z-0 bg-[#eae6da]/90"
+            className={`${isSideOpen ? '' : 'lg:hidden'} pointer-events-none absolute inset-y-0 left-0 z-0 bg-[#eae6da]/90`}
           >
             <span
               className="absolute bottom-0 inset-x-2.5 h-[2.5px] bg-primary"
@@ -232,21 +240,23 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
             />
           </div>
 
-          {/* Indicador de focus deslizante vertical (lg+) */}
-          <div
-            aria-hidden="true"
-            style={{
-              height: `${100 / books.length}%`,
-              transform: `translate3d(0, ${selectedIdx * 100}%, 0)`,
-              transition: 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-            className="hidden lg:block pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90"
-          >
-            <span
-              className="absolute left-0 inset-y-2.5 w-[3px] bg-primary"
-              style={{ borderRadius: '0 9999px 9999px 0' }}
-            />
-          </div>
+          {/* Indicador de focus deslizante vertical (solo desktop sin side chat) */}
+          {!isSideOpen && (
+            <div
+              aria-hidden="true"
+              style={{
+                height: `${100 / books.length}%`,
+                transform: `translate3d(0, ${selectedIdx * 100}%, 0)`,
+                transition: 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+              className="hidden lg:block pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90"
+            >
+              <span
+                className="absolute left-0 inset-y-2.5 w-[3px] bg-primary"
+                style={{ borderRadius: '0 9999px 9999px 0' }}
+              />
+            </div>
+          )}
 
           {books.map((book, idx) => {
             const isSelected = idx === selectedIdx
@@ -258,12 +268,16 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 aria-selected={isSelected}
                 aria-label={`Puesto ${book.rank}: ${book.title}`}
                 onClick={() => handleSelect(idx)}
-                className={`group relative z-10 w-full h-full lg:h-auto lg:flex-1 flex items-center justify-center lg:justify-start lg:gap-4 px-1 lg:px-4 text-center lg:text-left border-r border-outline-variant/45 last:border-r-0 lg:border-r-0 lg:border-b lg:last:border-b-0 transition-colors duration-200 cursor-pointer [-webkit-tap-highlight-color:transparent] ${
-                  isSelected ? 'bg-transparent' : 'hover:bg-[#eae6da]/40'
-                }`}
+                className={`group relative z-10 w-full h-full flex items-center justify-center px-1 text-center border-r border-outline-variant/45 last:border-r-0 transition-colors duration-200 cursor-pointer [-webkit-tap-highlight-color:transparent] ${
+                  isSideOpen
+                    ? ''
+                    : 'lg:h-auto lg:flex-1 lg:justify-start lg:gap-4 lg:px-4 lg:text-left lg:border-r-0 lg:border-b lg:last:border-b-0'
+                } ${isSelected ? 'bg-transparent' : 'hover:bg-[#eae6da]/40'}`}
               >
                 <span
-                  className={`font-bestseller-display italic text-[20px] sm:text-[22px] lg:text-[24px] font-medium lg:w-9 shrink-0 leading-none transition-colors duration-300 ${
+                  className={`font-bestseller-display italic text-[20px] sm:text-[22px] font-medium shrink-0 leading-none transition-colors duration-300 ${
+                    isSideOpen ? '' : 'lg:text-[24px] lg:w-9'
+                  } ${
                     isSelected
                       ? 'text-secondary-dark'
                       : 'text-primary/40 group-hover:text-primary/75'
@@ -271,22 +285,26 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 >
                   {book.rank}
                 </span>
-                <div className="hidden lg:block min-w-0 flex-1">
-                  <p
-                    className={`font-hero-sans text-[15px] font-semibold truncate transition-colors duration-300 ${
-                      isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary'
-                    }`}
-                  >
-                    {book.title}
-                  </p>
-                  <p className="font-hero-sans text-xs text-on-surface-variant truncate">
-                    {book.author}
-                  </p>
-                </div>
-                <span className="hidden lg:inline-flex items-center gap-1 shrink-0 font-hero-sans text-xs font-semibold text-on-surface-variant tabular-nums">
-                  <Star size={12} className="fill-[#d9973b] text-[#d9973b]" aria-hidden="true" />
-                  {book.rate.toFixed(1)}
-                </span>
+                {!isSideOpen && (
+                  <>
+                    <div className="hidden lg:block min-w-0 flex-1">
+                      <p
+                        className={`font-hero-sans text-[15px] font-semibold truncate transition-colors duration-300 ${
+                          isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary'
+                        }`}
+                      >
+                        {book.title}
+                      </p>
+                      <p className="font-hero-sans text-xs text-on-surface-variant truncate">
+                        {book.author}
+                      </p>
+                    </div>
+                    <span className="hidden lg:inline-flex items-center gap-1 shrink-0 font-hero-sans text-xs font-semibold text-on-surface-variant tabular-nums">
+                      <Star size={12} className="fill-[#d9973b] text-[#d9973b]" aria-hidden="true" />
+                      {book.rate.toFixed(1)}
+                    </span>
+                  </>
+                )}
               </button>
             )
           })}
@@ -295,10 +313,14 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         {/* Vista previa editorial con dimensiones fijas y transición suave entre posiciones */}
         <div
           role="tabpanel"
-          className="h-[495px] sm:h-[535px] lg:h-[400px] lg:rounded-2xl lg:bg-[#eae6da]/75 lg:border lg:border-[#d6d0c0]/80 lg:p-8 overflow-hidden"
+          className={`h-[495px] sm:h-[535px] overflow-hidden ${
+            isSideOpen
+              ? 'rounded-2xl bg-[#eae6da]/60 border border-[#d6d0c0]/70'
+              : 'lg:h-[400px] lg:rounded-2xl lg:bg-[#eae6da]/75 lg:border lg:border-[#d6d0c0]/80 lg:p-8'
+          }`}
         >
-          {/* Responsive (< lg): Slide horizontal direccional sincronizado con los números 01–05 */}
-          <div className="lg:hidden h-full overflow-hidden">
+          {/* Vista compacta / responsive: Slide horizontal direccional sincronizado con los números 01–05 */}
+          <div className={`${isSideOpen ? '' : 'lg:hidden'} h-full overflow-hidden`}>
             <div
               className="flex h-full will-change-transform"
               style={{
@@ -382,54 +404,56 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
             </div>
           </div>
 
-          {/* Desktop (lg+): Portada a la izquierda + ficha editorial a la derecha */}
-          <div className="hidden lg:flex h-full flex-row items-center gap-8">
-            <div
-              key={`cover-${active.rank}`}
-              className="w-[186px] shrink-0 bestseller-cover-in"
-            >
-              <BookCoverFrame book={active} />
-            </div>
+          {/* Desktop (lg+ sin side chat): Portada a la izquierda + ficha editorial a la derecha */}
+          {!isSideOpen && (
+            <div className="hidden lg:flex h-full flex-row items-center gap-8">
+              <div
+                key={`cover-${active.rank}`}
+                className="w-[186px] shrink-0 bestseller-cover-in"
+              >
+                <BookCoverFrame book={active} />
+              </div>
 
-            <div
-              key={`info-${active.rank}`}
-              className="min-w-0 min-h-0 flex-1 h-full flex flex-col justify-between text-left py-1 bestseller-text-in"
-            >
-              <div className="min-w-0">
-                <span className="block truncate font-hero-sans text-[11px] font-bold uppercase tracking-[0.16em] text-secondary-dark">
-                  Best Seller #{active.rank} · {active.genre}
-                </span>
-                <h3 className="mt-2 font-bestseller-display text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2">
-                  {active.title}
-                </h3>
-                <p className="mt-1.5 font-hero-sans text-sm font-medium text-on-surface-variant truncate">
-                  {active.author}
-                </p>
-                <div className="mt-2.5 flex justify-start">
-                  <StarRow rate={active.rate} />
+              <div
+                key={`info-${active.rank}`}
+                className="min-w-0 min-h-0 flex-1 h-full flex flex-col justify-between text-left py-1 bestseller-text-in"
+              >
+                <div className="min-w-0">
+                  <span className="block truncate font-hero-sans text-[11px] font-bold uppercase tracking-[0.16em] text-secondary-dark">
+                    Best Seller #{active.rank} · {active.genre}
+                  </span>
+                  <h3 className="mt-2 font-bestseller-display text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2">
+                    {active.title}
+                  </h3>
+                  <p className="mt-1.5 font-hero-sans text-sm font-medium text-on-surface-variant truncate">
+                    {active.author}
+                  </p>
+                  <div className="mt-2.5 flex justify-start">
+                    <StarRow rate={active.rate} />
+                  </div>
+                  <p className="mt-3.5 font-hero-sans text-[14px] leading-relaxed text-on-surface-variant line-clamp-4">
+                    {active.synopsis}
+                  </p>
                 </div>
-                <p className="mt-3.5 font-hero-sans text-[14px] leading-relaxed text-on-surface-variant line-clamp-4">
-                  {active.synopsis}
-                </p>
-              </div>
 
-              <div className="pt-4">
-                <Link
-                  to={activeHref}
-                  className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
-                >
-                  <span>Descubrir este libro</span>
-                  <ArrowRight
-                    size={14}
-                    strokeWidth={2}
-                    absoluteStrokeWidth
-                    aria-hidden="true"
-                    className="transition-transform duration-150 group-hover/btn:translate-x-0.5"
-                  />
-                </Link>
+                <div className="pt-4">
+                  <Link
+                    to={activeHref}
+                    className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
+                  >
+                    <span>Descubrir este libro</span>
+                    <ArrowRight
+                      size={14}
+                      strokeWidth={2}
+                      absoluteStrokeWidth
+                      aria-hidden="true"
+                      className="transition-transform duration-150 group-hover/btn:translate-x-0.5"
+                    />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useAIChatContext } from '../../context/AIChatContext'
 import { getBooks } from '../../api/books'
 import HeroBookShowcase from './HeroBookShowcase'
 
 export default function Hero() {
   const { user, isAuthenticated } = useAuth()
+  const { isSideOpen } = useAIChatContext()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
@@ -82,13 +84,31 @@ export default function Hero() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-6 md:px-12 pt-32 md:pt-40 lg:pt-44 pb-20 md:pb-28 lg:pb-32">
-      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12 lg:items-stretch relative">
+    <section
+      className={`mx-auto w-full max-w-[1440px] px-6 md:px-12 ${
+        isSideOpen
+          ? 'pt-28 md:pt-32 pb-16 md:pb-20'
+          : 'pt-32 md:pt-40 lg:pt-44 pb-20 md:pb-28 lg:pb-32'
+      }`}
+    >
+      <div
+        className={`grid gap-10 relative ${
+          isSideOpen ? 'grid-cols-1' : 'lg:grid-cols-[0.8fr_1.2fr] lg:gap-12 lg:items-stretch'
+        }`}
+      >
         {/* Columna Izquierda: Contenido y Buscador (borde superior e inferior alineados con los arcos) */}
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col lg:justify-between text-center lg:text-left">
+        <div
+          className={`order-2 relative z-20 flex flex-col text-center ${
+            isSideOpen ? '' : 'lg:order-1 lg:justify-between lg:text-left'
+          }`}
+        >
           <div>
             {isAuthenticated && user?.name ? (
-              <h1 className="font-hero-display max-w-170 mx-auto lg:mx-0 text-[34px] min-[400px]:text-4xl sm:text-5xl lg:text-[50px] xl:text-[58px] font-semibold leading-[1.04] tracking-[-0.02em] text-primary lg:-mt-2">
+              <h1
+                className={`font-hero-display max-w-170 mx-auto text-[34px] min-[400px]:text-4xl sm:text-5xl font-semibold leading-[1.04] tracking-[-0.02em] text-primary ${
+                  isSideOpen ? '' : 'lg:mx-0 lg:text-[50px] xl:text-[58px] lg:-mt-2'
+                }`}
+              >
                 <span className="hero-slide-track">
                   <span className="hero-from-left whitespace-nowrap" style={{ animationDelay: '40ms' }}>
                     ¡Hola, {user.name}!
@@ -102,10 +122,16 @@ export default function Hero() {
                 </span>
               </h1>
             ) : (
-              <h1 className="font-hero-display font-semibold text-primary leading-[1.02] tracking-[-0.02em] lg:-mt-2">
+              <h1
+                className={`font-hero-display font-semibold text-primary leading-[1.02] tracking-[-0.02em] ${
+                  isSideOpen ? '' : 'lg:-mt-2'
+                }`}
+              >
                 <span className="hero-slide-track">
                   <span
-                    className="hero-from-left text-[40px] min-[400px]:text-[44px] sm:text-[56px] lg:text-[54px] xl:text-[66px] whitespace-nowrap"
+                    className={`hero-from-left text-[40px] min-[400px]:text-[44px] sm:text-[56px] whitespace-nowrap ${
+                      isSideOpen ? '' : 'lg:text-[54px] xl:text-[66px]'
+                    }`}
                     style={{ animationDelay: '40ms' }}
                   >
                     Encuentra tu
@@ -113,7 +139,9 @@ export default function Hero() {
                 </span>
                 <span className="hero-slide-track">
                   <span
-                    className="hero-from-left italic font-medium text-[40px] min-[400px]:text-[44px] sm:text-[56px] lg:text-[54px] xl:text-[66px] text-secondary-dark whitespace-nowrap"
+                    className={`hero-from-left italic font-medium text-[40px] min-[400px]:text-[44px] sm:text-[56px] text-secondary-dark whitespace-nowrap ${
+                      isSideOpen ? '' : 'lg:text-[54px] xl:text-[66px]'
+                    }`}
                     style={{ animationDelay: '150ms' }}
                   >
                     próxima lectura
@@ -122,7 +150,7 @@ export default function Hero() {
               </h1>
             )}
 
-            <div className="hero-slide-track mt-5 max-w-[440px] mx-auto lg:mx-0">
+            <div className={`hero-slide-track mt-5 max-w-[440px] mx-auto ${isSideOpen ? '' : 'lg:mx-0'}`}>
               <p
                 className="hero-from-left font-hero-sans text-[14.5px] sm:text-[15.5px] leading-[1.7] tracking-[-0.005em] text-on-surface-variant/90"
                 style={{ animationDelay: '260ms' }}
@@ -134,7 +162,9 @@ export default function Hero() {
 
           <div
             ref={searchBoxRef}
-            className="hero-search-enter relative mt-7 lg:mt-6 w-full max-w-[470px] mx-auto lg:mx-0"
+            className={`hero-search-enter relative mt-7 w-full max-w-[470px] mx-auto ${
+              isSideOpen ? '' : 'lg:mt-6 lg:mx-0'
+            }`}
             style={{ animationDelay: '340ms' }}
           >
             <form
@@ -260,12 +290,16 @@ export default function Hero() {
         </div>
 
         {/* Columna Derecha: Carrusel de 3 portadas con arcos decorativos */}
-        <div className="order-1 lg:order-2 relative z-10 flex items-center lg:items-end justify-center lg:justify-end">
+        <div
+          className={`order-1 relative z-10 flex items-center justify-center ${
+            isSideOpen ? '' : 'lg:order-2 lg:items-end lg:justify-end'
+          }`}
+        >
           <div
             className="hero-from-right w-full"
             style={{ animationDelay: '80ms' }}
           >
-            <HeroBookShowcase />
+            <HeroBookShowcase compact={isSideOpen} />
           </div>
         </div>
       </div>

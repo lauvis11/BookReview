@@ -310,7 +310,7 @@ const ARCH_STYLES = [
 
 const AUTOPLAY_INTERVAL_MS = 3000
 
-export default function HeroBookShowcase({ slides = SLIDES }) {
+export default function HeroBookShowcase({ slides = SLIDES, compact = false }) {
   const [activeSlide, setActiveSlide] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [hasFinishedAutoplay, setHasFinishedAutoplay] = useState(false)
@@ -339,7 +339,9 @@ export default function HeroBookShowcase({ slides = SLIDES }) {
 
   return (
     <div
-      className="relative w-full max-w-[780px] mx-auto lg:ml-auto lg:mr-0 select-none"
+      className={`relative w-full mx-auto select-none ${
+        compact ? 'max-w-[580px]' : 'max-w-[780px] lg:ml-auto lg:mr-0'
+      }`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -403,7 +405,9 @@ export default function HeroBookShowcase({ slides = SLIDES }) {
 
       {/* 3 puntos indicadores del carrusel: en desktop flotan debajo sin desplazar la base de los arcos */}
       <div
-        className="mt-4 lg:mt-0 lg:absolute lg:inset-x-0 lg:top-full lg:pt-4 flex items-center justify-center gap-1"
+        className={`mt-4 flex items-center justify-center gap-1 ${
+          compact ? '' : 'lg:mt-0 lg:absolute lg:inset-x-0 lg:top-full lg:pt-4'
+        }`}
         role="tablist"
         aria-label="Seleccionar grupo de portadas"
       >
