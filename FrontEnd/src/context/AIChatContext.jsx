@@ -5,17 +5,29 @@ import { useAiChat } from '../hooks/useAiChat'
 const AIChatContext = createContext(null)
 
 export function AIChatProvider({ children }) {
-  // 'closed' | 'side' (preparado para sumar 'modal' en el paso 2)
+  // 'closed' | 'side' | 'modal'
   const [chatMode, setChatMode] = useState('closed')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isAuthenticated } = useAuth()
   const { messages, loading, error, sendMessage, clearMessages } = useAiChat()
 
   const isSideOpen = chatMode === 'side'
+  const isModalOpen = chatMode === 'modal'
+  const isAnyOpen = chatMode !== 'closed'
 
   const openSideChat = useCallback(
     (initialMessage) => {
       setChatMode('side')
+      if (initialMessage && isAuthenticated) {
+        sendMessage(initialMessage)
+      }
+    },
+    [isAuthenticated, sendMessage]
+  )
+
+  const openModalChat = useCallback(
+    (initialMessage) => {
+      setChatMode('modal')
       if (initialMessage && isAuthenticated) {
         sendMessage(initialMessage)
       }
@@ -44,18 +56,22 @@ export function AIChatProvider({ children }) {
     return () => window.removeEventListener('mobile-menu-toggle', handleMobileMenu)
   }, [])
 
-  // Escucha el evento global `open-ai-chat` (botones de recomendaciones / BookDetail / Home)
+  // Escucha `open-ai-chat`: los accesos que no son la burbuja abren la vista expandida a pantalla completa
   useEffect(() => {
     const handleCustomOpen = (e) => {
-      openSideChat(e.detail?.message)
+      if (e.detail?.mode === 'side') {
+        openSideChat(e.detail?.message)
+      } else {
+        openModalChat(e.detail?.message)
+      }
     }
     window.addEventListener('open-ai-chat', handleCustomOpen)
     return () => window.removeEventListener('open-ai-chat', handleCustomOpen)
-  }, [openSideChat])
+  }, [openModalChat, openSideChat])
 
-  // Escape cierra el side chat
+  // Escape cierra tanto el side chat como la vista expandida
   useEffect(() => {
-    if (!isSideOpen) return
+    if (!isAnyOpen) return
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setChatMode('closed')
@@ -63,11 +79,18 @@ export function AIChatProvider({ children }) {
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isSideOpen])
+  }, [isAnyOpen])
 
-  // Bloquea el scroll del body solo en mobile/tablet (< 1024px) cuando el drawer está abierto
+  // Bloquea scroll del body en vista expandida siempre, y en side chat solo en mobile/tablet (< 1024px)
   useEffect(() => {
-    if (!isSideOpen) return
+    if (!isAnyOpen) return
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = ''
+      }
+    }
+
     const mq = window.matchMedia('(max-width: 1023px)')
     const syncBodyScroll = () => {
       document.body.style.overflow = mq.matches ? 'hidden' : ''
@@ -78,13 +101,15 @@ export function AIChatProvider({ children }) {
       mq.removeEventListener('change', syncBodyScroll)
       document.body.style.overflow = ''
     }
-  }, [isSideOpen])
+  }, [isAnyOpen, isModalOpen])
 
   return (
     <AIChatContext.Provider
       value={{
         chatMode,
         isSideOpen,
+        isModalOpen,
+        isAnyOpen,
         mobileMenuOpen,
         messages,
         loading,
@@ -92,6 +117,7 @@ export function AIChatProvider({ children }) {
         sendMessage,
         clearMessages,
         openSideChat,
+        openModalChat,
         closeChat,
         toggleSideChat,
       }}
