@@ -68,25 +68,50 @@ export class ProfileModel{
     }
 
     static async update({id, input}){
+        const { name, ...profileFields } = input
+
+        if (typeof name === 'string') {
+            const trimmedName = name.trim()
+            const [existing] = await connection.query(
+                `SELECT BIN_TO_UUID(id) id FROM users
+                 WHERE name = ? AND id != UUID_TO_BIN(?)
+                 LIMIT 1;`,
+                [trimmedName, id]
+            )
+            if (existing.length > 0) {
+                return { conflict: 'name' }
+            }
+
+            await connection.query(
+                `UPDATE users SET name = ?
+                 WHERE id = UUID_TO_BIN(?);`,
+                [trimmedName, id]
+            )
+        }
+
         // Whitelist de columnas permitidas para prevenir SQL injection
         const ALLOWED_COLUMNS = ['profile_img', 'bio']
-        const safeEntries = Object.entries(input).filter(([key]) => ALLOWED_COLUMNS.includes(key))
+        const safeEntries = Object.entries(profileFields).filter(([key]) => ALLOWED_COLUMNS.includes(key))
 
-        if (safeEntries.length === 0) return false
+        if (safeEntries.length > 0) {
+            const setClauses = safeEntries.map(([key]) => `\`${key}\` = ?`)
+            const values = safeEntries.map(([, value]) => value)
+            values.push(id)
 
-        const setClauses = safeEntries.map(([key]) => `\`${key}\` = ?`)
-        const values = safeEntries.map(([, value]) => value)
-        values.push(id)
+            await connection.query(
+                `UPDATE user_profile SET ${setClauses.join(', ')}
+                WHERE user_id = UUID_TO_BIN(?);
+                `, values
+            )
+        }
 
-        await connection.query(
-            `UPDATE user_profile SET ${setClauses.join(', ')}
-            WHERE user_id = UUID_TO_BIN(?);
-            `, values
-        )
+        if (typeof name !== 'string' && safeEntries.length === 0) return false
 
         const [dataUpdate] = await connection.query(
-            `SELECT BIN_TO_UUID(user_id) id, profile_img, bio FROM user_profile
-            WHERE user_id = UUID_TO_BIN(?);
+            `SELECT BIN_TO_UUID(up.user_id) id, u.name, up.profile_img, up.bio
+             FROM user_profile up
+             JOIN users u ON u.id = up.user_id
+             WHERE up.user_id = UUID_TO_BIN(?);
             `, [id]
         )
 

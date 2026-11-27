@@ -1,19 +1,26 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
+import { updateEmail } from '../api/auth'
 import { useAuth } from '../context/AuthContext'
 import { PREDEFINED_AVATARS } from '../utils/avatars'
 
 export default function UserProfile() {
   const { id } = useParams()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, updateUser } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(location.state?.openEdit || false)
+  const [editing, setEditing] = useState(Boolean(location.state?.openEdit || location.state?.requireProfileName))
+  const [requireProfileName, setRequireProfileName] = useState(Boolean(location.state?.requireProfileName))
+  const [profileName, setProfileName] = useState('')
   const [bio, setBio] = useState('')
   const [profileImg, setProfileImg] = useState('')
+  const [recoveryEmail, setRecoveryEmail] = useState(user?.email || '')
+  const [nameError, setNameError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
   const [activeTab, setActiveTab] = useState('reading')
   const [currentPage, setCurrentPage] = useState(1)
   
@@ -48,8 +55,14 @@ export default function UserProfile() {
     try {
       const { data } = await getProfile(id)
       setProfile(data)
+      const isTempName = /^lector_[a-f0-9]{8}$/i.test(data.name || '')
+      setProfileName(requireProfileName || isTempName ? '' : (data.name || ''))
       setBio(data.bio || '')
       setProfileImg(data.profile_img || '')
+      if (isOwn && isTempName && !requireProfileName) {
+        setRequireProfileName(true)
+        setEditing(true)
+      }
 
       const readingBooks   = data.reading      || []
       const completedBooks = data.completed     || []
@@ -72,17 +85,64 @@ export default function UserProfile() {
   }
 
   const handleSave = async () => {
+    setNameError('')
+    setEmailError('')
+
+    const trimmedName = profileName.trim()
+    const needsNameUpdate = requireProfileName || trimmedName !== (profile?.name || '')
+    if (needsNameUpdate) {
+      if (trimmedName.length < 3 || trimmedName.length > 50) {
+        setNameError('Ingresá un nombre de perfil de entre 3 y 50 caracteres.')
+        return
+      }
+    }
+
+    setSavingProfile(true)
     try {
+      if (!requireProfileName) {
+        const trimmedEmail = recoveryEmail.trim().toLowerCase()
+        const currentEmail = (user?.email || '').trim().toLowerCase()
+        if (trimmedEmail && trimmedEmail !== currentEmail) {
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+            setEmailError('Ingresá un correo electrónico válido.')
+            setSavingProfile(false)
+            return
+          }
+          const { data: emailRes } = await updateEmail({ email: trimmedEmail })
+          if (updateUser) updateUser({ email: emailRes.email })
+        }
+      }
+
       const updates = {}
+      if (needsNameUpdate) updates.name = trimmedName
       if (bio !== profile.bio) updates.bio = bio
       if (profileImg !== profile.profile_img) updates.profile_img = profileImg
-      if (Object.keys(updates).length > 0) { 
-        await updateProfile(updates); 
-        fetchProfile();
-        if (updates.profile_img && updateUser) updateUser({ profile_img: updates.profile_img });
+
+      if (Object.keys(updates).length > 0) {
+        const { data: updatedProfile } = await updateProfile(updates)
+        if (updateUser) {
+          const authPatch = {}
+          if (updatedProfile?.name) authPatch.name = updatedProfile.name
+          if (updatedProfile?.profile_img) authPatch.profile_img = updatedProfile.profile_img
+          if (Object.keys(authPatch).length > 0) updateUser(authPatch)
+        }
+        await fetchProfile()
+      }
+
+      if (requireProfileName) {
+        setRequireProfileName(false)
+        navigate(location.pathname, { replace: true, state: {} })
       }
       setEditing(false)
-    } catch (_) {}
+    } catch (err) {
+      if (err.response?.data?.field === 'name') {
+        setNameError(err.response.data.message)
+      } else if (err.response?.data?.message) {
+        setEmailError(err.response.data.message)
+      }
+    } finally {
+      setSavingProfile(false)
+    }
   }
 
   // Calculate Top Genres from all books
@@ -267,8 +327,16 @@ export default function UserProfile() {
               </div>
               
               {isOwn && (
-                <button onClick={() => setEditing(true)}
-                  className="inline-flex self-center md:self-start items-center justify-center gap-2 px-6 py-2.5 bg-primary text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-md hover:shadow-lg hover:bg-primary-container active:scale-95 transition-all duration-200 cursor-pointer">
+                <button
+                  onClick={() => {
+                    setProfileName(profile?.name || '')
+                    setRecoveryEmail(user?.email || '')
+                    setNameError('')
+                    setEmailError('')
+                    setEditing(true)
+                  }}
+                  className="inline-flex self-center md:self-start items-center justify-center gap-2 px-6 py-2.5 bg-primary text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-md hover:shadow-lg hover:bg-primary-container active:scale-95 transition-all duration-200 cursor-pointer"
+                >
                   <span className="material-symbols-outlined text-sm">edit</span>
                   Editar Perfil
                 </button>
@@ -293,7 +361,9 @@ export default function UserProfile() {
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-primary/40 backdrop-blur-sm transition-opacity"
-            onClick={() => setEditing(false)}
+            onClick={() => {
+              if (!requireProfileName && !savingProfile) setEditing(false)
+            }}
           />
           
           {/* Modal Content */}
@@ -302,18 +372,59 @@ export default function UserProfile() {
             <div className="bg-primary px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary-light">manage_accounts</span>
-                <h3 className="font-headline text-xl font-bold text-white">Editar Perfil</h3>
+                <div>
+                  <h3 className="font-headline text-xl font-bold text-white">
+                    {requireProfileName ? 'Completá tu perfil' : 'Editar Perfil'}
+                  </h3>
+                  {requireProfileName && (
+                    <p className="font-body text-xs text-forest-muted">
+                      Elegí tu nombre de perfil para empezar a usar BookReview.
+                    </p>
+                  )}
+                </div>
               </div>
-              <button 
-                onClick={() => setEditing(false)}
-                className="text-forest-muted hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
+              {!requireProfileName && (
+                <button 
+                  onClick={() => setEditing(false)}
+                  className="text-forest-muted hover:text-white transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              )}
             </div>
             
             {/* Body */}
-            <div className="p-6 md:p-8 space-y-8 max-h-[75vh] overflow-y-auto">
+            <div className="p-6 md:p-8 space-y-6 max-h-[75vh] overflow-y-auto overscroll-contain">
+              {/* Profile Name (Obligatorio al crear cuenta) */}
+              <div className="relative group">
+                <label
+                  htmlFor="profile-display-name"
+                  className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary"
+                >
+                  Nombre de perfil {requireProfileName && <span className="text-error">*</span>}
+                </label>
+                <input
+                  id="profile-display-name"
+                  type="text"
+                  value={profileName}
+                  onChange={(e) => {
+                    setProfileName(e.target.value)
+                    setNameError('')
+                  }}
+                  maxLength={50}
+                  autoFocus={requireProfileName}
+                  placeholder="Tu nombre visible en BookReview (3 a 50 caracteres)"
+                  className={`w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white border rounded-lg focus:ring-2 font-body px-4 text-sm text-on-surface transition-[background-color,border-color,box-shadow] duration-150 ${
+                    nameError
+                      ? 'border-error focus:border-error focus:ring-error/20'
+                      : 'border-outline-variant/60 focus:border-secondary focus:ring-secondary/30'
+                  }`}
+                />
+                {nameError && (
+                  <p className="mt-1.5 text-xs font-body text-error">{nameError}</p>
+                )}
+              </div>
+
               {/* Avatar Selection */}
               <div>
                 <label className="block font-label text-xs uppercase tracking-widest text-outline mb-4">
@@ -323,6 +434,7 @@ export default function UserProfile() {
                   {PREDEFINED_AVATARS.map((avatar, index) => (
                     <button
                       key={index}
+                      type="button"
                       onClick={() => setProfileImg(avatar)}
                       className={`relative w-16 h-16 rounded-full transition-all duration-300 ${
                         profileImg === avatar 
@@ -356,22 +468,54 @@ export default function UserProfile() {
                 />
                 <p className="absolute bottom-3 right-4 text-[10px] text-outline font-medium">{bio.length}/300</p>
               </div>
+
+              {/* Recovery Email (visible al editar un perfil ya existente) */}
+              {!requireProfileName && (
+                <div className="relative group">
+                  <label
+                    htmlFor="profile-recovery-email"
+                    className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary"
+                  >
+                    Correo electrónico
+                  </label>
+                  <input
+                    id="profile-recovery-email"
+                    type="email"
+                    value={recoveryEmail}
+                    onChange={(e) => {
+                      setRecoveryEmail(e.target.value)
+                      setEmailError('')
+                    }}
+                    placeholder="tu@correo.com (para iniciar sesión y recuperar contraseña)"
+                    className="w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white border border-outline-variant/60 focus:border-secondary rounded-lg focus:ring-2 focus:ring-secondary/30 font-body px-4 text-sm text-on-surface transition-all duration-300"
+                  />
+                  {emailError && (
+                    <p className="mt-1.5 text-xs font-body text-error">{emailError}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Footer */}
             <div className="bg-surface-container-low px-6 py-4 flex justify-end gap-3 border-t border-outline-variant/40">
+              {!requireProfileName && (
+                <button 
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  disabled={savingProfile}
+                  className="px-5 py-2.5 text-on-surface-variant font-label text-xs uppercase tracking-widest hover:bg-surface-container-high transition-colors rounded-md cursor-pointer font-bold"
+                >
+                  Cancelar
+                </button>
+              )}
               <button 
-                onClick={() => setEditing(false)}
-                className="px-5 py-2.5 text-on-surface-variant font-label text-xs uppercase tracking-widest hover:bg-surface-container-high transition-colors rounded-md cursor-pointer font-bold"
-              >
-                Cancelar
-              </button>
-              <button 
+                type="button"
                 onClick={handleSave}
-                className="px-6 py-2.5 bg-primary text-on-primary font-label font-bold uppercase tracking-widest text-xs rounded-md shadow-md hover:shadow-lg hover:bg-primary-container active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                disabled={savingProfile}
+                className="px-6 py-2.5 bg-primary text-on-primary font-label font-bold uppercase tracking-widest text-xs rounded-md shadow-md hover:shadow-lg hover:bg-primary-container active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2 disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-sm">save</span>
-                Guardar
+                {savingProfile ? 'Guardando...' : requireProfileName ? 'Guardar y continuar' : 'Guardar'}
               </button>
             </div>
           </div>

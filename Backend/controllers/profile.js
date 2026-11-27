@@ -19,6 +19,12 @@ export class ProfileController{
             if(!input.success) return res.status(400).json({ message: 'Invalid profile data' })
             const userData = req.session.user
             const profileUpdate = await ProfileModel.update({id: userData.id, input: input.data})
+            if (profileUpdate?.conflict === 'name') {
+                return res.status(409).json({ message: 'Ese nombre de perfil ya está en uso. Probá con otro.', field: 'name' })
+            }
+            if (profileUpdate === false) {
+                return res.status(400).json({ message: 'No profile fields provided' })
+            }
             res.status(200).json(profileUpdate)
         } catch (e) {
             next(e)

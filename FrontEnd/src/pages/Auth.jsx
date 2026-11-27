@@ -9,7 +9,7 @@ import {
   EyeOff,
   Loader2,
   Lock,
-  User,
+  Mail,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { frases } from '../utils/frases'
@@ -24,7 +24,7 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
   const [isTurning, setIsTurning] = useState(false)
   const turnTimerRef = useRef(null)
-  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -47,10 +47,10 @@ export default function Auth() {
   const { login, register } = useAuth()
   const navigate = useNavigate()
 
-  const isNameValid = name.trim().length >= 3 && name.trim().length <= 50
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
   const isPasswordValid =
     password.length >= 6 && /[0-9]/.test(password) && password.length <= 100
-  const isNameInvalid = name.length > 0 && !isNameValid
+  const isEmailInvalid = email.length > 0 && !isEmailValid
   const isPasswordInvalid = password.length > 0 && !isPasswordValid
 
   const handleModeSwitch = (targetIsLogin) => {
@@ -69,25 +69,39 @@ export default function Auth() {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    const trimmedEmail = email.trim()
+    if (!isEmailValid) {
+      setError('Ingresá un correo electrónico válido.')
+      return
+    }
+
+    if (!isLogin && !isPasswordValid) {
+      setError('La contraseña debe tener al menos 6 caracteres y un número.')
+      return
+    }
+
     setLoading(true)
     try {
       if (isLogin) {
-        await login({ name, password })
+        await login({ email: trimmedEmail, password })
         navigate('/')
       } else {
-        await register({ name, password })
-        const userData = await login({ name, password })
-        navigate(`/user/${userData.id}`, { state: { openEdit: true } })
+        await register({ email: trimmedEmail, password })
+        const userData = await login({ email: trimmedEmail, password })
+        navigate(`/user/${userData.id}`, {
+          state: { openEdit: true, requireProfileName: true },
+        })
       }
     } catch (err) {
       if (!isLogin && err.response?.status === 409) {
-        setError('Ese nombre de usuario ya está en uso. Probá con otro.')
+        setError('Ese correo electrónico ya está registrado en otra cuenta.')
       } else if (!isLogin && err.response?.status === 400) {
-        setError('Revisá que el usuario y la contraseña cumplan las condiciones.')
+        setError('Revisá que el correo electrónico y la contraseña cumplan las condiciones.')
       } else {
         setError(
           isLogin
-            ? 'El usuario o la contraseña no coinciden. Revisalos e intentá de nuevo.'
+            ? 'El correo o la contraseña no coinciden. Revisalos e intentá de nuevo.'
             : 'No pudimos crear la cuenta en este momento. Intentá de nuevo.'
         )
       }
@@ -250,16 +264,16 @@ export default function Auth() {
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-            {/* Campo Usuario */}
+            {/* Campo Correo Electrónico (único identificador para login y registro) */}
             <div>
               <label
-                htmlFor={`username-${modeKey}`}
+                htmlFor={`email-${modeKey}`}
                 className="block font-body text-xs font-semibold text-on-surface mb-1.5"
               >
-                Nombre de usuario
+                Correo electrónico
               </label>
               <div className="relative flex items-center">
-                <User
+                <Mail
                   size={16}
                   strokeWidth={1.75}
                   absoluteStrokeWidth
@@ -267,16 +281,16 @@ export default function Auth() {
                   className="pointer-events-none absolute left-3.5 z-10 text-outline"
                 />
                 <input
-                  id={`username-${modeKey}`}
-                  type="text"
-                  autoComplete="username"
-                  placeholder="Tu nombre de usuario"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  id={`email-${modeKey}`}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="tu@correo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   tabIndex={isActive ? 0 : -1}
                   required
                   className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-3.5 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white ${
-                    !isLoginMode && isNameInvalid
+                    !isLoginMode && isEmailInvalid
                       ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(186,26,26,0.12)]'
                       : 'border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)]'
                   }`}
@@ -336,25 +350,25 @@ export default function Auth() {
               <ul className="pt-0.5 space-y-1.5" aria-label="Requisitos de la cuenta">
                 <li
                   className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${
-                    isNameValid
+                    isEmailValid
                       ? 'text-primary font-medium'
-                      : isNameInvalid
+                      : isEmailInvalid
                       ? 'text-error'
                       : 'text-on-surface-variant/80'
                   }`}
                 >
                   <span
                     className={`inline-flex size-4 items-center justify-center rounded-full border transition-colors duration-150 ${
-                      isNameValid
+                      isEmailValid
                         ? 'bg-primary border-primary text-white'
-                        : isNameInvalid
+                        : isEmailInvalid
                         ? 'border-error text-error'
                         : 'border-outline-variant text-transparent'
                     }`}
                   >
                     <Check size={10} strokeWidth={2.5} absoluteStrokeWidth aria-hidden="true" />
                   </span>
-                  <span>Usuario de 3 a 50 caracteres</span>
+                  <span>Correo electrónico válido</span>
                 </li>
                 <li
                   className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${

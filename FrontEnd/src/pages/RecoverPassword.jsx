@@ -12,11 +12,14 @@ import {
 } from 'lucide-react'
 import { useSEO } from '../hooks/useSEO'
 import BrandLogo from '../components/ui/BrandLogo'
+import { forgotPassword, verifyResetCode, resetPassword } from '../api/auth'
 
 export default function RecoverPassword() {
   const [step, setStep] = useState('email') // 'email' | 'code' | 'password' | 'success'
   const [email, setEmail] = useState('')
   const [code, setCode] = useState(['', '', '', '', '', ''])
+  const [recoveryToken, setRecoveryToken] = useState('')
+  const [resetToken, setResetToken] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -26,7 +29,6 @@ export default function RecoverPassword() {
   const [loading, setLoading] = useState(false)
 
   const codeInputsRef = useRef([])
-  const timerRef = useRef(null)
   const navigate = useNavigate()
 
   useSEO({
@@ -34,12 +36,6 @@ export default function RecoverPassword() {
     description: 'Recuperá el acceso a tu cuenta de BookReview mediante un código de verificación de 6 dígitos.',
     noindex: true,
   })
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
 
   useEffect(() => {
     if (step === 'code') {
@@ -54,8 +50,8 @@ export default function RecoverPassword() {
     password.length > 0 && confirmPassword.length > 0 && password === confirmPassword
   const isConfirmInvalid = confirmPassword.length > 0 && password !== confirmPassword
 
-  // Paso 1 y 2: Pedir email y simular verificación en DB
-  const handleEmailSubmit = (e) => {
+  // Paso 1: Solicitar envío de código al correo vía Brevo
+  const handleEmailSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setInfo('')
@@ -64,11 +60,25 @@ export default function RecoverPassword() {
       setError('Ingresá un correo electrónico válido.')
       return
     }
+
     setLoading(true)
-    timerRef.current = setTimeout(() => {
-      setLoading(false)
+    try {
+      const { data } = await forgotPassword({ email: trimmed })
+      setRecoveryToken(data?.recoveryToken || '')
+      setCode(['', '', '', '', '', ''])
       setStep('code')
-    }, 450)
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setError('Demasiados intentos en pocos minutos. Esperá un momento y volvé a probar.')
+      } else {
+        setError(
+          err.response?.data?.message ||
+            'No pudimos enviar el código en este momento. Intentá de nuevo.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Manejo de las 6 casillas del código de 6 dígitos
@@ -108,31 +118,63 @@ export default function RecoverPassword() {
     codeInputsRef.current[focusIdx]?.focus()
   }
 
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
+    if (loading) return
     setError('')
-    setCode(['', '', '', '', '', ''])
-    setInfo('Enviamos un nuevo código de 6 dígitos a tu correo.')
-    codeInputsRef.current[0]?.focus()
+    setInfo('')
+    setLoading(true)
+    try {
+      const { data } = await forgotPassword({ email: email.trim() })
+      setRecoveryToken(data?.recoveryToken || '')
+      setCode(['', '', '', '', '', ''])
+      setInfo('Enviamos un nuevo código de 6 dígitos a tu correo.')
+      codeInputsRef.current[0]?.focus()
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setError('Demasiados intentos en pocos minutos. Esperá un momento y volvé a probar.')
+      } else {
+        setError(
+          err.response?.data?.message ||
+            'No pudimos reenviar el código en este momento.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // Paso 3A: Verificar únicamente el código de 6 dígitos
-  const handleCodeSubmit = (e) => {
+  // Paso 2: Verificar el código de 6 dígitos en el backend
+  const handleCodeSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setInfo('')
-    if (code.join('').length < 6) {
+    const fullCode = code.join('')
+    if (fullCode.length < 6) {
       setError('Completá los 6 dígitos del código enviado a tu correo.')
       return
     }
+
     setLoading(true)
-    timerRef.current = setTimeout(() => {
-      setLoading(false)
+    try {
+      const { data } = await verifyResetCode({ code: fullCode, recoveryToken })
+      setResetToken(data?.resetToken || '')
       setStep('password')
-    }, 400)
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setError('Demasiados intentos fallidos. Esperá unos minutos antes de reintentar.')
+      } else {
+        setError(
+          err.response?.data?.message ||
+            'El código ingresado es incorrecto o venció.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // Paso 3B: Ingresar 2 veces la nueva contraseña y validar coincidencia
-  const handlePasswordSubmit = (e) => {
+  // Paso 3: Guardar nueva contraseña real en MySQL
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setInfo('')
@@ -144,11 +186,23 @@ export default function RecoverPassword() {
       setError('Las contraseñas ingresadas no coinciden.')
       return
     }
+
     setLoading(true)
-    timerRef.current = setTimeout(() => {
-      setLoading(false)
+    try {
+      await resetPassword({ resetToken, new_password: password })
       setStep('success')
-    }, 450)
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setError('Demasiados intentos en pocos minutos. Esperá un momento y volvé a probar.')
+      } else {
+        setError(
+          err.response?.data?.message ||
+            'No pudimos actualizar tu contraseña. Solicitá un nuevo código.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const stepIndex = step === 'email' ? 1 : step === 'code' ? 2 : step === 'password' ? 3 : 4

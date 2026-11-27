@@ -62,7 +62,7 @@ app.use(globalLimiter)
 // Rate limiting específico para auth (previene brute force)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 10, // máximo 10 intentos por ventana
+    max: 25, // máximo 25 intentos por ventana (cubre login + flujo de recuperación)
     message: { message: 'Too many authentication attempts, please try again later' },
     standardHeaders: true,
     legacyHeaders: false,

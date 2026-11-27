@@ -20,7 +20,13 @@ export function AuthProvider({ children }) {
     const { data } = await authAPI.login(credentials)
     const user = data.user
     if (user?.id) {
-      const userData = { id: user.id, name: user.name, role: user.role, profile_img: user.profile_img }
+      const userData = {
+        id: user.id,
+        name: user.name,
+        email: user.email || null,
+        role: user.role,
+        profile_img: user.profile_img,
+      }
       setUser(userData)
       localStorage.setItem('user', JSON.stringify(userData))
       return userData
