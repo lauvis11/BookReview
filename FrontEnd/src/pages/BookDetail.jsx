@@ -7,6 +7,8 @@ import { saveFavorite, deleteFavorite, getFavorites } from '../api/favorites'
 import { saveStatus } from '../api/status'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
+import ReadingTimeCalculator from '../components/book-detail/ReadingTimeCalculator'
+import { syncReadingTracker } from '../utils/readingTrackerStore'
 
 export default function BookDetail() {
   const { id } = useParams()
@@ -111,7 +113,11 @@ export default function BookDetail() {
       'reading': 'Leyendo',
       'completed': 'Completado'
     }
-    try { await saveStatus({ book_id: id, status }); flash(`Agregado a: ${STATUS_LABELS[status] || status}`) } catch (_) {}
+    try {
+      await saveStatus({ book_id: id, status })
+      void syncReadingTracker(user?.id, { force: true })
+      flash(`Agregado a: ${STATUS_LABELS[status] || status}`)
+    } catch (_) {}
   }
 
   const flash = (msg) => { setStatusMsg(msg); setTimeout(() => setStatusMsg(''), 2000) }
@@ -324,6 +330,9 @@ export default function BookDetail() {
               </div>
             </div>
           )}
+
+          {/* Reading Time Calculator */}
+          <ReadingTimeCalculator book={book} />
 
           {/* Ask AI Banner */}
           <div className="bg-primary rounded-xl p-5 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 md:gap-6 shadow-xl relative overflow-hidden group">
