@@ -6,11 +6,15 @@ import { verifyToken } from "../middleware/verifyToken.js";
 export const aiRouter = Router();
 
 const aiLimiter = rateLimit({
-            windowMs: 60 * 1000,
-            max: 5, 
-            message: 'You have sent too many messages, please try again later',
-            legacyHeaders: false,
-            standardHeaders: true,
-        })
-aiRouter.use(aiLimiter)
-aiRouter.post('/', verifyToken, AiController.aiChat)
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {
+        error: "Enviaste demasiados mensajes en poco tiempo. Esperá unos segundos e intentá nuevamente.",
+    },
+    legacyHeaders: false,
+    standardHeaders: true,
+});
+
+// verifyToken antes de aiLimiter evita que un 401 previo al refresh consuma cuota
+aiRouter.post("/", verifyToken, aiLimiter, AiController.aiChat);
+

@@ -22,11 +22,11 @@ import rateLimit from 'express-rate-limit';
 
 const PORT = process.env.PORT ?? 1234;
 app.disable('x-powered-by');
-app.use(json({ limit: '16kb' }));
+app.use(json({ limit: '64kb' }));
 app.use(helmet());
 
-// Solo confiar en proxy en producción (previene IP spoofing en desarrollo)
-if (process.env.NODE_ENV === 'production') {
+// Solo confiar en proxy en producción o Vercel (previene IP spoofing en desarrollo)
+if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
     app.set('trust proxy', 1)
 }
 
