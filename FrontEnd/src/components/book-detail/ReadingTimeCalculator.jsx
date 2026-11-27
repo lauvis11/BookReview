@@ -1,4 +1,11 @@
 import { useState } from 'react'
+import { motion as Motion } from 'motion/react'
+import {
+  scale,
+  spring,
+  useShouldReduceMotion,
+  useTempoTransition,
+} from '@animate-ui/react/utils/motion'
 import { BookOpen, Calendar, Clock, Gauge } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import {
@@ -35,6 +42,10 @@ function formatEstimatedFinishDate(baseTimestamp, daysNeeded) {
 export default function ReadingTimeCalculator({ book }) {
   const { user } = useAuth()
   const { trackerState, preferences } = useReadingTracker(user?.id)
+  const reduce = useShouldReduceMotion()
+  const selectionSpring = useTempoTransition(spring.selection)
+  const pressSpring = useTempoTransition(spring.press)
+
   const [scope, setScope] = useState('remaining')
   const [baseTimestamp] = useState(() => {
     const today = new Date()
@@ -71,7 +82,10 @@ export default function ReadingTimeCalculator({ book }) {
   const formattedFinishDate = formatEstimatedFinishDate(baseTimestamp, daysNeeded)
 
   const handleDailyMinutesChange = (minutes) => {
-    const clamped = Math.min(120, Math.max(10, Math.round(Number(minutes) || DEFAULT_DAILY_MINUTES)))
+    const clamped = Math.min(
+      120,
+      Math.max(10, Math.round(Number(minutes) || DEFAULT_DAILY_MINUTES))
+    )
     saveReaderPreferences(user?.id, { dailyMinutes: clamped })
   }
 
@@ -82,38 +96,44 @@ export default function ReadingTimeCalculator({ book }) {
     })
   }
 
+  const pressTap = reduce ? undefined : { transform: `scale(${scale.press})` }
+
   return (
     <section
       aria-labelledby="reading-calculator-heading"
-      className="bg-[#eae6da]/70 dark:bg-surface-container-low border border-[#d6d0c0]/85 dark:border-outline-variant rounded-2xl p-5 sm:p-7 md:p-8"
+      className="bg-white dark:bg-[#131f1c] border border-[#18332f]/[0.08] dark:border-white/[0.08] rounded-2xl p-5 sm:p-7 shadow-[0_1px_2px_rgba(24,51,47,0.03)] dark:shadow-none"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-5 border-b border-[#d6d0c0]/75 dark:border-outline-variant/80">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-5 border-b border-[#18332f]/[0.08] dark:border-white/[0.08]">
         <div>
-          <span className="inline-flex items-center gap-1.5 font-hero-sans text-[11px] font-bold uppercase tracking-[0.18em] text-secondary-dark">
-            <Clock size={14} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" />
-            Calculadora de lectura
-          </span>
           <h2
             id="reading-calculator-heading"
-            className="font-hero-display text-2xl sm:text-[30px] font-semibold tracking-[-0.015em] text-primary dark:text-[#e8e3d6] leading-[1.1] mt-1"
+            className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-[-0.015em] text-[#18332f] dark:text-[#f0ede6] leading-[1.12]"
           >
-            ¿Cuánto tardás en{' '}
-            <span className="italic font-medium text-secondary-dark">leerlo?</span>
+            Tiempo estimado de lectura
           </h2>
+          <p className="mt-1 text-xs sm:text-sm text-[#4a615b] dark:text-[#a6b7b1]">
+            Ajustá tu rutina diaria y ritmo para calcular cuándo lo terminás.
+          </p>
         </div>
 
-        <div className="flex flex-col items-start sm:items-end gap-1">
-          <div
-            className="inline-flex items-center gap-1.5 bg-[#f8f7f2] dark:bg-surface-container border border-[#d6d0c0]/75 dark:border-outline-variant px-3 py-1.5 font-hero-sans text-xs font-semibold text-primary dark:text-[#e8e3d6] tabular-nums"
+        <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
+          <span
             style={{ borderRadius: '9999px' }}
+            className="inline-flex items-center gap-1.5 bg-[#f8f7f2] dark:bg-[#192824] border border-[#18332f]/[0.08] dark:border-white/[0.08] px-3 py-1.5 text-xs font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums"
           >
-            <BookOpen size={14} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-primary/80 dark:text-[#edbd79]" />
+            <BookOpen
+              size={14}
+              strokeWidth={1.85}
+              absoluteStrokeWidth
+              aria-hidden="true"
+              className="text-[#0e5146] dark:text-[#edbd79]"
+            />
             <span>{totalPages} págs.</span>
-          </div>
+          </span>
           {!hasExactPageCount && (
-            <p className="font-hero-sans text-[11px] text-on-surface-variant italic">
-              Estimación basada en {DEFAULT_TOTAL_PAGES_FALLBACK} págs. estándar
+            <p className="text-[11px] text-[#5d726c] dark:text-[#a6b7b1]">
+              Base estimada de {DEFAULT_TOTAL_PAGES_FALLBACK} págs.
             </p>
           )}
         </div>
@@ -125,44 +145,49 @@ export default function ReadingTimeCalculator({ book }) {
         <div className="md:col-span-7 flex flex-col justify-between gap-6">
           {canToggleRemaining && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-hero-sans text-[11px] font-bold uppercase tracking-[0.14em] text-on-surface-variant">
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="font-semibold text-[#4a615b] dark:text-[#a6b7b1]">
                   Tramo a calcular
                 </span>
-                <span className="font-hero-sans text-xs font-medium text-primary dark:text-[#d6e8b5] tabular-nums">
+                <span className="font-semibold text-[#0e5146] dark:text-[#4fb39d] tabular-nums">
                   Llevás {bookProgress.pagesRead} págs. ({bookProgress.percentage}%)
                 </span>
               </div>
 
+              {/* Concentric segmented control (rounded-xl p-1 + rounded-lg) with gliding spring indicator */}
               <div
                 role="group"
                 aria-label="Seleccionar tramo del libro"
-                className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 p-1 bg-[#f8f7f2] dark:bg-surface-container-lowest border border-[#d6d0c0]/75 dark:border-outline-variant rounded-xl"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-1 p-1 bg-[#f1efe7] dark:bg-[#192824] rounded-xl"
               >
-                <button
-                  type="button"
-                  aria-pressed={activeScope === 'remaining'}
-                  onClick={() => setScope('remaining')}
-                  className={`px-3 py-2 rounded-lg font-hero-sans text-xs font-semibold tabular-nums cursor-pointer transition-[background-color,border-color,color,scale] duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                    activeScope === 'remaining'
-                      ? 'bg-primary text-white shadow-[0_2px_8px_-2px_rgba(14,81,70,0.3)]'
-                      : 'text-on-surface-variant hover:text-primary dark:hover:text-[#e8e3d6] hover:bg-[#eae6da]/55 dark:hover:bg-surface-container'
-                  }`}
-                >
-                  Lo que te falta ({remainingPages} págs.)
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={activeScope === 'full'}
-                  onClick={() => setScope('full')}
-                  className={`px-3 py-2 rounded-lg font-hero-sans text-xs font-semibold tabular-nums cursor-pointer transition-[background-color,border-color,color,scale] duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                    activeScope === 'full'
-                      ? 'bg-primary text-white shadow-[0_2px_8px_-2px_rgba(14,81,70,0.3)]'
-                      : 'text-on-surface-variant hover:text-primary dark:hover:text-[#e8e3d6] hover:bg-[#eae6da]/55 dark:hover:bg-surface-container'
-                  }`}
-                >
-                  Libro completo ({totalPages} págs.)
-                </button>
+                {[
+                  { key: 'remaining', label: `Lo que falta (${remainingPages} págs.)` },
+                  { key: 'full', label: `Libro completo (${totalPages} págs.)` },
+                ].map((tab) => {
+                  const isActive = activeScope === tab.key
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setScope(tab.key)}
+                      className={`relative px-3 py-2 rounded-lg text-xs font-semibold tabular-nums cursor-pointer transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] ${
+                        isActive
+                          ? 'text-[#18332f] dark:text-[#f0ede6]'
+                          : 'text-[#4a615b] dark:text-[#a6b7b1] hover:text-[#18332f] dark:hover:text-[#f0ede6]'
+                      }`}
+                    >
+                      {isActive && (
+                        <Motion.span
+                          layoutId="calc-scope-indicator"
+                          transition={selectionSpring}
+                          className="absolute inset-0 rounded-lg bg-white dark:bg-[#0c1412] border border-[#18332f]/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(24,51,47,0.06)] dark:shadow-none"
+                        />
+                      )}
+                      <span className="relative z-10">{tab.label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -172,12 +197,18 @@ export default function ReadingTimeCalculator({ book }) {
             <div className="flex items-center justify-between gap-2">
               <label
                 htmlFor="reading-daily-minutes"
-                className="inline-flex items-center gap-1.5 font-hero-sans text-[11px] font-bold uppercase tracking-[0.14em] text-on-surface-variant"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4a615b] dark:text-[#a6b7b1]"
               >
-                <Clock size={14} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-secondary-dark" />
-                Tiempo diario dedicado
+                <Clock
+                  size={14}
+                  strokeWidth={1.85}
+                  absoluteStrokeWidth
+                  aria-hidden="true"
+                  className="text-[#c9833b] dark:text-[#edbd79]"
+                />
+                <span>Tiempo diario dedicado</span>
               </label>
-              <span className="font-hero-sans text-sm font-bold text-primary dark:text-[#e8e3d6] tabular-nums">
+              <span className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums">
                 {dailyMinutes} min / día
               </span>
             </div>
@@ -186,20 +217,22 @@ export default function ReadingTimeCalculator({ book }) {
               {DAILY_MINUTE_PRESETS.map((minutes) => {
                 const isSelected = dailyMinutes === minutes
                 return (
-                  <button
+                  <Motion.button
                     key={minutes}
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => handleDailyMinutesChange(minutes)}
+                    whileTap={pressTap}
+                    transition={pressSpring}
                     style={{ borderRadius: '9999px' }}
-                    className={`px-3.5 py-1.5 border font-hero-sans text-xs font-semibold tabular-nums cursor-pointer transition-[background-color,border-color,color,scale] duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                    className={`px-3.5 py-1.5 border text-xs font-semibold tabular-nums cursor-pointer transition-[background-color,border-color,color] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] ${
                       isSelected
-                        ? 'bg-primary text-white border-primary shadow-[0_3px_10px_-3px_rgba(14,81,70,0.35)]'
-                        : 'bg-[#f8f7f2] dark:bg-surface-container-lowest text-primary dark:text-[#e8e3d6] border-[#d6d0c0]/80 dark:border-outline-variant hover:border-primary/45 dark:hover:border-secondary/60 hover:bg-white dark:hover:bg-surface-container'
+                        ? 'bg-[#0e5146] dark:bg-[#166e5e] text-white border-transparent'
+                        : 'bg-[#f8f7f2] dark:bg-[#192824] text-[#18332f] dark:text-[#f0ede6] border-[#18332f]/[0.1] dark:border-white/[0.08] hover:border-[#0e5146]/40 dark:hover:border-[#edbd79]/40'
                     }`}
                   >
                     {minutes} min
-                  </button>
+                  </Motion.button>
                 )
               })}
             </div>
@@ -214,9 +247,9 @@ export default function ReadingTimeCalculator({ book }) {
                 value={dailyMinutes}
                 onChange={(event) => handleDailyMinutesChange(event.target.value)}
                 aria-label="Tiempo diario dedicado en minutos"
-                className="w-full h-2 accent-[#0e5146] dark:accent-[#edbd79] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="w-full h-2 accent-[#0e5146] dark:accent-[#edbd79] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0e5146]"
               />
-              <div className="flex justify-between mt-1 font-hero-sans text-[11px] font-medium text-on-surface-variant tabular-nums">
+              <div className="flex justify-between mt-1 text-[11px] font-medium text-[#5d726c] dark:text-[#a6b7b1] tabular-nums">
                 <span>10 min</span>
                 <span>60 min</span>
                 <span>120 min</span>
@@ -226,106 +259,130 @@ export default function ReadingTimeCalculator({ book }) {
 
           {/* Reading pace control */}
           <div className="space-y-2.5">
-            <span className="inline-flex items-center gap-1.5 font-hero-sans text-[11px] font-bold uppercase tracking-[0.14em] text-on-surface-variant">
-              <Gauge size={14} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-secondary-dark" />
-              Ritmo de lectura
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4a615b] dark:text-[#a6b7b1]">
+              <Gauge
+                size={14}
+                strokeWidth={1.85}
+                absoluteStrokeWidth
+                aria-hidden="true"
+                className="text-[#c9833b] dark:text-[#edbd79]"
+              />
+              <span>Ritmo de lectura</span>
             </span>
 
             <div className="grid grid-cols-1 gap-2">
               {PACE_PRESETS_LIST.map((preset) => {
                 const isSelected = activePace.id === preset.id
                 return (
-                  <button
+                  <Motion.button
                     key={preset.id}
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => handlePaceChange(preset)}
-                    className={`w-full text-left px-3.5 py-2.5 rounded-xl border cursor-pointer transition-[background-color,border-color,color,scale] duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                    whileTap={reduce ? undefined : { transform: `scale(${scale.choice})` }}
+                    transition={pressSpring}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl border cursor-pointer transition-[background-color,border-color] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] ${
                       isSelected
-                        ? 'bg-white dark:bg-surface-container border-primary dark:border-secondary shadow-[0_4px_12px_-4px_rgba(14,81,70,0.16)] dark:shadow-[0_6px_16px_-4px_rgba(0,0,0,0.45)]'
-                        : 'bg-[#f8f7f2] dark:bg-surface-container-lowest border-[#d6d0c0]/75 dark:border-outline-variant hover:border-primary/40 dark:hover:border-secondary/50 hover:bg-white/90 dark:hover:bg-surface-container'
+                        ? 'bg-[#f2f5f0] dark:bg-[#192824] border-[#0e5146]/45 dark:border-[#edbd79]/45'
+                        : 'bg-[#f8f7f2]/70 dark:bg-[#0c1412]/50 border-[#18332f]/[0.08] dark:border-white/[0.08] hover:border-[#18332f]/20 dark:hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-hero-sans text-[13px] font-bold text-primary dark:text-[#e8e3d6] tabular-nums">
-                        {preset.label} · {preset.pagesPerHour} pág/h
+                      <span className="text-[13px] font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums">
+                        {preset.label} ({preset.pagesPerHour} pág/h)
                       </span>
                       <span
                         aria-hidden="true"
                         style={{ borderRadius: '9999px' }}
-                        className={`w-4 h-4 shrink-0 border flex items-center justify-center transition-[background-color,border-color] duration-150 ease-out ${
+                        className={`w-4 h-4 shrink-0 border flex items-center justify-center transition-[background-color,border-color] duration-150 ${
                           isSelected
-                            ? 'border-primary dark:border-secondary bg-primary dark:bg-secondary'
-                            : 'border-[#d6d0c0] dark:border-outline-variant bg-white/80 dark:bg-surface-container-low'
+                            ? 'border-[#0e5146] dark:border-[#edbd79] bg-[#0e5146] dark:bg-[#edbd79]'
+                            : 'border-[#18332f]/25 dark:border-white/25 bg-white dark:bg-[#131f1c]'
                         }`}
                       >
                         {isSelected && (
                           <span
-                            className="w-1.5 h-1.5 bg-white dark:bg-on-secondary"
+                            className="w-1.5 h-1.5 bg-white dark:bg-[#0c1412]"
                             style={{ borderRadius: '9999px' }}
                           />
                         )}
                       </span>
                     </div>
-                    <p className="font-hero-sans text-xs text-on-surface-variant mt-0.5 leading-snug">
+                    <p className="text-xs text-[#5d726c] dark:text-[#a6b7b1] mt-0.5 leading-snug">
                       {preset.desc}
                     </p>
-                  </button>
+                  </Motion.button>
                 )
               })}
             </div>
           </div>
         </div>
 
-        {/* Right: Editorial readout block */}
+        {/* Right: Clean Editorial Readout */}
         <div className="md:col-span-5 flex">
-          <div className="w-full bg-white/85 dark:bg-surface-container-lowest border border-[#d6d0c0]/80 dark:border-outline-variant rounded-xl p-5 flex flex-col justify-between divide-y divide-[#d6d0c0]/70 dark:divide-outline-variant/70">
-            {/* Hero estimate */}
+          <div className="w-full bg-[#f8f7f2] dark:bg-[#192824] border border-[#18332f]/[0.08] dark:border-white/[0.08] rounded-xl p-5 flex flex-col justify-between divide-y divide-[#18332f]/[0.08] dark:divide-white/[0.08]">
             <div className="pb-4">
-              <span className="font-hero-sans text-[11px] font-bold uppercase tracking-[0.14em] text-secondary-dark block">
-                {activeScope === 'remaining' ? 'Para completar tu lectura' : 'Tiempo estimado'}
+              <span className="text-xs font-semibold text-[#c9833b] dark:text-[#edbd79] block">
+                {activeScope === 'remaining' ? 'Para completar tu lectura' : 'Duración estimada'}
               </span>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-hero-display text-5xl sm:text-[54px] font-semibold text-primary dark:text-[#e8e3d6] leading-none tabular-nums">
+                <span className="font-hero-display text-5xl sm:text-[52px] font-semibold text-[#18332f] dark:text-[#f0ede6] leading-none tabular-nums">
                   {daysNeeded}
                 </span>
-                <span className="font-hero-display italic text-2xl font-medium text-secondary-dark">
+                <span className="font-hero-display italic text-2xl font-medium text-[#4a615b] dark:text-[#a6b7b1]">
                   {daysNeeded === 1 ? 'día' : 'días'}
                 </span>
               </div>
-              <p className="mt-2 font-hero-sans text-xs text-on-surface-variant tabular-nums">
+              <p className="mt-2 text-xs text-[#5d726c] dark:text-[#a6b7b1] tabular-nums">
                 Sobre {targetPages} {targetPages === 1 ? 'página' : 'páginas'} a {dailyMinutes} min diarios
               </p>
             </div>
 
-            {/* Total reading time */}
             <div className="py-3.5 flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2 font-hero-sans text-xs font-medium text-on-surface-variant">
-                <Clock size={15} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-primary/80 dark:text-[#edbd79] shrink-0" />
-                Tiempo total
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a615b] dark:text-[#a6b7b1]">
+                <Clock
+                  size={15}
+                  strokeWidth={1.8}
+                  absoluteStrokeWidth
+                  aria-hidden="true"
+                  className="text-[#0e5146] dark:text-[#edbd79] shrink-0"
+                />
+                <span>Tiempo total</span>
               </span>
-              <span className="font-hero-sans text-sm font-bold text-primary dark:text-[#e8e3d6] tabular-nums">
+              <span className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums">
                 {formattedTotalDuration}
               </span>
             </div>
 
-            {/* Pages per day */}
             <div className="py-3.5 flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2 font-hero-sans text-xs font-medium text-on-surface-variant">
-                <BookOpen size={15} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-primary/80 dark:text-[#edbd79] shrink-0" />
-                Avance diario
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a615b] dark:text-[#a6b7b1]">
+                <BookOpen
+                  size={15}
+                  strokeWidth={1.8}
+                  absoluteStrokeWidth
+                  aria-hidden="true"
+                  className="text-[#0e5146] dark:text-[#edbd79] shrink-0"
+                />
+                <span>Avance diario</span>
               </span>
-              <span className="font-hero-sans text-sm font-bold text-primary dark:text-[#e8e3d6] tabular-nums">
+              <span className="text-sm font-semibold text-[#18332f] dark:text-[#f0ede6] tabular-nums">
                 ~{pagesPerDay} {pagesPerDay === 1 ? 'pág.' : 'págs.'}/día
               </span>
             </div>
 
-            {/* Finish date */}
             <div className="pt-3.5 flex items-start gap-2.5">
-              <Calendar size={15} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" className="text-secondary-dark shrink-0 mt-0.5" />
-              <p className="font-hero-sans text-xs text-on-surface-variant leading-relaxed">
-                Leyendo desde hoy, lo terminás el{' '}
-                <strong className="font-bold text-primary dark:text-[#e8e3d6]">{formattedFinishDate}</strong>
+              <Calendar
+                size={15}
+                strokeWidth={1.8}
+                absoluteStrokeWidth
+                aria-hidden="true"
+                className="text-[#c9833b] dark:text-[#edbd79] shrink-0 mt-0.5"
+              />
+              <p className="text-xs text-[#4a615b] dark:text-[#a6b7b1] leading-relaxed">
+                Empezando hoy, lo terminás el{' '}
+                <strong className="font-semibold text-[#18332f] dark:text-[#f0ede6]">
+                  {formattedFinishDate}
+                </strong>
               </p>
             </div>
           </div>
