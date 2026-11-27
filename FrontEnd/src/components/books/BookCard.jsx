@@ -18,6 +18,7 @@ export default function BookCard({ book, showRating = false }) {
             src={book.img}
             alt={`Portada de ${book.title}`}
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[#eae6da] font-hero-display text-3xl text-primary/35">

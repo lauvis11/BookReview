@@ -1,4 +1,4 @@
-/* Custom styles for enhanced interactions */
+/* Custom styles for enhanced interactions (GPU-friendly, no global transition: all) */
 
 /* Input focus animation */
 input:focus,
@@ -7,13 +7,32 @@ select:focus {
   outline: none;
 }
 
-/* Input hover effect */
-input:not(:focus):not(:placeholder-shown):hover,
-textarea:not(:focus):not(:placeholder-shown):hover {
-  background-color: #ebf0e9;
+/* Input hover effect only on hover-capable pointers */
+@media (hover: hover) and (pointer: fine) {
+  input:not(:focus):not(:placeholder-shown):hover,
+  textarea:not(:focus):not(:placeholder-shown):hover {
+    background-color: #ebf0e9;
+  }
+
+  .card-hover:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow: 0 12px 24px rgba(14, 81, 70, 0.12);
+  }
+
+  .chip-hover:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(14, 81, 70, 0.1);
+  }
+
+  .icon-btn:hover::after {
+    opacity: 0.08;
+  }
+
+  select:hover {
+    background-color: #ebf0e9;
+  }
 }
 
-/* Input active underline animation */
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -21,46 +40,17 @@ input[type="number"],
 input[type="url"],
 textarea {
   position: relative;
-  transition: all 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus,
-input[type="number"]:focus,
-input[type="url"]:focus,
-textarea:focus {
-  transform: translateY(-1px);
-}
-
-/* Button press effect */
-button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-/* Link hover effect */
-a {
-  transition: all 0.2s ease;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
 }
 
 /* Card hover effect */
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(14, 81, 70, 0.12);
+  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 240ms ease-out;
 }
 
 /* Chip hover effect */
 .chip-hover {
-  transition: all 0.2s ease;
-}
-
-.chip-hover:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 8px rgba(14, 81, 70, 0.1);
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out, background-color 180ms ease-out;
 }
 
 /* Icon button ripple effect */
@@ -75,11 +65,7 @@ a {
   inset: 0;
   background: currentColor;
   opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.icon-btn:hover::after {
-  opacity: 0.08;
+  transition: opacity 160ms ease-out;
 }
 
 .icon-btn:active::after {
@@ -89,11 +75,7 @@ a {
 /* Select custom styling */
 select {
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-select:hover {
-  background-color: #ebf0e9;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out;
 }
 
 /* Textarea resize handle */
@@ -112,15 +94,6 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Smooth transitions for all interactive elements */
-button,
-a,
-input,
-select,
-textarea {
-  transition: all 0.2s ease;
-}
-
 /* Active state for navigation links */
 .nav-link-active {
   position: relative;
@@ -135,12 +108,12 @@ textarea {
   height: 2px;
   background: linear-gradient(to right, #0e5146, #0e5b4f);
   transform: scaleX(1);
-  transition: transform 0.3s ease;
+  transition: transform 240ms ease-out;
 }
 
-/* Modal backdrop blur animation */
+/* Modal backdrop animation */
 .modal-backdrop {
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 180ms ease-out;
 }
 
 @keyframes fadeIn {
@@ -154,17 +127,17 @@ textarea {
 
 /* Modal content slide up */
 .modal-content {
-  animation: slideUp 0.3s ease;
+  animation: slideUp 240ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate3d(0, 14px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -184,47 +157,47 @@ textarea {
 
 /* Dropdown menu animation */
 .dropdown-enter {
-  animation: dropdownIn 0.15s ease;
+  animation: dropdownIn 150ms ease-out;
 }
 
 @keyframes dropdownIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translate3d(0, -6px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 /* Toast notification animation */
 .toast-enter {
-  animation: toastIn 0.3s ease;
+  animation: toastIn 240ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .toast-exit {
-  animation: toastOut 0.3s ease forwards;
+  animation: toastOut 180ms ease-out forwards;
 }
 
 @keyframes toastIn {
   from {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translate3d(100%, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes toastOut {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translate3d(100%, 0, 0);
   }
 }

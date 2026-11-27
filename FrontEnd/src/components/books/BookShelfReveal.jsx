@@ -5,7 +5,7 @@ import BookRowSlider from './BookRowSlider'
 
 // Animate UI ease.out token: cubic-bezier(0.23, 1, 0.32, 1)
 const HEADER_REVEAL_EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
-const HEADER_REVEAL_DURATION = '540ms'
+const HEADER_REVEAL_DURATION = '440ms'
 
 export default function BookShelfReveal({
   title,
@@ -45,9 +45,8 @@ export default function BookShelfReveal({
         className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-7 pb-4 border-b border-outline-variant/45"
         style={{
           opacity: isVisible ? 1 : 0,
-          transform: isVisible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 14px, 0)',
-          filter: isVisible ? 'blur(0px)' : 'blur(2px)',
-          transitionProperty: 'opacity, transform, filter',
+          transform: isVisible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 12px, 0)',
+          transitionProperty: 'opacity, transform',
           transitionDuration: HEADER_REVEAL_DURATION,
           transitionTimingFunction: HEADER_REVEAL_EASE,
         }}

@@ -77,10 +77,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-200 ${
           scrolled
-            ? 'bg-surface/95 backdrop-blur-xl border-b border-outline-variant/50 shadow-[0_6px_28px_-10px_rgba(14,81,70,0.10)]'
-            : 'bg-surface/85 backdrop-blur-md border-b border-transparent'
+            ? 'bg-surface/98 md:bg-surface/94 md:backdrop-blur-md border-b border-outline-variant/50 shadow-[0_6px_24px_-10px_rgba(14,81,70,0.10)]'
+            : 'bg-surface/95 md:bg-surface/88 md:backdrop-blur-sm border-b border-transparent'
         }`}
       >
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12">
@@ -285,11 +285,11 @@ export default function Navbar() {
         <div className="md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex">
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="absolute inset-0 bg-[#18332f]/35 backdrop-blur-[2px] animate-[drawerBackdropIn_200ms_ease_both]"
+            className="absolute inset-0 bg-[#18332f]/40 animate-[drawerBackdropIn_180ms_ease_both]"
             aria-hidden="true"
           />
 
-          <aside className="relative z-10 w-[72%] max-w-[300px] h-full bg-surface/98 backdrop-blur-xl border-r border-outline-variant/60 shadow-[8px_0_32px_rgba(14,81,70,0.14)] flex flex-col overflow-y-auto overscroll-contain animate-[drawerSlideLeft_280ms_var(--ease-drawer)_both]">
+          <aside className="relative z-10 w-[72%] max-w-[300px] h-full bg-surface border-r border-outline-variant/60 shadow-[8px_0_28px_rgba(14,81,70,0.14)] flex flex-col overflow-y-auto overscroll-contain animate-[drawerSlideLeft_260ms_var(--ease-drawer)_both]">
             <div className="flex-1 flex flex-col items-stretch justify-start gap-1 px-4 py-6">
               <MobileNavItem to="/" active={isActive('/')} icon={Home} onClick={() => setMobileMenuOpen(false)}>
                 Inicio

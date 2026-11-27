@@ -30,8 +30,8 @@ export default function SeccionAbout() {
       transitionDelay: `${delayMs}ms`,
       transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
     },
-    className: `transition-[opacity,translate,transform] duration-1000 ${
-      visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+    className: `transition-[opacity,translate] duration-600 ${
+      visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
     }`,
   })
 
@@ -46,24 +46,25 @@ export default function SeccionAbout() {
         {/* Columna Izquierda: Ilustración de libros flotantes */}
         <div
           style={{
-            transitionDelay: '160ms',
+            transitionDelay: '100ms',
             transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
           }}
-          className={`flex items-center justify-center transition-[opacity,translate,scale,transform] duration-1000 ${
-            visible ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-6 scale-[0.97]'
+          className={`flex items-center justify-center transition-[opacity,translate,scale] duration-600 ${
+            visible ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-[0.98]'
           }`}
         >
           <img
             src="/Libros-flotantes.png"
             alt="Libros destacados flotando con insignias de Best Seller y 4.8 de calificación"
-            className="w-full max-w-[265px] sm:max-w-[330px] lg:max-w-[430px] xl:max-w-[470px] h-auto object-contain select-none drop-shadow-[0_22px_36px_rgba(14,81,70,0.14)]"
+            className="w-full max-w-[265px] sm:max-w-[330px] lg:max-w-[430px] xl:max-w-[470px] h-auto object-contain select-none md:drop-shadow-[0_20px_32px_rgba(14,81,70,0.14)]"
             loading="lazy"
+            decoding="async"
           />
         </div>
 
         {/* Columna Derecha: Titular, descripción y acciones */}
         <div className="text-center lg:text-left">
-          <div {...revealUp(220)}>
+          <div {...revealUp(140)}>
             <h2
               id="seccion-about-title"
               className="font-hero-display text-[34px] sm:text-[42px] lg:text-[50px] xl:text-[54px] font-semibold leading-[1.03] tracking-[-0.02em] text-primary"
@@ -75,14 +76,14 @@ export default function SeccionAbout() {
             </h2>
           </div>
 
-          <div {...revealUp(320)}>
+          <div {...revealUp(210)}>
             <p className="mt-3.5 sm:mt-4 lg:mt-5 font-hero-sans text-[14.5px] sm:text-[15.5px] lg:text-base leading-[1.6] lg:leading-[1.7] text-on-surface-variant max-w-[460px] mx-auto lg:mx-0">
               Organiza tus lecturas, explora bestsellers y clásicos inolvidables, y descubre recomendaciones reales de nuestra comunidad de lectores.
             </p>
           </div>
 
           {/* Botones de acción (Primario sólido + Secundario delineado) */}
-          <div {...revealUp(420)}>
+          <div {...revealUp(280)}>
             <div className="mt-5 sm:mt-6 lg:mt-7 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-3.5">
               <Link
                 to="/catalog"
@@ -103,7 +104,7 @@ export default function SeccionAbout() {
       </div>
 
       {/* Frase literaria centrada como epígrafe de cierre de About */}
-      <div {...revealUp(520)}>
+      <div {...revealUp(340)}>
         <blockquote className="mt-8 sm:mt-10 lg:mt-12 max-w-3xl mx-auto text-center px-2">
           <span
             aria-hidden="true"

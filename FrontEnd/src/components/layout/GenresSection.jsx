@@ -50,10 +50,10 @@ const GENRE_COLUMNS = [
 const VISIBLE_COLUMNS = 3
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)'
 const EASE_SPRING_SETTLE = 'cubic-bezier(0.22, 1.12, 0.36, 1)'
-const HEADER_DURATION_MS = 520
-const TILE_DURATION_MS = 560
-const CONTROLS_DURATION_MS = 320
-const CONTROLS_DELAY_MS = 300
+const HEADER_DURATION_MS = 440
+const TILE_DURATION_MS = 480
+const CONTROLS_DURATION_MS = 280
+const CONTROLS_DELAY_MS = 240
 
 export default function GenresSection() {
   const [colOffset, setColOffset] = useState(0)
@@ -96,8 +96,7 @@ export default function GenresSection() {
         style={{
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 12px, 0)',
-          filter: isVisible ? 'blur(0px)' : 'blur(2px)',
-          transition: `opacity ${HEADER_DURATION_MS}ms ${EASE_OUT}, transform ${HEADER_DURATION_MS}ms ${EASE_OUT}, filter ${HEADER_DURATION_MS}ms ${EASE_OUT}`,
+          transition: `opacity ${HEADER_DURATION_MS}ms ${EASE_OUT}, transform ${HEADER_DURATION_MS}ms ${EASE_OUT}`,
         }}
       >
         <h2
@@ -127,10 +126,10 @@ export default function GenresSection() {
       <div className="relative -mx-4 sm:-mx-3 md:-mx-6 lg:mx-auto lg:max-w-[1100px] px-9 sm:px-12 lg:px-16">
         <div className="overflow-hidden -mx-1 sm:-mx-1.5 lg:-mx-2 -my-3 py-3">
           <div
-            className="flex will-change-transform"
+            className="flex"
             style={{
               transform: `translate3d(-${(colOffset * 100) / VISIBLE_COLUMNS}%, 0, 0)`,
-              transition: 'transform 560ms cubic-bezier(0.22, 1, 0.36, 1)',
+              transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             {GENRE_COLUMNS.map((pair, colIdx) => {
@@ -144,7 +143,7 @@ export default function GenresSection() {
                 >
                   {pair.map((genre, rowIdx) => {
                     const Icon = genre.icon
-                    const delayMs = 90 + colIdx * 75 + rowIdx * 60
+                    const delayMs = 60 + colIdx * 60 + rowIdx * 45
                     return (
                       <div
                         key={genre.query}
@@ -155,9 +154,8 @@ export default function GenresSection() {
                                 opacity: isVisible ? 1 : 0,
                                 transform: isVisible
                                   ? 'translate3d(0, 0, 0) scale(1)'
-                                  : 'translate3d(0, 14px, 0) scale(0.93)',
-                                filter: isVisible ? 'blur(0px)' : 'blur(3px)',
-                                transition: `opacity ${TILE_DURATION_MS}ms ${EASE_OUT} ${delayMs}ms, transform ${TILE_DURATION_MS}ms ${EASE_SPRING_SETTLE} ${delayMs}ms, filter ${TILE_DURATION_MS}ms ${EASE_OUT} ${delayMs}ms`,
+                                  : 'translate3d(0, 14px, 0) scale(0.94)',
+                                transition: `opacity ${TILE_DURATION_MS}ms ${EASE_OUT} ${delayMs}ms, transform ${TILE_DURATION_MS}ms ${EASE_SPRING_SETTLE} ${delayMs}ms`,
                               }
                             : undefined
                         }

@@ -49,9 +49,7 @@
   right: 0;
   bottom: 0;
   z-index: 44;
-  background: rgba(24, 51, 47, 0.36);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: rgba(24, 51, 47, 0.38);
   opacity: 0;
   pointer-events: none;
   transition-property: opacity;
@@ -226,9 +224,7 @@
   gap: 12px;
   height: 56px;
   padding: 0 18px;
-  background: rgba(248, 247, 242, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #f8f7f2;
   border-bottom: 1px solid rgba(214, 208, 192, 0.8);
   flex-shrink: 0;
 }

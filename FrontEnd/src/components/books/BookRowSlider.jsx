@@ -6,10 +6,10 @@ import BookSkeletonCard from './BookSkeletonCard'
 const ITEMS_PER_SLIDE = 5
 const MOBILE_REVEAL_COUNT = 4
 const CARD_REVEAL_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'
-const CARD_REVEAL_DURATION = '640ms'
-const DESKTOP_STAGGER_BASE_MS = 110
-const MOBILE_STAGGER_BASE_MS = 100
-const STAGGER_STEP_MS = 65
+const CARD_REVEAL_DURATION = '500ms'
+const DESKTOP_STAGGER_BASE_MS = 80
+const MOBILE_STAGGER_BASE_MS = 60
+const STAGGER_STEP_MS = 50
 const ARROW_REVEAL_EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
 
 function getCardRevealStyle(revealed, delayMs) {
@@ -17,9 +17,8 @@ function getCardRevealStyle(revealed, delayMs) {
     opacity: revealed ? 1 : 0,
     transform: revealed
       ? 'translate3d(0, 0, 0) scale(1)'
-      : 'translate3d(0, 18px, 0) scale(0.97)',
-    filter: revealed ? 'blur(0px)' : 'blur(3px)',
-    transitionProperty: 'opacity, transform, filter',
+      : 'translate3d(0, 14px, 0) scale(0.97)',
+    transitionProperty: 'opacity, transform',
     transitionDuration: CARD_REVEAL_DURATION,
     transitionTimingFunction: CARD_REVEAL_EASE,
     transitionDelay: revealed ? `${delayMs}ms` : '0ms',
@@ -137,10 +136,10 @@ export default function BookRowSlider({ books = [], loading = false, revealed = 
       <div className="hidden lg:block relative">
         <div className="overflow-hidden -mx-3 px-3 -my-5 py-5">
           <div
-            className="flex will-change-transform"
+            className="flex"
             style={{
               transform: `translate3d(-${safeSlide * 100}%, 0, 0)`,
-              transition: 'transform 650ms cubic-bezier(0.22, 1, 0.36, 1)',
+              transition: 'transform 560ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             {pages.map((pageBooks, pageIdx) => (

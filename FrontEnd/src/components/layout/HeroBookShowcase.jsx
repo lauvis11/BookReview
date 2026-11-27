@@ -353,10 +353,10 @@ export default function HeroBookShowcase({ slides = SLIDES, compact = false }) {
       {/* Viewport con margen de respiro para sombras sin alterar el alto ni la alineación */}
       <div className="overflow-hidden -mx-3 -my-5 py-5">
         <div
-          className="flex will-change-transform"
+          className="flex"
           style={{
             transform: `translate3d(-${activeSlide * 100}%, 0, 0)`,
-            transition: 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1)',
+            transition: 'transform 620ms cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
           {slides.map((slideBooks, slideIdx) => (
@@ -384,6 +384,7 @@ export default function HeroBookShowcase({ slides = SLIDES, compact = false }) {
                           alt={`Portada de ${book.title} por ${book.author}`}
                           className="h-full w-full object-cover"
                           loading="eager"
+                          decoding="async"
                         />
                       ) : (
                         book.renderCover()

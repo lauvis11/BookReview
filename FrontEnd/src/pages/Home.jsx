@@ -128,11 +128,11 @@ export default function Home() {
       >
         <div
           style={{
-            transitionDelay: '120ms',
+            transitionDelay: '60ms',
             transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
           }}
-          className={`flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5 transition-[opacity,transform] duration-1000 ${
-            aiVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          className={`flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5 transition-[opacity,translate] duration-550 ${
+            aiVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -169,11 +169,11 @@ export default function Home() {
               <div
                 key={prompt.text}
                 style={{
-                  transitionDelay: `${220 + index * 100}ms`,
+                  transitionDelay: `${120 + index * 70}ms`,
                   transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
-                className={`transition-[opacity,transform] duration-1000 ${
-                  aiVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                className={`transition-[opacity,translate] duration-550 ${
+                  aiVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
                 <button

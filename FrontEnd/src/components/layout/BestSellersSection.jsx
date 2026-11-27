@@ -91,6 +91,7 @@ function BookCoverFrame({ book, className = '' }) {
           alt={`Portada de ${book.title}`}
           className="h-full w-full object-cover"
           loading="lazy"
+          decoding="async"
         />
       ) : (
         <CoverSvg />
@@ -193,8 +194,8 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
       ref={sectionRef}
       aria-labelledby="bestsellers-section-title"
       style={{
-        transitionDelay: '90ms',
-        transitionDuration: '850ms',
+        transitionDelay: '60ms',
+        transitionDuration: '560ms',
         transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
       }}
       className={`mb-16 md:mb-20 transition-[opacity,translate] ${
@@ -322,10 +323,10 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
           {/* Vista compacta / responsive: Slide horizontal direccional sincronizado con los números 01–05 */}
           <div className={`${isSideOpen ? '' : 'lg:hidden'} h-full overflow-hidden`}>
             <div
-              className="flex h-full will-change-transform"
+              className="flex h-full"
               style={{
                 transform: `translate3d(-${selectedIdx * 100}%, 0, 0)`,
-                transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
+                transition: 'transform 440ms cubic-bezier(0.22, 1, 0.36, 1)',
               }}
             >
               {books.map((book, idx) => {

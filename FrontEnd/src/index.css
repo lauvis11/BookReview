@@ -331,18 +331,15 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
 
 .hero-from-left {
   display: block;
-  will-change: transform, opacity;
-  animation: heroTranslateFromLeft 680ms var(--ease-expo-out) both;
+  animation: heroTranslateFromLeft 620ms var(--ease-expo-out) both;
 }
 
 .hero-from-right {
-  will-change: transform, opacity;
-  animation: heroTranslateFromRight 720ms var(--ease-expo-out) both;
+  animation: heroTranslateFromRight 640ms var(--ease-expo-out) both;
 }
 
 .hero-search-enter {
-  will-change: transform, opacity;
-  animation: heroSearchTranslate 650ms var(--ease-expo-out) both;
+  animation: heroSearchTranslate 580ms var(--ease-expo-out) both;
 }
 
 .hero-btn-sheen {
@@ -407,6 +404,22 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
   animation:
     heroSparklePop 520ms var(--ease-spring-settle) var(--sparkle-delay, 620ms) both,
     heroSparklePulse 3.6s ease-in-out calc(var(--sparkle-delay, 620ms) + 600ms) infinite;
+}
+
+/* En mobile, evita loops decorativos infinitos en segundo plano para mantener 60fps estables */
+@media (max-width: 767px) {
+  .hero-glow-drift,
+  .hero-steam {
+    animation: none;
+  }
+
+  .hero-open-book {
+    animation: heroOpenBookUnfold 520ms var(--ease-out-strong) 340ms both;
+  }
+
+  .hero-sparkle {
+    animation: heroSparklePop 420ms var(--ease-spring-settle) var(--sparkle-delay, 480ms) both;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
