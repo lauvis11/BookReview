@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import * as authAPI from '../api/auth'
+import { invalidateReadingTrackerCache } from '../utils/readingTrackerStore'
 
 const AuthContext = createContext(null)
 
@@ -36,6 +37,7 @@ export function AuthProvider({ children }) {
     try {
       await authAPI.logout()
     } catch (_) { /* ignore */ }
+    invalidateReadingTrackerCache()
     setUser(null)
     localStorage.removeItem('user')
   }
