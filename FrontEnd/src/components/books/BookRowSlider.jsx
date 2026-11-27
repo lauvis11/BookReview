@@ -189,7 +189,7 @@ export default function BookRowSlider({ books = [], loading = false, revealed = 
               disabled={!canPrev || !revealed}
               aria-label="Ver 5 libros anteriores"
               style={{ borderRadius: '9999px' }}
-              className={`absolute -left-10 lg:-left-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              className={`absolute -left-10 lg:-left-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white dark:bg-surface-container border border-primary/20 dark:border-outline-variant text-primary dark:text-[#e8e3d6] hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.58)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 canPrev
                   ? revealed
                     ? 'opacity-100 pointer-events-auto'
@@ -207,7 +207,7 @@ export default function BookRowSlider({ books = [], loading = false, revealed = 
               disabled={!canNext || !revealed}
               aria-label="Ver siguientes 5 libros"
               style={{ borderRadius: '9999px' }}
-              className={`absolute -right-10 lg:-right-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white border border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              className={`absolute -right-10 lg:-right-11 top-[38%] -translate-y-1/2 size-10 lg:size-11 flex items-center justify-center bg-white dark:bg-surface-container border border-primary/20 dark:border-outline-variant text-primary dark:text-[#e8e3d6] hover:bg-primary hover:text-white hover:border-primary shadow-[0_8px_22px_-4px_rgba(14,81,70,0.18),0_2px_6px_rgba(14,81,70,0.08)] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.58)] hover:shadow-[0_12px_28px_-4px_rgba(14,81,70,0.28)] transition-[opacity,color,background-color,border-color,box-shadow,scale] duration-200 ease-out active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 canNext
                   ? revealed
                     ? 'opacity-100 pointer-events-auto'

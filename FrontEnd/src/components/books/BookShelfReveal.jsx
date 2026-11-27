@@ -52,7 +52,7 @@ export default function BookShelfReveal({
         }}
       >
         <div>
-          <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary leading-tight">
+          <h2 className="font-hero-display text-3xl sm:text-[34px] md:text-[38px] font-semibold tracking-[-0.015em] text-primary dark:text-[#e8e3d6] leading-tight">
             {title}
             {accent && (
               <>
@@ -69,7 +69,7 @@ export default function BookShelfReveal({
         </div>
         <Link
           to={ctaTo}
-          className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 hover:text-primary transition-[color] duration-150 ease-out cursor-pointer pb-0.5"
+          className="group inline-flex items-center gap-1.5 font-hero-sans text-[13px] font-semibold text-primary/80 dark:text-[#d6e8b5]/85 hover:text-primary dark:hover:text-[#d6e8b5] transition-[color] duration-150 ease-out cursor-pointer pb-0.5"
         >
           <span>{ctaLabel}</span>
           <ArrowRight
@@ -85,7 +85,7 @@ export default function BookShelfReveal({
       {error && !loading ? (
         <div
           role="alert"
-          className="rounded-2xl bg-[#eae6da]/55 border border-transparent shadow-[0_0_0_1px_oklch(0_0_0/0.06)] px-6 py-9 sm:py-11 flex flex-col items-center justify-center text-center"
+          className="rounded-2xl bg-[#eae6da]/55 dark:bg-surface-container-low border border-transparent dark:border-outline-variant shadow-[0_0_0_1px_oklch(0_0_0/0.06)] dark:shadow-none px-6 py-9 sm:py-11 flex flex-col items-center justify-center text-center"
         >
           <div
             className="flex items-center justify-center text-secondary-dark"
@@ -94,7 +94,7 @@ export default function BookShelfReveal({
             <BookX size={26} strokeWidth={1.75} absoluteStrokeWidth />
           </div>
 
-          <h3 className="mt-3 font-hero-display text-2xl sm:text-[26px] font-semibold text-primary leading-tight">
+          <h3 className="mt-3 font-hero-display text-2xl sm:text-[26px] font-semibold text-primary dark:text-[#e8e3d6] leading-tight">
             No pudimos cargar estos libros
           </h3>
 
@@ -106,7 +106,7 @@ export default function BookShelfReveal({
             <button
               type="button"
               onClick={onRetry}
-              className="mt-5 group inline-flex items-center gap-2 h-9 ps-3.5 pe-4 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="mt-5 group inline-flex items-center gap-2 h-9 ps-3.5 pe-4 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.24)] dark:shadow-[0_6px_18px_-4px_rgba(0,0,0,0.45)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <svg
                 viewBox="0 0 24 24"

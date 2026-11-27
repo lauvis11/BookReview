@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import AiSparkleIcon from '../ui/AiSparkleIcon'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import BrandLogo from '../ui/BrandLogo'
 
 const GENRE_LINKS = [
@@ -15,6 +16,7 @@ const GENRE_LINKS = [
 
 export default function Footer() {
   const { isAuthenticated, user } = useAuth()
+  const { isDark } = useTheme()
   const isAdmin = user?.role === 'admin'
 
   const navLinks = [
@@ -35,7 +37,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full bg-[#eae6da]/75 text-on-surface border-t border-[#d6d0c0]/90 mt-14 sm:mt-16 md:mt-24">
+    <footer className="w-full bg-[#eae6da]/75 dark:bg-footer-bg text-on-surface border-t border-[#d6d0c0]/90 dark:border-outline-variant/80 mt-14 sm:mt-16 md:mt-24">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12 pt-10 sm:pt-14 pb-7 sm:pb-8">
         {/* Main Editorial Grid */}
         <div className="grid grid-cols-2 md:grid-cols-12 gap-x-6 sm:gap-x-8 gap-y-7 sm:gap-y-10 lg:gap-12 pb-8 sm:pb-11">
@@ -45,7 +47,7 @@ export default function Footer() {
               to="/"
               className="inline-flex items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
             >
-              <BrandLogo variant="light" className="h-9 sm:h-10 w-auto" />
+              <BrandLogo variant={isDark ? 'dark' : 'light'} className="h-9 sm:h-10 w-auto" />
             </Link>
 
             <p className="mt-3.5 sm:mt-4 max-w-sm mx-auto md:mx-0 font-hero-sans text-[13.5px] sm:text-[14px] leading-[1.65] text-on-surface-variant">
@@ -58,7 +60,7 @@ export default function Footer() {
             aria-label="Navegación del pie de página"
             className="col-span-1 md:col-span-3 lg:col-span-2 text-center sm:text-left"
           >
-            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-2.5 sm:mb-3.5">
+            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary dark:text-[#e8e3d6] mb-2.5 sm:mb-3.5">
               Navegación
             </h3>
             <ul className="space-y-1.5 sm:space-y-2">
@@ -66,7 +68,7 @@ export default function Footer() {
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
+                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary dark:hover:text-[#d6e8b5] transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                   >
                     {item.label}
                   </Link>
@@ -80,7 +82,7 @@ export default function Footer() {
             aria-label="Géneros destacados"
             className="col-span-1 md:col-span-3 lg:col-span-2 text-center sm:text-left"
           >
-            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary mb-2.5 sm:mb-3.5">
+            <h3 className="font-hero-display text-lg font-semibold tracking-[-0.01em] text-primary dark:text-[#e8e3d6] mb-2.5 sm:mb-3.5">
               Géneros
             </h3>
             <ul className="space-y-1.5 sm:space-y-2">
@@ -88,7 +90,7 @@ export default function Footer() {
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
+                    className="inline-flex items-center py-0.5 font-hero-sans text-[13px] sm:text-[13.5px] font-medium text-on-surface-variant hover:text-primary dark:hover:text-[#d6e8b5] transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                   >
                     {item.label}
                   </Link>
@@ -98,14 +100,14 @@ export default function Footer() {
           </nav>
 
           {/* Columna 4: Bloque abierto del Asistente Lib (sin fondo de tarjeta) */}
-          <div className="col-span-2 md:col-span-12 lg:col-span-4 border-t border-[#d6d0c0]/75 pt-6 lg:border-t-0 lg:pt-0 flex items-start justify-center md:justify-start lg:justify-end text-center md:text-left">
+          <div className="col-span-2 md:col-span-12 lg:col-span-4 border-t border-[#d6d0c0]/75 dark:border-outline-variant/70 pt-6 lg:border-t-0 lg:pt-0 flex items-start justify-center md:justify-start lg:justify-end text-center md:text-left">
             <div className="w-full max-w-sm lg:max-w-md">
               <div className="inline-flex items-center gap-1.5 text-secondary-dark font-hero-sans text-xs font-semibold">
                 <AiSparkleIcon size={15} />
                 <span>Asistente literario Lib</span>
               </div>
 
-              <h3 className="mt-1.5 sm:mt-2 font-hero-display text-2xl font-semibold tracking-[-0.015em] text-primary leading-[1.12]">
+              <h3 className="mt-1.5 sm:mt-2 font-hero-display text-2xl font-semibold tracking-[-0.015em] text-primary dark:text-[#e8e3d6] leading-[1.12]">
                 ¿No sabés qué{' '}
                 <span className="italic font-medium text-secondary-dark">leer ahora?</span>
               </h3>
@@ -118,7 +120,7 @@ export default function Footer() {
                 <button
                   type="button"
                   onClick={handleOpenAssistant}
-                  className="group inline-flex items-center gap-2 h-10 ps-4 pe-3.5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.26)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="group inline-flex items-center gap-2 h-10 ps-4 pe-3.5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.26)] dark:shadow-[0_6px_18px_-4px_rgba(0,0,0,0.45)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span>Hablar con Lib</span>
                   <ArrowRight
@@ -135,14 +137,14 @@ export default function Footer() {
         </div>
 
         {/* Barra inferior centrada */}
-        <div className="border-t border-[#d6d0c0]/85 pt-5 sm:pt-6 flex items-center justify-center">
+        <div className="border-t border-[#d6d0c0]/85 dark:border-outline-variant/75 pt-5 sm:pt-6 flex items-center justify-center">
           <p className="font-hero-sans text-xs text-on-surface-variant text-center tabular-nums">
             © {new Date().getFullYear()} BookReview. Desarrollado por{' '}
             <a
               href="https://github.com/lauvis11"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-0.5 font-semibold text-primary hover:text-secondary-dark underline underline-offset-4 decoration-primary/30 hover:decoration-secondary-dark transition-[color,text-decoration-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
+              className="group inline-flex items-center gap-0.5 font-semibold text-primary dark:text-[#d6e8b5] hover:text-secondary-dark underline underline-offset-4 decoration-primary/30 dark:decoration-[#d6e8b5]/40 hover:decoration-secondary-dark transition-[color,text-decoration-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
             >
               <span>Lautaro Viscarra</span>
               <ArrowUpRight

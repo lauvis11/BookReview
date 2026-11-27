@@ -45,7 +45,7 @@ function parseBold(text) {
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={i} className="font-semibold text-primary">
+        <strong key={i} className="font-semibold text-primary dark:text-[#d6e8b5]">
           {part.slice(2, -2)}
         </strong>
       )
@@ -63,7 +63,7 @@ export default function ChatMessage({ message, isStreaming }) {
         {isUser ? message.text : renderMarkdown(message.text)}
         {isStreaming && (
           <span
-            className="inline-block w-[2px] h-4 bg-primary/80 ml-1 align-middle animate-pulse"
+            className="inline-block w-[2px] h-4 bg-primary/80 dark:bg-[#edbd79] ml-1 align-middle animate-pulse"
             aria-hidden="true"
           />
         )}

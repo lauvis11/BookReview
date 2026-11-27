@@ -232,11 +232,11 @@ export default function BookDetail() {
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-start mb-12 md:mb-24">
         {/* Left: Large Book Cover */}
         <div className="lg:col-span-5 xl:col-span-4 group relative">
-          <div className="aspect-[2/3] w-full max-h-[60vw] sm:max-h-[50vw] lg:max-h-none rounded-sm overflow-hidden shadow-[6px_0_30px_-8px_rgba(0,0,0,0.4)] transition-all duration-500 group-hover:shadow-[8px_0_40px_-8px_rgba(0,0,0,0.5)]">
+          <div className="aspect-[2/3] w-full max-h-[60vw] sm:max-h-[50vw] lg:max-h-none rounded-sm overflow-hidden ring-1 ring-black/[0.06] dark:ring-white/10 shadow-[6px_0_30px_-8px_rgba(0,0,0,0.4)] transition-all duration-500 group-hover:shadow-[8px_0_40px_-8px_rgba(0,0,0,0.5)]">
             {book.img ? (
               <img className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={book.img} alt={book.title} />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-surface-container text-6xl text-primary/20">📖</div>
+              <div className="w-full h-full flex items-center justify-center bg-surface-container text-6xl text-primary/20 dark:text-on-surface-variant/40">📖</div>
             )}
             {/* Subtle spine */}
             <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/25 to-transparent pointer-events-none z-10"></div>
@@ -246,10 +246,10 @@ export default function BookDetail() {
         {/* Right: Editorial Meta */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 md:gap-8">
           <div>
-            <span className="font-label text-[10px] md:text-xs uppercase tracking-[0.2em] text-secondary font-semibold mb-3 md:mb-4 block">
+            <span className="font-label text-[10px] md:text-xs uppercase tracking-[0.2em] text-secondary-dark font-semibold mb-3 md:mb-4 block">
               {Array.isArray(book.genre) ? book.genre.join(' / ') : book.genre || 'Ficción'}
             </span>
-            <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-primary leading-[0.9] tracking-tighter mb-4 md:mb-6">
+            <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-primary dark:text-[#e8e3d6] leading-[0.9] tracking-tighter mb-4 md:mb-6">
               {book.title}
             </h1>
             <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-x-8 sm:gap-y-4">
@@ -259,16 +259,16 @@ export default function BookDetail() {
               <div className="flex flex-wrap gap-4 sm:gap-6 items-center sm:border-l sm:border-outline-variant sm:pl-8 pt-2 sm:pt-0 border-t border-outline-variant/20 sm:border-t-0">
                 <div className="flex flex-col">
                   <span className="font-label text-[9px] md:text-xs uppercase tracking-widest text-outline">Publicado</span>
-                  <span className="font-body font-bold text-base md:text-lg text-primary">{book.year}</span>
+                  <span className="font-body font-bold text-base md:text-lg text-primary dark:text-[#e8e3d6]">{book.year}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label text-[9px] md:text-xs uppercase tracking-widest text-outline">Páginas</span>
-                  <span className="font-body font-bold text-base md:text-lg text-primary">{book.pages}</span>
+                  <span className="font-body font-bold text-base md:text-lg text-primary dark:text-[#e8e3d6]">{book.pages}</span>
                 </div>
                 {book.editorial && (
                   <div className="flex flex-col">
                     <span className="font-label text-[9px] md:text-xs uppercase tracking-widest text-outline">Editorial</span>
-                    <span className="font-body font-bold text-base md:text-lg text-primary">{book.editorial}</span>
+                    <span className="font-body font-bold text-base md:text-lg text-primary dark:text-[#e8e3d6]">{book.editorial}</span>
                   </div>
                 )}
               </div>
@@ -280,7 +280,7 @@ export default function BookDetail() {
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
               {renderStars(Number(book.rate), 'text-2xl md:text-3xl')}
               <div className="flex items-baseline gap-2">
-                <span className="font-headline text-2xl md:text-3xl font-black text-primary">{Number(book.rate).toFixed(1)} / 5</span>
+                <span className="font-headline text-2xl md:text-3xl font-black text-primary dark:text-[#e8e3d6]">{Number(book.rate).toFixed(1)} / 5</span>
               </div>
             </div>
             <span className="text-xs md:text-sm text-on-surface-variant font-label uppercase tracking-widest font-bold">
@@ -300,12 +300,12 @@ export default function BookDetail() {
           {isAuthenticated && (
             <div className="flex flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
               <button onClick={() => setStatusModalOpen(true)}
-                className="flex-1 sm:flex-none px-6 md:px-10 py-3.5 md:py-4 bg-primary text-on-primary rounded-xl font-label font-bold uppercase tracking-widest text-xs md:text-sm shadow-xl hover:scale-105 hover:shadow-2xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
+                className="flex-1 sm:flex-none px-6 md:px-10 py-3.5 md:py-4 bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-on-primary rounded-xl font-label font-bold uppercase tracking-widest text-xs md:text-sm shadow-xl hover:scale-105 hover:shadow-2xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
                 <span className="material-symbols-outlined text-base md:text-lg">bookmark</span>
                 Por leer
               </button>
               <button onClick={handleFavorite}
-                className={`py-3.5 md:py-4 border rounded-xl font-label font-bold uppercase tracking-widest text-sm transition-all duration-300 w-12 md:w-14 h-12 md:h-14 flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 group ${isFavorite ? 'bg-primary border-primary text-secondary-light shadow-lg' : 'border-outline text-secondary-dark bg-surface-container-high hover:bg-surface-container-low'}`}>
+                className={`py-3.5 md:py-4 border rounded-xl font-label font-bold uppercase tracking-widest text-sm transition-all duration-300 w-12 md:w-14 h-12 md:h-14 flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 group ${isFavorite ? 'bg-primary border-primary text-secondary-light shadow-lg' : 'border-outline dark:border-outline-variant text-secondary-dark bg-surface-container-high hover:bg-surface-container-low'}`}>
                 <span className={`material-symbols-outlined text-lg transition-transform duration-300 group-hover:scale-110 ${isFavorite ? 'scale-110' : ''}`}
                   style={{ fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0" }}>
                   favorite
@@ -314,7 +314,7 @@ export default function BookDetail() {
             </div>
           )}
 
-          {statusMsg && <p className="text-sm text-accent font-label uppercase tracking-widest font-bold animate-pulse">{statusMsg}</p>}
+          {statusMsg && <p className="text-sm text-secondary-dark font-label uppercase tracking-widest font-bold animate-pulse">{statusMsg}</p>}
         </div>
       </section>
 
@@ -323,9 +323,9 @@ export default function BookDetail() {
         <div className="lg:col-span-8 space-y-12">
           {/* Synopsis */}
           {book.sinopsis && (
-            <div className="bg-surface-container-low p-6 sm:p-10 md:p-16 rounded-xl relative">
+            <div className="bg-surface-container-low dark:border dark:border-outline-variant/65 p-6 sm:p-10 md:p-16 rounded-xl relative">
               <span className="absolute top-8 left-8 text-6xl font-serif text-outline-variant opacity-30 select-none">"</span>
-              <h2 className="font-label text-xs uppercase tracking-[0.3em] text-secondary font-bold mb-8">Sinopsis</h2>
+              <h2 className="font-label text-xs uppercase tracking-[0.3em] text-secondary-dark font-bold mb-8">Sinopsis</h2>
               <div className="font-body text-lg leading-relaxed text-on-surface-variant space-y-6">
                 <p>{book.sinopsis}</p>
               </div>
@@ -358,14 +358,14 @@ export default function BookDetail() {
           <div className="space-y-12">
             <div className="flex justify-between items-end">
               <div>
-                <span className="font-label text-[10px] uppercase tracking-[0.3em] text-secondary font-semibold mb-2 block">
+                <span className="font-label text-[10px] uppercase tracking-[0.3em] text-secondary-dark font-semibold mb-2 block">
                   Voces de Lectores
                 </span>
-                <h2 className="font-headline text-4xl font-bold text-primary">Reseñas</h2>
+                <h2 className="font-headline text-4xl font-bold text-primary dark:text-[#e8e3d6]">Reseñas</h2>
               </div>
               {isAuthenticated && (
                 <button onClick={() => document.getElementById('comment-area')?.focus()}
-                  className="font-label text-xs uppercase tracking-widest text-secondary font-bold border-b border-secondary pb-1 hover:text-primary hover:border-primary transition-all cursor-pointer">
+                  className="font-label text-xs uppercase tracking-widest text-secondary-dark font-bold border-b border-secondary-dark pb-1 hover:text-primary dark:hover:text-[#d6e8b5] hover:border-primary dark:hover:border-[#d6e8b5] transition-all cursor-pointer">
                   Añadir Reseña
                 </button>
               )}
@@ -374,9 +374,9 @@ export default function BookDetail() {
             {/* New comment form - Editorial Style */}
             {isAuthenticated && (
               <form onSubmit={handleComment} className="relative">
-                <div className="bg-surface-container-low p-5 sm:p-8 md:p-10 relative overflow-hidden">
+                <div className="bg-surface-container-low dark:border dark:border-outline-variant/65 p-5 sm:p-8 md:p-10 relative overflow-hidden">
                   {/* Decorative quote mark */}
-                  <span className="absolute top-4 left-6 text-8xl font-serif text-primary/5 select-none leading-none">"</span>
+                  <span className="absolute top-4 left-6 text-8xl font-serif text-primary/5 dark:text-white/5 select-none leading-none">"</span>
                   
                   {/* User avatar and name */}
                   <div className="flex items-center gap-4 mb-6 relative z-10">
@@ -384,7 +384,7 @@ export default function BookDetail() {
                       {user?.name?.charAt(0)?.toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-bold text-primary text-sm">{user?.name}</p>
+                      <p className="font-bold text-primary dark:text-[#e8e3d6] text-sm">{user?.name}</p>
                       <p className="text-[10px] font-label uppercase tracking-widest text-outline">Comparte tu opinión</p>
                     </div>
                   </div>
@@ -395,7 +395,7 @@ export default function BookDetail() {
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Escribe una reseña honesta..."
                     rows={3}
-                    className="w-full bg-transparent border-0 border-b-2 border-outline-variant/30 focus:border-secondary focus:ring-0 transition-all duration-300 py-4 px-1 font-body text-lg text-on-surface placeholder:text-outline/50 resize-none leading-relaxed relative z-10"
+                    className="w-full bg-transparent border-0 border-b-2 border-outline-variant/30 dark:border-outline-variant/70 focus:border-secondary focus:ring-0 transition-all duration-300 py-4 px-1 font-body text-lg text-on-surface placeholder:text-outline/50 resize-none leading-relaxed relative z-10"
                   />
                   
                   <div className="flex justify-between items-center mt-6 relative z-10">
@@ -404,7 +404,7 @@ export default function BookDetail() {
                     </p>
                     <button type="submit"
                       disabled={!newComment.trim()}
-                      className="px-8 py-3 bg-primary text-on-primary font-label text-xs uppercase tracking-[0.15em] rounded shadow-lg hover:shadow-xl hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg">
+                      className="px-8 py-3 bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-on-primary font-label text-xs uppercase tracking-[0.15em] rounded shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg">
                       Publicar Reseña
                     </button>
                   </div>
@@ -417,8 +417,8 @@ export default function BookDetail() {
 
             {/* Comments list */}
             {comments.length === 0 && (
-              <div className="text-center py-16 border-y border-outline-variant/20">
-                <span className="material-symbols-outlined text-5xl text-outline-variant/40 mb-4 block">forum</span>
+              <div className="text-center py-16 border-y border-outline-variant/20 dark:border-outline-variant/60">
+                <span className="material-symbols-outlined text-5xl text-outline-variant/40 dark:text-outline/50 mb-4 block">forum</span>
                 <p className="text-on-surface-variant font-body italic">Sé el primero en compartir tu reseña</p>
               </div>
             )}
@@ -431,10 +431,10 @@ export default function BookDetail() {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {/* Main comment */}
-                  <div className="flex gap-3 md:gap-6 p-4 md:p-8 bg-white/50 hover:bg-white transition-all duration-300 rounded-sm">
+                  <div className="flex gap-3 md:gap-6 p-4 md:p-8 bg-white/50 dark:bg-surface-container-low/80 hover:bg-white dark:hover:bg-surface-container border border-transparent dark:border-outline-variant/55 transition-all duration-300 rounded-sm">
                     {/* Avatar */}
                     <div className="shrink-0">
-                      <Link to={`/user/${comment.user_id}`} className="block w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm hover:ring-secondary transition-all duration-200">
+                      <Link to={`/user/${comment.user_id}`} className="w-9 md:w-12 h-9 md:h-12 rounded-full overflow-hidden ring-2 ring-surface-container-high ring-offset-2 ring-offset-surface bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-sm hover:ring-secondary transition-all duration-200">
                         {comment.profile_img ? (
                           <img className="w-full h-full object-cover bg-surface-container-high" src={comment.profile_img} alt={comment.name} />
                         ) : (
@@ -447,9 +447,9 @@ export default function BookDetail() {
                     <div className="flex-1 min-w-0">
                       {/* Header */}
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
-                        <Link to={`/user/${comment.user_id}`} className="font-headline font-bold text-primary hover:text-secondary transition-colors duration-200">{comment.name}</Link>
+                        <Link to={`/user/${comment.user_id}`} className="font-headline font-bold text-primary dark:text-[#e8e3d6] hover:text-secondary transition-colors duration-200">{comment.name}</Link>
                         <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
-                        <time className="text-secondary font-bold text-[11px] font-label tracking-widest">
+                        <time className="text-secondary-dark font-bold text-[11px] font-label tracking-widest">
                           {new Date(comment.create_at).toLocaleDateString('es-AR', { 
                             day: '2-digit', 
                             month: '2-digit', 
@@ -468,15 +468,14 @@ export default function BookDetail() {
                           onClick={() => handleLike(comment.id)}
                           className={`flex items-center gap-2 transition-all duration-200 cursor-pointer group/like ${
                             likedComments.has(comment.id) 
-                              ? 'text-primary' 
-                              : 'text-outline hover:text-primary'
+                              ? 'text-primary dark:text-[#edbd79]' 
+                              : 'text-outline hover:text-primary dark:hover:text-[#edbd79]'
                           }`}>
                           <span className={`material-symbols-outlined text-lg transition-transform duration-200 group-hover/like:scale-110 ${
                             likedComments.has(comment.id) ? 'scale-110' : ''
                           }`}
                           style={{ 
-                            fontVariationSettings: likedComments.has(comment.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0",
-                            color: likedComments.has(comment.id) ? '#0e5146' : undefined
+                            fontVariationSettings: likedComments.has(comment.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0"
                           }}>
                             favorite
                           </span>
@@ -533,8 +532,8 @@ export default function BookDetail() {
                             </Link>
                             <div className="flex-1">
                               <div className="flex items-baseline gap-2 mb-1">
-                                <Link to={`/user/${reply.user_id}`} className="font-bold text-sm text-primary hover:text-secondary transition-colors duration-200">{reply.name}</Link>
-                                <span className="text-secondary font-bold text-[10px] font-label tracking-wider">
+                                <Link to={`/user/${reply.user_id}`} className="font-bold text-sm text-primary dark:text-[#e8e3d6] hover:text-secondary transition-colors duration-200">{reply.name}</Link>
+                                <span className="text-secondary-dark font-bold text-[10px] font-label tracking-wider">
                                   {new Date(reply.create_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                                 </span>
                               </div>
@@ -544,13 +543,12 @@ export default function BookDetail() {
                                 onClick={() => handleLike(reply.id)}
                                 className={`flex items-center gap-1.5 transition-all duration-200 cursor-pointer ${
                                   likedComments.has(reply.id) 
-                                    ? 'text-primary' 
-                                    : 'text-outline hover:text-primary'
+                                    ? 'text-primary dark:text-[#edbd79]' 
+                                    : 'text-outline hover:text-primary dark:hover:text-[#edbd79]'
                                 }`}>
                                 <span className="material-symbols-outlined text-sm transition-transform duration-200 hover:scale-110"
                                   style={{ 
-                                    fontVariationSettings: likedComments.has(reply.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0",
-                                    color: likedComments.has(reply.id) ? '#0e5146' : undefined
+                                    fontVariationSettings: likedComments.has(reply.id) ? "'FILL' 1, 'wght' 600" : "'FILL' 0"
                                   }}>
                                   favorite
                                 </span>
@@ -566,7 +564,7 @@ export default function BookDetail() {
                   </div>
                   
                   {/* Divider */}
-                  <div className="mt-8 border-b border-outline-variant/10"></div>
+                  <div className="mt-8 border-b border-outline-variant/10 dark:border-outline-variant/40"></div>
                 </article>
               ))}
             </div>
@@ -597,15 +595,15 @@ function StatusModal({ onClose, onSelect }) {
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 dark:bg-black/68 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="bg-white w-full max-w-sm rounded-2xl shadow-[0_20px_60px_rgba(24,51,47,0.2)] overflow-hidden animate-[dropdownIn_0.3s_ease]"
+        className="bg-white dark:bg-surface-container-low border border-transparent dark:border-outline-variant w-full max-w-sm rounded-2xl shadow-[0_20px_60px_rgba(24,51,47,0.2)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] overflow-hidden animate-[dropdownIn_0.3s_ease]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
-          <h3 className="font-headline text-lg font-bold text-primary">Estado de lectura</h3>
-          <button onClick={onClose} className="text-outline hover:text-primary transition-colors cursor-pointer">
+        <div className="px-6 py-4 border-b border-outline-variant/30 dark:border-outline-variant flex items-center justify-between">
+          <h3 className="font-headline text-lg font-bold text-primary dark:text-[#e8e3d6]">Estado de lectura</h3>
+          <button onClick={onClose} className="text-outline hover:text-primary dark:hover:text-[#e8e3d6] transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
@@ -616,12 +614,12 @@ function StatusModal({ onClose, onSelect }) {
             <button
               key={status.id}
               onClick={() => onSelect(status.id)}
-              className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-all duration-200 group cursor-pointer"
+              className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low dark:hover:bg-surface-container transition-all duration-200 group cursor-pointer"
             >
               <div className={`w-10 h-10 rounded-lg ${status.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
                 <span className="material-symbols-outlined text-white">{status.icon}</span>
               </div>
-              <span className="font-headline font-bold text-primary flex-1 text-left">{status.label}</span>
+              <span className="font-headline font-bold text-primary dark:text-[#e8e3d6] flex-1 text-left">{status.label}</span>
             </button>
           ))}
         </div>

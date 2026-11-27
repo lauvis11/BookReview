@@ -37,7 +37,7 @@ export default function BookGrid({
   if (!books || books.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="font-hero-display text-3xl font-semibold text-primary">{emptyTitle}</p>
+        <p className="font-hero-display text-3xl font-semibold text-primary dark:text-[#e8e3d6]">{emptyTitle}</p>
         <p className="mt-2 font-hero-sans text-sm text-on-surface-variant">{emptySubtitle}</p>
       </div>
     )

@@ -778,3 +778,190 @@
     padding: 10px 12px 14px;
   }
 }
+
+/* ============================================================================
+   Dark Mode Overrides (Warm Editorial Forest & Gold)
+   ============================================================================ */
+.dark .ai-side-backdrop {
+  background: rgba(4, 10, 8, 0.68);
+}
+
+.dark .ai-side-panel {
+  background: #0c1412;
+  border-top-color: #293e38;
+  border-left-color: #293e38;
+  box-shadow:
+    -18px 0 44px -14px rgba(0, 0, 0, 0.65),
+    -1px 0 0 rgba(237, 189, 121, 0.08);
+}
+
+@media (min-width: 1024px) {
+  .dark .ai-side-panel {
+    box-shadow:
+      -14px 0 36px -14px rgba(0, 0, 0, 0.55),
+      -1px 0 0 rgba(237, 189, 121, 0.07);
+  }
+}
+
+.dark .chat-bubble {
+  background: linear-gradient(135deg, #19826f 0%, #146c5c 100%);
+  border-color: rgba(237, 189, 121, 0.28);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.52),
+    0 2px 8px rgba(20, 108, 92, 0.32);
+}
+
+.dark .chat-bubble.notify-attention::after {
+  border-color: rgba(237, 189, 121, 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark .chat-bubble:hover {
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.6),
+      0 0 0 6px rgba(237, 189, 121, 0.14);
+  }
+}
+
+.dark .chat-bubble:focus-visible,
+.dark .chat-icon-btn:focus-visible,
+.dark .chat-quick-prompt-btn:focus-visible,
+.dark .chat-send-btn:focus-visible {
+  outline-color: #edbd79;
+}
+
+.dark .chat-header {
+  background: #0c1412;
+  border-bottom-color: #293e38;
+}
+
+.dark .chat-header-sparkle {
+  color: #edbd79;
+}
+
+.dark .chat-header-name {
+  color: #e8e3d6;
+}
+
+.dark .chat-header-badge {
+  background: rgba(237, 189, 121, 0.16);
+  color: #edbd79;
+}
+
+.dark .chat-icon-btn {
+  color: #a6b7b1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark .chat-icon-btn:hover:not(:disabled) {
+    background: #1f312c;
+    color: #f0ede6;
+  }
+}
+
+.dark .chat-messages-area::-webkit-scrollbar-thumb {
+  background: rgba(166, 183, 177, 0.24);
+}
+
+.dark .chat-welcome-title {
+  color: #e8e3d6;
+}
+
+.dark .ai-modal-shell {
+  background: #0c1412;
+}
+
+.dark .chat-quick-prompt-btn {
+  background: #192824;
+  border-color: #293e38;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.45);
+  color: #f0ede6;
+}
+
+.dark .chat-quick-prompt-arrow {
+  color: #7c918a;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark .chat-quick-prompt-btn:hover {
+    background: #1f312c;
+    border-color: rgba(237, 189, 121, 0.42);
+    box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.55);
+    color: #edbd79;
+  }
+
+  .dark .chat-quick-prompt-btn:hover .chat-quick-prompt-arrow {
+    color: #edbd79;
+  }
+}
+
+.dark .chat-msg-row.model .chat-bubble-text {
+  background: #192824;
+  color: #f0ede6;
+  border-color: #293e38;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.42);
+}
+
+.dark .chat-msg-row.user .chat-bubble-text {
+  background: #146c5c;
+  color: #fdfcf7;
+  box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.45);
+}
+
+.dark .typing-dots {
+  background: #192824;
+  border-color: #293e38;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.4);
+}
+
+.dark .typing-dots span {
+  background: #edbd79;
+}
+
+.dark .chat-error-banner {
+  background: rgba(120, 26, 26, 0.42);
+  border-color: rgba(255, 138, 128, 0.35);
+  color: #ffdad6;
+}
+
+.dark .chat-input-area {
+  background: #0c1412;
+}
+
+.dark .chat-welcome-composer .chat-input-area {
+  background: transparent;
+}
+
+.dark .chat-input-row {
+  background: #131f1c;
+  border-color: #293e38;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.42);
+}
+
+.dark .chat-input-row:focus-within {
+  border-color: rgba(237, 189, 121, 0.55);
+  box-shadow:
+    0 8px 24px -8px rgba(0, 0, 0, 0.55),
+    0 0 0 3px rgba(237, 189, 121, 0.14);
+}
+
+.dark .chat-input-row .chat-textarea {
+  color: #f0ede6;
+}
+
+.dark .chat-textarea::placeholder {
+  color: #7c918a;
+}
+
+.dark .chat-send-btn {
+  background: #146c5c;
+  color: #ffffff;
+  box-shadow: 0 4px 12px -3px rgba(0, 0, 0, 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark .chat-send-btn:hover:not(:disabled) {
+    background: #19826f;
+    box-shadow: 0 6px 16px -3px rgba(0, 0, 0, 0.52);
+  }
+}

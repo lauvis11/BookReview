@@ -12,6 +12,7 @@ import {
   Mail,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { frases } from '../utils/frases'
 import { useSEO } from '../hooks/useSEO'
 import BrandLogo from '../components/ui/BrandLogo'
@@ -21,6 +22,7 @@ const FOLD_ANGLES = [0, 3.2, 3.6, 4.0, 4.4, 4.8, 5.2, 5.5, 5.5, 5.2, 4.8, 4.4, 4
 const TURN_DURATION_MS = 800
 
 export default function Auth() {
+  const { isDark } = useTheme()
   const [isLogin, setIsLogin] = useState(true)
   const [isTurning, setIsTurning] = useState(false)
   const turnTimerRef = useRef(null)
@@ -115,7 +117,7 @@ export default function Auth() {
     return (
       <div
         className={`relative flex items-center justify-center w-full h-full bg-primary p-10 sm:p-12 lg:p-14 overflow-hidden select-none ${
-          isFront ? 'border-r-[3px] border-[#dfd6c5]' : 'border-l-[3px] border-[#dfd6c5]'
+          isFront ? 'border-r-[3px] border-[#dfd6c5] dark:border-[#213a34]' : 'border-l-[3px] border-[#dfd6c5] dark:border-[#213a34]'
         }`}
       >
         {/* Sombreado natural del giro de hoja 3D */}
@@ -216,7 +218,7 @@ export default function Auth() {
             tabIndex={isActive ? 0 : -1}
             className="inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
           >
-            <BrandLogo variant="light" className="h-8 sm:h-9 w-auto" />
+            <BrandLogo variant={isDark ? 'dark' : 'light'} className="h-8 sm:h-9 w-auto" />
           </Link>
 
           <h1 className="mt-4 font-headline text-2xl sm:text-[26px] font-bold tracking-tight text-on-surface leading-snug">
@@ -289,10 +291,10 @@ export default function Auth() {
                   onChange={(e) => setEmail(e.target.value)}
                   tabIndex={isActive ? 0 : -1}
                   required
-                  className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-3.5 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white ${
+                  className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-3.5 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container ${
                     !isLoginMode && isEmailInvalid
                       ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(186,26,26,0.12)]'
-                      : 'border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)]'
+                      : 'border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)]'
                   }`}
                 />
               </div>
@@ -323,17 +325,17 @@ export default function Auth() {
                   onChange={(e) => setPassword(e.target.value)}
                   tabIndex={isActive ? 0 : -1}
                   required
-                  className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white ${
+                  className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container ${
                     !isLoginMode && isPasswordInvalid
                       ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(186,26,26,0.12)]'
-                      : 'border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)]'
+                      : 'border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)]'
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={isActive ? 0 : -1}
-                  className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
+                  className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary dark:hover:text-[#edbd79] hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
                   {showPassword ? (
@@ -351,7 +353,7 @@ export default function Auth() {
                 <li
                   className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${
                     isEmailValid
-                      ? 'text-primary font-medium'
+                      ? 'text-primary dark:text-[#d6e8b5] font-medium'
                       : isEmailInvalid
                       ? 'text-error'
                       : 'text-on-surface-variant/80'
@@ -373,7 +375,7 @@ export default function Auth() {
                 <li
                   className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${
                     isPasswordValid
-                      ? 'text-primary font-medium'
+                      ? 'text-primary dark:text-[#d6e8b5] font-medium'
                       : isPasswordInvalid
                       ? 'text-error'
                       : 'text-on-surface-variant/80'
@@ -401,7 +403,7 @@ export default function Auth() {
                 type="submit"
                 disabled={loading}
                 tabIndex={isActive ? 0 : -1}
-                className="group w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="group w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {loading ? (
                   <>
@@ -429,7 +431,7 @@ export default function Auth() {
                 <Link
                   to="/recuperar-contraseña"
                   tabIndex={isActive ? 0 : -1}
-                  className="font-body text-xs font-semibold text-primary hover:text-[#166e5e] underline underline-offset-4 decoration-primary/70 hover:decoration-[#166e5e] transition-[color,text-decoration-color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-xs"
+                  className="font-body text-xs font-semibold text-primary dark:text-[#d6e8b5] hover:text-[#166e5e] dark:hover:text-[#edbd79] underline underline-offset-4 decoration-primary/70 dark:decoration-[#d6e8b5]/60 hover:decoration-[#166e5e] dark:hover:decoration-[#edbd79] transition-[color,text-decoration-color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-xs"
                 >
                   Recuperar contraseña
                 </Link>
@@ -462,14 +464,14 @@ export default function Auth() {
       {/* Atmósfera editorial sutil de fondo */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(14,81,70,0.06),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.12),transparent_50%)]"
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(14,81,70,0.06),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.12),transparent_50%)] dark:bg-[radial-gradient(circle_at_15%_20%,rgba(20,108,92,0.18),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.08),transparent_50%)]"
       />
 
       {/* Barra superior minimalista sin bordes ni fondo para acceder sin cuenta */}
       <div className="relative z-10 w-full max-w-4xl mb-3 flex items-center justify-between">
         <Link
           to="/"
-          className="group inline-flex items-center gap-1 py-1 font-body text-sm font-medium text-primary hover:text-outline transition-[color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-xs"
+          className="group inline-flex items-center gap-1 py-1 font-body text-sm font-medium text-primary dark:text-[#d6e8b5] hover:text-outline dark:hover:text-[#edbd79] transition-[color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-xs"
         >
           <ChevronLeft
             size={16}
@@ -483,7 +485,7 @@ export default function Auth() {
       </div>
 
       {/* Cubierta exterior de tapa dura (Concentric radius: outer 22px = inner 11px + 10px p-2.5 + 1px border) */}
-      <div className="relative z-10 w-full max-w-4xl rounded-[22px] bg-[#0b3b33] p-2 sm:p-2.5 shadow-[0_32px_70px_-15px_rgba(7,35,30,0.42)] border border-secondary/25">
+      <div className="relative z-10 w-full max-w-4xl rounded-[22px] bg-[#0b3b33] dark:bg-[#071f1a] p-2 sm:p-2.5 shadow-[0_32px_70px_-15px_rgba(7,35,30,0.42)] dark:shadow-[0_36px_80px_-15px_rgba(0,0,0,0.75)] border border-secondary/25 dark:border-secondary/35">
         {/* Cinta marcapáginas dorada en el lomo superior */}
         <div
           aria-hidden="true"
@@ -494,7 +496,7 @@ export default function Auth() {
         <div className="auth-book-spread relative w-full min-h-[580px] grid grid-cols-1 md:grid-cols-2 bg-surface-container-lowest rounded-[11px]">
           {/* Página izquierda estática (Formulario de Registro en Desktop / Hoja con giro suave en Móvil) */}
           <div
-            className={`col-start-1 row-start-1 md:col-start-1 md:row-start-1 w-full h-full rounded-[11px] md:rounded-none md:rounded-l-[11px] overflow-hidden border-l-[3px] border-[#e6dfd3] transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            className={`col-start-1 row-start-1 md:col-start-1 md:row-start-1 w-full h-full rounded-[11px] md:rounded-none md:rounded-l-[11px] overflow-hidden border-l-[3px] border-[#e6dfd3] dark:border-outline-variant transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.23,1,0.32,1)] ${
               !isLogin
                 ? 'opacity-100 translate-x-0 z-10'
                 : 'opacity-0 -translate-x-4 pointer-events-none md:opacity-100 md:translate-x-0 md:pointer-events-auto z-0'
@@ -505,7 +507,7 @@ export default function Auth() {
 
           {/* Página derecha estática (Formulario de Login en Desktop / Hoja con giro suave en Móvil) */}
           <div
-            className={`col-start-1 row-start-1 md:col-start-2 md:row-start-1 w-full h-full rounded-[11px] md:rounded-none md:rounded-r-[11px] overflow-hidden border-r-[3px] border-[#e6dfd3] transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            className={`col-start-1 row-start-1 md:col-start-2 md:row-start-1 w-full h-full rounded-[11px] md:rounded-none md:rounded-r-[11px] overflow-hidden border-r-[3px] border-[#e6dfd3] dark:border-outline-variant transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.23,1,0.32,1)] ${
               isLogin
                 ? 'opacity-100 translate-x-0 z-10'
                 : 'opacity-0 translate-x-4 pointer-events-none md:opacity-100 md:translate-x-0 md:pointer-events-auto z-0'

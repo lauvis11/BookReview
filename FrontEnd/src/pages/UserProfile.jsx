@@ -188,7 +188,7 @@ export default function UserProfile() {
       activities.push({
         type: 'reading',
         icon: 'auto_stories',
-        color: 'text-primary',
+        color: 'text-primary dark:text-[#d6e8b5]',
         bgColor: 'bg-primary-fixed',
         message: 'Está leyendo',
         book: book.title,
@@ -201,8 +201,8 @@ export default function UserProfile() {
       activities.push({
         type: 'favorite',
         icon: 'favorite',
-        color: 'text-[#ba1a1a]',
-        bgColor: 'bg-[#ffdad6]/50',
+        color: 'text-[#ba1a1a] dark:text-[#ff8a80]',
+        bgColor: 'bg-[#ffdad6]/50 dark:bg-[#ff8a80]/15',
         message: 'Agregó a favoritos',
         book: book.title,
         bookId: book.id
@@ -214,7 +214,7 @@ export default function UserProfile() {
       activities.push({
         type: 'completed',
         icon: 'check_circle',
-        color: 'text-primary-container',
+        color: 'text-primary-container dark:text-[#d6e8b5]',
         bgColor: 'bg-primary-fixed/80',
         message: 'Completó',
         book: book.title,
@@ -301,7 +301,7 @@ export default function UserProfile() {
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 pt-6 md:pt-8 pb-4">
           {/* Avatar */}
           <div className="relative group">
-            <div className="w-24 md:w-36 h-24 md:h-36 rounded-full overflow-hidden shadow-[0_8px_30px_rgba(14,81,70,0.2)] ring-4 ring-white">
+            <div className="w-24 md:w-36 h-24 md:h-36 rounded-full overflow-hidden shadow-[0_8px_30px_rgba(14,81,70,0.2)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.6)] ring-4 ring-white dark:ring-surface-container-highest">
               {profile.profile_img ? (
                 <img alt={profile.name} className="w-full h-full object-cover bg-surface-container-high" src={profile.profile_img} />
               ) : (
@@ -316,7 +316,7 @@ export default function UserProfile() {
           <div className="flex-1 text-center md:text-left">
             <div className="mb-3 md:mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-primary tracking-tight leading-none">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-primary dark:text-[#e8e3d6] tracking-tight leading-none">
                   {profile.name}
                 </h1>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3">
@@ -360,14 +360,14 @@ export default function UserProfile() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-primary/40 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-primary/40 dark:bg-black/72 backdrop-blur-sm transition-opacity"
             onClick={() => {
               if (!requireProfileName && !savingProfile) setEditing(false)
             }}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-surface-container-lowest dark:border dark:border-outline-variant rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="bg-primary px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -399,7 +399,7 @@ export default function UserProfile() {
               <div className="relative group">
                 <label
                   htmlFor="profile-display-name"
-                  className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary"
+                  className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary dark:group-focus-within:text-secondary"
                 >
                   Nombre de perfil {requireProfileName && <span className="text-error">*</span>}
                 </label>
@@ -414,7 +414,7 @@ export default function UserProfile() {
                   maxLength={50}
                   autoFocus={requireProfileName}
                   placeholder="Tu nombre visible en BookReview (3 a 50 caracteres)"
-                  className={`w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white border rounded-lg focus:ring-2 font-body px-4 text-sm text-on-surface transition-[background-color,border-color,box-shadow] duration-150 ${
+                  className={`w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white dark:focus:bg-surface-container border rounded-lg focus:ring-2 font-body px-4 text-sm text-on-surface transition-[background-color,border-color,box-shadow] duration-150 ${
                     nameError
                       ? 'border-error focus:border-error focus:ring-error/20'
                       : 'border-outline-variant/60 focus:border-secondary focus:ring-secondary/30'
@@ -438,7 +438,7 @@ export default function UserProfile() {
                       onClick={() => setProfileImg(avatar)}
                       className={`relative w-16 h-16 rounded-full transition-all duration-300 ${
                         profileImg === avatar 
-                          ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface scale-110 shadow-md z-10' 
+                          ? 'ring-2 ring-primary dark:ring-secondary ring-offset-2 ring-offset-surface-container-lowest scale-110 shadow-md z-10' 
                           : 'ring-1 ring-transparent hover:ring-outline-variant hover:scale-105 opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -455,7 +455,7 @@ export default function UserProfile() {
 
               {/* Bio Textarea */}
               <div className="relative group">
-                <label className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary">
+                <label className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary dark:group-focus-within:text-secondary">
                   Biografía
                 </label>
                 <textarea
@@ -463,7 +463,7 @@ export default function UserProfile() {
                   onChange={(e) => setBio(e.target.value)}
                   rows={4}
                   maxLength={300}
-                  className="w-full bg-surface-container-low hover:bg-surface-container focus:bg-white border border-outline-variant/60 focus:border-secondary rounded-lg focus:ring-2 focus:ring-secondary/30 font-body p-4 resize-none leading-relaxed transition-all duration-300 shadow-inner"
+                  className="w-full bg-surface-container-low hover:bg-surface-container focus:bg-white dark:focus:bg-surface-container text-on-surface border border-outline-variant/60 focus:border-secondary rounded-lg focus:ring-2 focus:ring-secondary/30 font-body p-4 resize-none leading-relaxed transition-all duration-300 shadow-inner"
                   placeholder="Cuéntanos sobre ti y tu amor por los libros..."
                 />
                 <p className="absolute bottom-3 right-4 text-[10px] text-outline font-medium">{bio.length}/300</p>
@@ -474,7 +474,7 @@ export default function UserProfile() {
                 <div className="relative group">
                   <label
                     htmlFor="profile-recovery-email"
-                    className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary"
+                    className="block font-label text-xs uppercase tracking-widest text-outline mb-2 transition-colors group-focus-within:text-primary dark:group-focus-within:text-secondary"
                   >
                     Correo electrónico
                   </label>
@@ -487,7 +487,7 @@ export default function UserProfile() {
                       setEmailError('')
                     }}
                     placeholder="tu@correo.com (para iniciar sesión y recuperar contraseña)"
-                    className="w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white border border-outline-variant/60 focus:border-secondary rounded-lg focus:ring-2 focus:ring-secondary/30 font-body px-4 text-sm text-on-surface transition-all duration-300"
+                    className="w-full h-11 bg-surface-container-low hover:bg-surface-container focus:bg-white dark:focus:bg-surface-container border border-outline-variant/60 focus:border-secondary rounded-lg focus:ring-2 focus:ring-secondary/30 font-body px-4 text-sm text-on-surface transition-all duration-300"
                   />
                   {emailError && (
                     <p className="mt-1.5 text-xs font-body text-error">{emailError}</p>
@@ -527,23 +527,23 @@ export default function UserProfile() {
       {!editing && (
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Top Genres */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/30">
-            <h3 className="font-headline text-lg font-bold text-primary mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 dark:border-outline-variant">
+            <h3 className="font-headline text-lg font-bold text-primary dark:text-[#e8e3d6] mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-secondary-dark">category</span>
               Géneros Favoritos
             </h3>
             
             {topGenres.length > 0 ? (
               <div className="space-y-4">
-                {topGenres.map((genre, i) => (
+                {topGenres.map((genre) => (
                   <div key={genre.name} className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="font-body text-sm text-primary font-medium">{genre.name}</span>
+                      <span className="font-body text-sm text-primary dark:text-[#e8e3d6] font-medium">{genre.name}</span>
                       <span className="font-label text-[10px] text-outline">{genre.count} libros</span>
                     </div>
-                    <div className="h-2 w-full bg-surface-container-low rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-surface-container-low dark:bg-surface-container rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-primary rounded-full transition-all duration-500"
+                        className="h-full bg-primary dark:bg-secondary rounded-full transition-all duration-500"
                         style={{ width: `${genre.percentage}%` }}
                       />
                     </div>
@@ -558,8 +558,8 @@ export default function UserProfile() {
           </div>
 
           {/* Activity Feed */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/30">
-            <h3 className="font-headline text-lg font-bold text-primary mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 dark:border-outline-variant">
+            <h3 className="font-headline text-lg font-bold text-primary dark:text-[#e8e3d6] mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-secondary-dark">timeline</span>
               Actividad Reciente
             </h3>
@@ -570,7 +570,7 @@ export default function UserProfile() {
                   <Link 
                     key={i}
                     to={`/books/${activity.bookId}`}
-                    className="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors group"
+                    className="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container-low dark:hover:bg-surface-container transition-colors group"
                   >
                     <div className={`w-8 h-8 rounded-full ${activity.bgColor} flex items-center justify-center flex-shrink-0`}>
                       <span className={`material-symbols-outlined text-sm ${activity.color}`}>{activity.icon}</span>
@@ -578,7 +578,7 @@ export default function UserProfile() {
                     <div className="flex-1 min-w-0">
                       <p className="font-body text-sm text-on-surface-variant">
                         <span className="text-outline">{activity.message}</span>{' '}
-                        <span className="font-medium text-primary group-hover:text-secondary-dark transition-colors truncate block">
+                        <span className="font-medium text-primary dark:text-[#e8e3d6] group-hover:text-secondary-dark transition-colors truncate block">
                           "{activity.book}"
                         </span>
                       </p>
@@ -607,13 +607,13 @@ export default function UserProfile() {
                 className={`flex items-center gap-2 px-5 py-3 rounded-full font-label text-xs uppercase tracking-wider whitespace-nowrap transition-all duration-300 cursor-pointer ${
                   activeTab === tab.id
                     ? 'bg-primary text-white shadow-lg'
-                    : 'bg-white text-on-surface-variant hover:bg-primary-fixed/60 hover:text-primary'
+                    : 'bg-white dark:bg-surface-container-low text-on-surface-variant hover:bg-primary-fixed/60 dark:hover:bg-surface-container hover:text-primary dark:hover:text-[#e8e3d6] dark:border dark:border-outline-variant/70'
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">{tab.icon}</span>
                 <span>{tab.label}</span>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeTab === tab.id ? 'bg-secondary text-on-secondary' : 'bg-surface-container-low'
+                  activeTab === tab.id ? 'bg-secondary text-on-secondary' : 'bg-surface-container-low dark:bg-surface-container-high'
                 }`}>
                   {tab.count}
                 </span>
@@ -631,7 +631,7 @@ export default function UserProfile() {
                     to={`/books/${book.id || book.book_id}`}
                     className="group block"
                   >
-                    <div className="aspect-[2/3] mb-3 overflow-hidden rounded-sm shadow-md">
+                    <div className="aspect-[2/3] mb-3 overflow-hidden rounded-sm ring-1 ring-black/[0.06] dark:ring-white/10 shadow-md">
                       {book.img ? (
                         <img src={book.img} alt={book.title} className="w-full h-full object-cover" />
                       ) : (
@@ -640,7 +640,7 @@ export default function UserProfile() {
                         </div>
                       )}
                     </div>
-                    <h4 className="font-headline font-bold text-sm text-primary line-clamp-2 transition-colors">
+                    <h4 className="font-headline font-bold text-sm text-primary dark:text-[#e8e3d6] group-hover:text-secondary-dark line-clamp-2 transition-colors">
                       {book.title}
                     </h4>
                     <p className="font-body text-xs text-outline mt-1 truncate">
@@ -656,7 +656,7 @@ export default function UserProfile() {
                   <button 
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container-low transition-colors cursor-pointer"
+                    className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary dark:text-[#e8e3d6] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container-low transition-colors cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm">chevron_left</span>
                   </button>
@@ -680,7 +680,7 @@ export default function UserProfile() {
                   <button 
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container-low transition-colors cursor-pointer"
+                    className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary dark:text-[#e8e3d6] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container-low transition-colors cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm">chevron_right</span>
                   </button>
@@ -688,7 +688,7 @@ export default function UserProfile() {
               )}
             </>
           ) : (
-            <div className="text-center py-16 bg-white/50 rounded-xl border border-outline-variant/30">
+            <div className="text-center py-16 bg-white/50 dark:bg-surface-container-low rounded-xl border border-outline-variant/30 dark:border-outline-variant">
               <span className="material-symbols-outlined text-5xl text-outline-variant/60 mb-4 block">
                 {tabs.find(t => t.id === activeTab)?.icon}
               </span>
@@ -712,7 +712,7 @@ export default function UserProfile() {
               {isOwn && (
                 <Link 
                   to="/catalog" 
-                  className="inline-flex items-center gap-2 mt-4 text-primary font-label text-xs uppercase tracking-wider font-bold hover:text-secondary-dark transition-colors"
+                  className="inline-flex items-center gap-2 mt-4 text-primary dark:text-[#d6e8b5] font-label text-xs uppercase tracking-wider font-bold hover:text-secondary-dark transition-colors"
                 >
                   <span className="material-symbols-outlined text-sm">explore</span>
                   Explorar catálogo

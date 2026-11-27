@@ -83,7 +83,7 @@ function BookCoverFrame({ book, className = '' }) {
   const CoverSvg = book.CoverSvg
   return (
     <div
-      className={`relative aspect-[2/3] overflow-hidden rounded-[5px] ring-1 ring-black/[0.08] shadow-[0_14px_28px_-6px_rgba(24,51,47,0.24),0_4px_10px_-2px_rgba(24,51,47,0.12)] ${className}`}
+      className={`relative aspect-[2/3] overflow-hidden rounded-[5px] ring-1 ring-black/[0.08] dark:ring-white/10 shadow-[0_14px_28px_-6px_rgba(24,51,47,0.24),0_4px_10px_-2px_rgba(24,51,47,0.12)] dark:shadow-[0_18px_32px_-6px_rgba(0,0,0,0.68),0_4px_12px_-2px_rgba(0,0,0,0.45)] ${className}`}
     >
       {book.imageUrl ? (
         <img
@@ -202,10 +202,10 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
       }`}
     >
-      <div className="mb-6 sm:mb-7 pb-4 border-b border-outline-variant/45">
+      <div className="mb-6 sm:mb-7 pb-4 border-b border-outline-variant/45 dark:border-outline-variant/80">
         <h2
           id="bestsellers-section-title"
-          className="font-bestseller-display text-[28px] sm:text-[38px] md:text-[42px] font-semibold tracking-[-0.02em] text-primary leading-none"
+          className="font-bestseller-display text-[28px] sm:text-[38px] md:text-[42px] font-semibold tracking-[-0.02em] text-primary dark:text-[#e8e3d6] leading-none"
         >
           Los{' '}
           <span className="italic font-medium text-secondary-dark">“Best Sellers”</span>
@@ -221,7 +221,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
         <div
           role="tablist"
           aria-label="Lista de Best Sellers"
-          className={`relative grid grid-cols-5 h-[50px] sm:h-[54px] border-y border-outline-variant/45 overflow-hidden ${
+          className={`relative grid grid-cols-5 h-[50px] sm:h-[54px] border-y border-outline-variant/45 dark:border-outline-variant/80 overflow-hidden ${
             isSideOpen ? '' : 'lg:flex lg:flex-col lg:h-[400px]'
           }`}
         >
@@ -233,10 +233,10 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
               transform: `translate3d(${selectedIdx * 100}%, 0, 0)`,
               transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
-            className={`${isSideOpen ? '' : 'lg:hidden'} pointer-events-none absolute inset-y-0 left-0 z-0 bg-[#eae6da]/90`}
+            className={`${isSideOpen ? '' : 'lg:hidden'} pointer-events-none absolute inset-y-0 left-0 z-0 bg-[#eae6da]/90 dark:bg-surface-container`}
           >
             <span
-              className="absolute bottom-0 inset-x-2.5 h-[2.5px] bg-primary"
+              className="absolute bottom-0 inset-x-2.5 h-[2.5px] bg-primary dark:bg-secondary"
               style={{ borderRadius: '9999px 9999px 0 0' }}
             />
           </div>
@@ -250,10 +250,10 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 transform: `translate3d(0, ${selectedIdx * 100}%, 0)`,
                 transition: 'transform 460ms cubic-bezier(0.22, 1, 0.36, 1)',
               }}
-              className="hidden lg:block pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90"
+              className="hidden lg:block pointer-events-none absolute inset-x-0 top-0 z-0 bg-[#eae6da]/90 dark:bg-surface-container"
             >
               <span
-                className="absolute left-0 inset-y-2.5 w-[3px] bg-primary"
+                className="absolute left-0 inset-y-2.5 w-[3px] bg-primary dark:bg-secondary"
                 style={{ borderRadius: '0 9999px 9999px 0' }}
               />
             </div>
@@ -269,11 +269,11 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 aria-selected={isSelected}
                 aria-label={`Puesto ${book.rank}: ${book.title}`}
                 onClick={() => handleSelect(idx)}
-                className={`group relative z-10 w-full h-full flex items-center justify-center px-1 text-center border-r border-outline-variant/45 last:border-r-0 transition-colors duration-200 cursor-pointer [-webkit-tap-highlight-color:transparent] ${
+                className={`group relative z-10 w-full h-full flex items-center justify-center px-1 text-center border-r border-outline-variant/45 dark:border-outline-variant/75 last:border-r-0 transition-colors duration-200 cursor-pointer [-webkit-tap-highlight-color:transparent] ${
                   isSideOpen
                     ? ''
                     : 'lg:h-auto lg:flex-1 lg:justify-start lg:gap-4 lg:px-4 lg:text-left lg:border-r-0 lg:border-b lg:last:border-b-0'
-                } ${isSelected ? 'bg-transparent' : 'hover:bg-[#eae6da]/40'}`}
+                } ${isSelected ? 'bg-transparent' : 'hover:bg-[#eae6da]/40 dark:hover:bg-surface-container-low/70'}`}
               >
                 <span
                   className={`font-bestseller-display italic text-[20px] sm:text-[22px] font-medium shrink-0 leading-none transition-colors duration-300 ${
@@ -281,7 +281,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                   } ${
                     isSelected
                       ? 'text-secondary-dark'
-                      : 'text-primary/40 group-hover:text-primary/75'
+                      : 'text-primary/40 dark:text-on-surface-variant/45 group-hover:text-primary/75 dark:group-hover:text-[#e8e3d6]'
                   }`}
                 >
                   {book.rank}
@@ -291,7 +291,9 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                     <div className="hidden lg:block min-w-0 flex-1">
                       <p
                         className={`font-hero-sans text-[15px] font-semibold truncate transition-colors duration-300 ${
-                          isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary'
+                          isSelected
+                            ? 'text-primary dark:text-[#e8e3d6]'
+                            : 'text-on-surface group-hover:text-primary dark:group-hover:text-[#d6e8b5]'
                         }`}
                       >
                         {book.title}
@@ -316,8 +318,8 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
           role="tabpanel"
           className={`h-[495px] sm:h-[535px] overflow-hidden ${
             isSideOpen
-              ? 'rounded-2xl bg-[#eae6da]/60 border border-[#d6d0c0]/70'
-              : 'lg:h-[400px] lg:rounded-2xl lg:bg-[#eae6da]/75 lg:border lg:border-[#d6d0c0]/80 lg:p-8'
+              ? 'rounded-2xl bg-[#eae6da]/60 dark:bg-surface-container-low border border-[#d6d0c0]/70 dark:border-outline-variant'
+              : 'lg:h-[400px] lg:rounded-2xl lg:bg-[#eae6da]/75 dark:lg:bg-surface-container-low lg:border lg:border-[#d6d0c0]/80 dark:lg:border-outline-variant lg:p-8'
           }`}
         >
           {/* Vista compacta / responsive: Slide horizontal direccional sincronizado con los números 01–05 */}
@@ -347,7 +349,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                       </div>
 
                       <div className="mt-4 w-full flex flex-col items-center">
-                        <h3 className="font-bestseller-display text-[24px] sm:text-[28px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2 max-w-[20ch]">
+                        <h3 className="font-bestseller-display text-[24px] sm:text-[28px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary dark:text-[#e8e3d6] line-clamp-2 max-w-[20ch]">
                           {book.title}
                         </h3>
 
@@ -371,7 +373,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                               aria-hidden="true"
                               className="size-[13px] fill-[#d9973b] text-[#d9973b]"
                             />
-                            <span className="font-hero-sans text-[13px] font-bold text-primary tabular-nums leading-none">
+                            <span className="font-hero-sans text-[13px] font-bold text-primary dark:text-[#e8e3d6] tabular-nums leading-none">
                               {book.rate.toFixed(1)}
                             </span>
                           </span>
@@ -387,7 +389,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                       <Link
                         to={bookHref}
                         tabIndex={isCurrent ? 0 : -1}
-                        className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
+                        className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] dark:shadow-[0_6px_18px_-4px_rgba(0,0,0,0.45)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
                       >
                         <span>Descubrir este libro</span>
                         <ArrowRight
@@ -423,7 +425,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                   <span className="block truncate font-hero-sans text-[11px] font-bold uppercase tracking-[0.16em] text-secondary-dark">
                     Best Seller #{active.rank} · {active.genre}
                   </span>
-                  <h3 className="mt-2 font-bestseller-display text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary line-clamp-2">
+                  <h3 className="mt-2 font-bestseller-display text-[33px] font-semibold leading-[1.12] tracking-[-0.015em] text-primary dark:text-[#e8e3d6] line-clamp-2">
                     {active.title}
                   </h3>
                   <p className="mt-1.5 font-hero-sans text-sm font-medium text-on-surface-variant truncate">
@@ -440,7 +442,7 @@ export default function BestSellersSection({ books = BEST_SELLERS }) {
                 <div className="pt-4">
                   <Link
                     to={activeHref}
-                    className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
+                    className="group/btn inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-xs font-semibold shadow-[0_6px_16px_-4px_rgba(14,81,70,0.28)] dark:shadow-[0_6px_18px_-4px_rgba(0,0,0,0.45)] transition-[background-color,scale] duration-150 active:scale-[0.97]"
                   >
                     <span>Descubrir este libro</span>
                     <ArrowRight

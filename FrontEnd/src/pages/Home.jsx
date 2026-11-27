@@ -140,7 +140,7 @@ export default function Home() {
               size={19}
               className="text-secondary-dark shrink-0"
             />
-            <h2 className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-[-0.015em] text-primary leading-tight">
+            <h2 className="font-hero-display text-2xl sm:text-[28px] font-semibold tracking-[-0.015em] text-primary dark:text-[#e8e3d6] leading-tight">
               ¿No sabés qué leer?{' '}
               <span className="italic font-medium text-secondary-dark">Preguntale a Lib</span>
             </h2>
@@ -149,7 +149,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: '' } }))}
-            className="group self-start sm:self-auto inline-flex items-center gap-1.5 font-hero-sans text-xs font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer"
+            className="group self-start sm:self-auto inline-flex items-center gap-1.5 font-hero-sans text-xs font-semibold text-primary/80 dark:text-[#d6e8b5]/85 hover:text-primary dark:hover:text-[#d6e8b5] transition-colors cursor-pointer"
           >
             <span>Abrir asistente</span>
             <ArrowRight
@@ -183,16 +183,16 @@ export default function Home() {
                       new CustomEvent('open-ai-chat', { detail: { message: prompt.text } })
                     )
                   }
-                  className="group w-full h-full flex items-center gap-2.5 px-4 py-3.5 rounded-xl bg-white/80 hover:bg-white border border-outline-variant/65 hover:border-primary/30 text-left shadow-[0_2px_10px_-4px_rgba(14,81,70,0.06)] hover:shadow-[0_10px_24px_-8px_rgba(14,81,70,0.12)] transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="group w-full h-full flex items-center gap-2.5 px-4 py-3.5 rounded-xl bg-white/80 dark:bg-surface-container-low hover:bg-white dark:hover:bg-surface-container border border-outline-variant/65 dark:border-outline-variant hover:border-primary/30 dark:hover:border-secondary/50 text-left shadow-[0_2px_10px_-4px_rgba(14,81,70,0.06)] dark:shadow-[0_4px_14px_-4px_rgba(0,0,0,0.45)] hover:shadow-[0_10px_24px_-8px_rgba(14,81,70,0.12)] dark:hover:shadow-[0_12px_26px_-8px_rgba(0,0,0,0.6)] transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <PromptIcon
                     size={18}
                     strokeWidth={1.8}
                     absoluteStrokeWidth
                     aria-hidden="true"
-                    className="shrink-0 text-primary/80 group-hover:text-secondary-dark transition-colors duration-200"
+                    className="shrink-0 text-primary/80 dark:text-[#edbd79] group-hover:text-secondary-dark transition-colors duration-200"
                   />
-                  <span className="flex-1 font-hero-sans text-[13.5px] font-medium text-on-surface group-hover:text-primary leading-snug transition-colors">
+                  <span className="flex-1 font-hero-sans text-[13.5px] font-medium text-on-surface group-hover:text-primary dark:group-hover:text-[#e8e3d6] leading-snug transition-colors">
                     {prompt.text}
                   </span>
                   <ChevronRight
@@ -200,7 +200,7 @@ export default function Home() {
                     strokeWidth={1.9}
                     absoluteStrokeWidth
                     aria-hidden="true"
-                    className="shrink-0 text-outline group-hover:text-primary transition-[color,transform] duration-150 ease-out group-hover:translate-x-0.5"
+                    className="shrink-0 text-outline group-hover:text-primary dark:group-hover:text-[#edbd79] transition-[color,transform] duration-150 ease-out group-hover:translate-x-0.5"
                   />
                 </button>
               </div>

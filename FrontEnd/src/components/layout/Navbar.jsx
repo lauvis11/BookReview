@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import { useState, useRef, useEffect } from 'react'
 import { Moon, Sun, Menu, X, Home, BookOpen, Bookmark, Users, User, LayoutDashboard } from 'lucide-react'
 import { getProfile } from '../../api/profile'
@@ -7,12 +8,12 @@ import BrandLogo from '../ui/BrandLogo'
 
 export default function Navbar() {
   const { user, isAuthenticated, logout, updateUser } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [darkModePreview, setDarkModePreview] = useState(false)
   const menuRef = useRef(null)
 
   // Track scroll for subtle navbar elevation
@@ -79,7 +80,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-200 ${
           scrolled
-            ? 'bg-surface/98 md:bg-surface/94 md:backdrop-blur-md border-b border-outline-variant/50 shadow-[0_6px_24px_-10px_rgba(14,81,70,0.10)]'
+            ? 'bg-surface/98 md:bg-surface/94 md:backdrop-blur-md border-b border-outline-variant/50 dark:border-outline-variant/80 shadow-[0_6px_24px_-10px_rgba(14,81,70,0.10)] dark:shadow-[0_8px_28px_-10px_rgba(0,0,0,0.58)]'
             : 'bg-surface/95 md:bg-surface/88 md:backdrop-blur-sm border-b border-transparent'
         }`}
       >
@@ -93,7 +94,7 @@ export default function Navbar() {
                 aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                 aria-expanded={mobileMenuOpen}
                 style={{ borderRadius: '9999px' }}
-                className="md:hidden size-8 sm:size-9 -ml-1 text-primary hover:bg-primary/[0.06] transition-colors cursor-pointer flex items-center justify-center active:scale-[0.96] [-webkit-tap-highlight-color:transparent]"
+                className="md:hidden size-8 sm:size-9 -ml-1 text-primary dark:text-[#e8e3d6] hover:bg-primary/[0.06] dark:hover:bg-white/[0.07] transition-colors cursor-pointer flex items-center justify-center active:scale-[0.96] [-webkit-tap-highlight-color:transparent]"
               >
                 {mobileMenuOpen ? (
                   <X size={20} strokeWidth={1.9} absoluteStrokeWidth aria-hidden="true" />
@@ -107,7 +108,7 @@ export default function Navbar() {
                 className="flex items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <BrandLogo variant="light" className="h-7 sm:h-9 md:h-10 w-auto" />
+                <BrandLogo variant={isDark ? 'dark' : 'light'} className="h-7 sm:h-9 md:h-10 w-auto" />
               </Link>
             </div>
 
@@ -129,16 +130,17 @@ export default function Navbar() {
 
             {/* Right Section: Theme Toggle + Avatar Bubble / Login Button */}
             <div className="flex items-center justify-end gap-1.5 sm:gap-3 md:gap-4 shrink-0">
-              {/* Theme Mode Toggle (Visual placeholder — sin funcionalidad real por ahora) */}
+              {/* Theme Mode Toggle */}
               <button
                 type="button"
-                onClick={() => setDarkModePreview((prev) => !prev)}
-                aria-label={darkModePreview ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-                title={darkModePreview ? 'Modo claro (próximamente)' : 'Modo oscuro (próximamente)'}
+                onClick={toggleTheme}
+                aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                aria-pressed={isDark}
+                title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
                 style={{ borderRadius: '9999px' }}
-                className="size-8 sm:size-9 md:size-10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/[0.06] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [-webkit-tap-highlight-color:transparent]"
+                className="size-8 sm:size-9 md:size-10 flex items-center justify-center text-on-surface-variant hover:text-primary dark:hover:text-[#edbd79] hover:bg-primary/[0.06] dark:hover:bg-white/[0.08] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [-webkit-tap-highlight-color:transparent]"
               >
-                {darkModePreview ? (
+                {isDark ? (
                   <Sun size={18} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" />
                 ) : (
                   <Moon size={18} strokeWidth={1.85} absoluteStrokeWidth aria-hidden="true" />
@@ -157,8 +159,8 @@ export default function Navbar() {
                     style={{ borderRadius: '9999px' }}
                     className={`relative size-9 md:size-10 flex items-center justify-center overflow-hidden bg-primary text-secondary-light font-hero-display text-base font-semibold transition-[box-shadow,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [-webkit-tap-highlight-color:transparent] ${
                       menuOpen
-                        ? 'ring-2 ring-secondary-dark ring-offset-2 ring-offset-surface shadow-[0_6px_18px_rgba(14,81,70,0.18)]'
-                        : 'ring-1 ring-primary/15 hover:ring-2 hover:ring-secondary/80 hover:ring-offset-2 hover:ring-offset-surface shadow-[0_2px_10px_rgba(14,81,70,0.12)]'
+                        ? 'ring-2 ring-secondary-dark ring-offset-2 ring-offset-surface shadow-[0_6px_18px_rgba(14,81,70,0.18)] dark:shadow-[0_6px_18px_rgba(0,0,0,0.45)]'
+                        : 'ring-1 ring-primary/15 dark:ring-white/15 hover:ring-2 hover:ring-secondary/80 hover:ring-offset-2 hover:ring-offset-surface shadow-[0_2px_10px_rgba(14,81,70,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)]'
                     }`}
                   >
                     {user?.profile_img ? (
@@ -176,10 +178,10 @@ export default function Navbar() {
                   {menuOpen && (
                     <div
                       role="menu"
-                      className="absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_16px_42px_-8px_rgba(14,81,70,0.16),0_4px_14px_rgba(0,0,0,0.04)] border border-outline-variant/60 overflow-hidden z-50 animate-[dropdownIn_0.18s_ease]"
+                      className="absolute right-0 top-full mt-3 w-64 bg-white dark:bg-surface-container-lowest rounded-2xl shadow-[0_16px_42px_-8px_rgba(14,81,70,0.16),0_4px_14px_rgba(0,0,0,0.04)] dark:shadow-[0_18px_46px_-8px_rgba(0,0,0,0.68),0_4px_14px_rgba(0,0,0,0.35)] border border-outline-variant/60 dark:border-outline-variant overflow-hidden z-50 animate-[dropdownIn_0.18s_ease]"
                     >
                       {/* User Header */}
-                      <div className="px-5 py-4 bg-surface-container-low/80 border-b border-outline-variant/40">
+                      <div className="px-5 py-4 bg-surface-container-low/80 dark:bg-surface-container-low border-b border-outline-variant/40 dark:border-outline-variant/80">
                         <div className="flex items-center gap-3">
                           <div
                             style={{ borderRadius: '9999px' }}
@@ -196,7 +198,7 @@ export default function Navbar() {
                             )}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate font-headline font-bold text-primary text-sm">
+                            <p className="truncate font-headline font-bold text-primary dark:text-[#e8e3d6] text-sm">
                               {user?.name}
                             </p>
                             {isAdmin && (
@@ -237,7 +239,7 @@ export default function Navbar() {
 
                         {isAdmin && (
                           <>
-                            <div className="my-1.5 mx-4 border-b border-outline-variant/40" />
+                            <div className="my-1.5 mx-4 border-b border-outline-variant/40 dark:border-outline-variant/75" />
                             <DropdownItem
                               to="/admin"
                               icon="dashboard"
@@ -251,11 +253,11 @@ export default function Navbar() {
                       </div>
 
                       {/* Logout */}
-                      <div className="border-t border-outline-variant/40 py-1.5">
+                      <div className="border-t border-outline-variant/40 dark:border-outline-variant/80 py-1.5">
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-5 py-2.5 text-[#ba1a1a] hover:bg-[#ffdad6]/35 transition-colors cursor-pointer group"
+                          className="w-full flex items-center gap-3 px-5 py-2.5 text-[#ba1a1a] dark:text-[#ff8a80] hover:bg-[#ffdad6]/35 dark:hover:bg-[#ff8a80]/12 transition-colors cursor-pointer group"
                         >
                           <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
                             logout
@@ -270,7 +272,7 @@ export default function Navbar() {
                 <Link
                   to="/auth"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex items-center justify-center px-2.5 sm:px-4 md:px-5 h-[30px] sm:h-9 md:h-10 rounded-lg sm:rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[11px] sm:text-xs md:text-[13px] font-semibold tracking-normal sm:tracking-wide whitespace-nowrap shadow-[0_2px_8px_rgba(14,81,70,0.18)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="inline-flex items-center justify-center px-2.5 sm:px-4 md:px-5 h-[30px] sm:h-9 md:h-10 rounded-lg sm:rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-[11px] sm:text-xs md:text-[13px] font-semibold tracking-normal sm:tracking-wide whitespace-nowrap shadow-[0_2px_8px_rgba(14,81,70,0.18)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.45)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.24)] transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   Iniciar sesión
                 </Link>
@@ -285,11 +287,11 @@ export default function Navbar() {
         <div className="md:hidden fixed top-16 left-0 right-0 bottom-0 z-50 flex">
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="absolute inset-0 bg-[#18332f]/40 animate-[drawerBackdropIn_180ms_ease_both]"
+            className="absolute inset-0 bg-[#18332f]/40 dark:bg-black/68 animate-[drawerBackdropIn_180ms_ease_both]"
             aria-hidden="true"
           />
 
-          <aside className="relative z-10 w-[72%] max-w-[300px] h-full bg-surface border-r border-outline-variant/60 shadow-[8px_0_28px_rgba(14,81,70,0.14)] flex flex-col overflow-y-auto overscroll-contain animate-[drawerSlideLeft_260ms_var(--ease-drawer)_both]">
+          <aside className="relative z-10 w-[72%] max-w-[300px] h-full bg-surface border-r border-outline-variant/60 dark:border-outline-variant shadow-[8px_0_28px_rgba(14,81,70,0.14)] dark:shadow-[8px_0_36px_rgba(0,0,0,0.65)] flex flex-col overflow-y-auto overscroll-contain animate-[drawerSlideLeft_260ms_var(--ease-drawer)_both]">
             <div className="flex-1 flex flex-col items-stretch justify-start gap-1 px-4 py-6">
               <MobileNavItem to="/" active={isActive('/')} icon={Home} onClick={() => setMobileMenuOpen(false)}>
                 Inicio
@@ -305,7 +307,7 @@ export default function Navbar() {
               </MobileNavItem>
               {isAuthenticated && (
                 <>
-                  <div className="my-2 border-b border-outline-variant/50" />
+                  <div className="my-2 border-b border-outline-variant/50 dark:border-outline-variant/80" />
                   <MobileNavItem
                     to={`/user/${user?.id}`}
                     active={isActive(`/user/${user?.id}`)}
@@ -323,12 +325,12 @@ export default function Navbar() {
               )}
             </div>
 
-            <div className="px-4 py-5 border-t border-outline-variant/50">
+            <div className="px-4 py-5 border-t border-outline-variant/50 dark:border-outline-variant/80">
               {isAuthenticated ? (
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-[#ba1a1a]/30 text-[#ba1a1a] rounded-[10px] font-hero-sans text-xs font-semibold hover:bg-[#ffdad6]/40 transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-[#ba1a1a]/30 dark:border-[#ff8a80]/35 text-[#ba1a1a] dark:text-[#ff8a80] rounded-[10px] font-hero-sans text-xs font-semibold hover:bg-[#ffdad6]/40 dark:hover:bg-[#ff8a80]/12 transition-colors cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-base">logout</span>
                   <span>Cerrar sesión</span>
@@ -337,7 +339,7 @@ export default function Navbar() {
                 <Link
                   to="/auth"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-[#166e5e] text-white rounded-[10px] font-hero-sans text-xs font-semibold transition-colors"
+                  className="w-full flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white rounded-[10px] font-hero-sans text-xs font-semibold transition-colors"
                 >
                   Iniciar sesión
                 </Link>
@@ -356,8 +358,8 @@ function NavItem({ to, active, icon: Icon, children }) {
       to={to}
       className={`relative inline-flex items-center gap-2 font-hero-sans text-[15.5px] transition-colors duration-200 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-xs ${
         active
-          ? 'text-primary font-semibold'
-          : 'text-on-surface-variant/75 font-medium hover:text-primary'
+          ? 'text-primary dark:text-[#d6e8b5] font-semibold'
+          : 'text-on-surface-variant/75 dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-[#e8e3d6]'
       }`}
     >
       {Icon && (
@@ -380,8 +382,8 @@ function MobileNavItem({ to, active, icon: Icon, children, onClick }) {
       onClick={onClick}
       className={`w-full flex items-center gap-3 text-left px-4 py-3 font-hero-sans text-[15px] transition-colors rounded-xl ${
         active
-          ? 'bg-primary/[0.08] text-primary font-semibold'
-          : 'text-on-surface-variant/80 font-medium hover:text-primary hover:bg-primary/[0.05]'
+          ? 'bg-primary/[0.08] dark:bg-primary/25 text-primary dark:text-[#d6e8b5] font-semibold'
+          : 'text-on-surface-variant/80 dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-[#e8e3d6] hover:bg-primary/[0.05] dark:hover:bg-white/[0.06]'
       }`}
     >
       {Icon && (
@@ -404,13 +406,13 @@ function DropdownItem({ to, icon, children, onClick, highlight }) {
       onClick={onClick}
       className={`flex items-center gap-3 px-5 py-2.5 transition-colors duration-150 group ${
         highlight
-          ? 'text-primary hover:bg-secondary-container/40'
-          : 'text-primary hover:bg-surface-container-low'
+          ? 'text-primary dark:text-[#edbd79] hover:bg-secondary-container/40 dark:hover:bg-secondary-container/60'
+          : 'text-primary dark:text-[#e8e3d6] hover:bg-surface-container-low dark:hover:bg-surface-container'
       }`}
     >
       <span
         className={`material-symbols-outlined text-lg transition-transform duration-150 group-hover:scale-110 ${
-          highlight ? 'text-secondary-dark' : 'text-outline'
+          highlight ? 'text-secondary-dark' : 'text-outline dark:text-on-surface-variant'
         }`}
       >
         {icon}

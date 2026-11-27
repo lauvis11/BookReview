@@ -67,7 +67,7 @@ export default function SeccionAbout() {
           <div {...revealUp(140)}>
             <h2
               id="seccion-about-title"
-              className="font-hero-display text-[34px] sm:text-[42px] lg:text-[50px] xl:text-[54px] font-semibold leading-[1.03] tracking-[-0.02em] text-primary"
+              className="font-hero-display text-[34px] sm:text-[42px] lg:text-[50px] xl:text-[54px] font-semibold leading-[1.03] tracking-[-0.02em] text-primary dark:text-[#e8e3d6]"
             >
               Descubre Tu Próximo
               <span className="block italic font-medium text-secondary-dark">
@@ -87,14 +87,14 @@ export default function SeccionAbout() {
             <div className="mt-5 sm:mt-6 lg:mt-7 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-3.5">
               <Link
                 to="/catalog"
-                className="inline-flex items-center justify-center h-[42px] lg:h-11 px-5.5 lg:px-6 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[13.5px] lg:text-sm font-semibold shadow-[0_6px_18px_-4px_rgba(14,81,70,0.28)] hover:shadow-[0_10px_24px_-4px_rgba(14,81,70,0.34)] transition-[background-color,box-shadow,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex items-center justify-center h-[42px] lg:h-11 px-5.5 lg:px-6 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-hero-sans text-[13.5px] lg:text-sm font-semibold shadow-[0_6px_18px_-4px_rgba(14,81,70,0.28)] dark:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_24px_-4px_rgba(14,81,70,0.34)] transition-[background-color,box-shadow,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 Explorar libros
               </Link>
 
               <Link
                 to="/library"
-                className="inline-flex items-center justify-center h-[42px] lg:h-11 px-5.5 lg:px-6 rounded-[10px] bg-transparent border border-primary/40 hover:border-primary hover:bg-primary/[0.05] text-primary font-hero-sans text-[13.5px] lg:text-sm font-semibold transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex items-center justify-center h-[42px] lg:h-11 px-5.5 lg:px-6 rounded-[10px] bg-transparent border border-primary/40 dark:border-[#d6e8b5]/40 hover:border-primary dark:hover:border-[#d6e8b5] hover:bg-primary/[0.05] dark:hover:bg-[#d6e8b5]/10 text-primary dark:text-[#d6e8b5] font-hero-sans text-[13.5px] lg:text-sm font-semibold transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 Mis guardados
               </Link>
@@ -111,7 +111,7 @@ export default function SeccionAbout() {
             className="block mx-auto mb-3.5 lg:mb-4 h-[2px] w-11 lg:w-12 bg-secondary-dark/65"
             style={{ borderRadius: '9999px' }}
           />
-          <p className="font-hero-display italic font-semibold text-[22px] sm:text-[26px] lg:text-[32px] leading-[1.24] tracking-[-0.01em] text-primary text-balance">
+          <p className="font-hero-display italic font-semibold text-[22px] sm:text-[26px] lg:text-[32px] leading-[1.24] tracking-[-0.01em] text-primary dark:text-[#e8e3d6] text-balance">
             “{quote.frase}”
           </p>
           <cite className="mt-2.5 sm:mt-3 block font-hero-sans not-italic text-[11.5px] sm:text-xs lg:text-[13px] uppercase tracking-[0.22em] text-secondary-dark font-bold">

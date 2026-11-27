@@ -83,9 +83,9 @@ export default function Catalog() {
     <main className="pt-28 md:pt-36 pb-16 md:pb-24 max-w-[1440px] mx-auto px-6 md:px-12 min-h-screen">
       <section className="mb-12">
         {/* Cabecera editorial coherente con Hero y Home */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 pb-6 border-b border-outline-variant/50">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 pb-6 border-b border-outline-variant/50 dark:border-outline-variant/80">
           <div>
-            <h1 className="font-hero-display text-4xl sm:text-5xl font-semibold tracking-[-0.02em] text-primary leading-[1.04]">
+            <h1 className="font-hero-display text-4xl sm:text-5xl font-semibold tracking-[-0.02em] text-primary dark:text-[#e8e3d6] leading-[1.04]">
               {hasFilters ? (
                 <>
                   Resultados del{' '}
@@ -110,7 +110,7 @@ export default function Catalog() {
                 setSearchParams({})
                 setPage(1)
               }}
-              className="inline-flex items-center gap-1.5 font-hero-sans text-xs font-semibold text-primary hover:text-secondary-dark transition-colors cursor-pointer pb-1"
+              className="inline-flex items-center gap-1.5 font-hero-sans text-xs font-semibold text-primary dark:text-[#d6e8b5] hover:text-secondary-dark transition-colors cursor-pointer pb-1"
             >
               <RotateCcw size={13} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
               <span>Ver todo el catálogo</span>
@@ -133,19 +133,19 @@ export default function Catalog() {
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-[10px] border border-outline-variant/80 bg-white hover:border-primary/40 hover:bg-surface-container-low/60 text-primary font-hero-sans text-xs font-semibold transition-all disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-[10px] border border-outline-variant/80 dark:border-outline-variant bg-white dark:bg-surface-container-low hover:border-primary/40 dark:hover:border-secondary/50 hover:bg-surface-container-low/60 dark:hover:bg-surface-container text-primary dark:text-[#e8e3d6] font-hero-sans text-xs font-semibold transition-colors disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
             >
               <ArrowLeft size={14} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
               <span>Anterior</span>
             </button>
-            <span className="font-hero-sans text-sm font-semibold text-primary tabular-nums px-2">
+            <span className="font-hero-sans text-sm font-semibold text-primary dark:text-[#e8e3d6] tabular-nums px-2">
               Página {page}
             </span>
             <button
               type="button"
               onClick={() => setPage((p) => p + 1)}
               disabled={books.length < 10}
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-[10px] border border-outline-variant/80 bg-white hover:border-primary/40 hover:bg-surface-container-low/60 text-primary font-hero-sans text-xs font-semibold transition-all disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-[10px] border border-outline-variant/80 dark:border-outline-variant bg-white dark:bg-surface-container-low hover:border-primary/40 dark:hover:border-secondary/50 hover:bg-surface-container-low/60 dark:hover:bg-surface-container text-primary dark:text-[#e8e3d6] font-hero-sans text-xs font-semibold transition-colors disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
             >
               <span>Siguiente</span>
               <ArrowRight size={14} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />

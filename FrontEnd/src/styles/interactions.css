@@ -11,7 +11,7 @@ select:focus {
 @media (hover: hover) and (pointer: fine) {
   input:not(:focus):not(:placeholder-shown):hover,
   textarea:not(:focus):not(:placeholder-shown):hover {
-    background-color: #ebf0e9;
+    background-color: var(--color-surface-container);
   }
 
   .card-hover:hover {
@@ -19,9 +19,17 @@ select:focus {
     box-shadow: 0 12px 24px rgba(14, 81, 70, 0.12);
   }
 
+  .dark .card-hover:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.42);
+  }
+
   .chip-hover:hover {
     transform: scale(1.02);
     box-shadow: 0 2px 8px rgba(14, 81, 70, 0.1);
+  }
+
+  .dark .chip-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.34);
   }
 
   .icon-btn:hover::after {
@@ -29,7 +37,7 @@ select:focus {
   }
 
   select:hover {
-    background-color: #ebf0e9;
+    background-color: var(--color-surface-container);
   }
 }
 
@@ -109,6 +117,10 @@ textarea:focus-visible {
   background: linear-gradient(to right, #0e5146, #0e5b4f);
   transform: scaleX(1);
   transition: transform 240ms ease-out;
+}
+
+.dark .nav-link-active::after {
+  background: linear-gradient(to right, #d6e8b5, #edbd79);
 }
 
 /* Modal backdrop animation */

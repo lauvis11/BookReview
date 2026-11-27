@@ -371,11 +371,11 @@ export default function HeroBookShowcase({ slides = SLIDES, compact = false }) {
                   <div
                     key={book.id}
                     style={ARCH_STYLES[idx]}
-                    className="relative aspect-[172/244] bg-[#eae6da] shadow-[0_12px_28px_-12px_rgba(60,52,36,0.14)] flex items-center justify-center"
+                    className="relative aspect-[172/244] bg-[#eae6da] dark:bg-surface-container-low dark:ring-1 dark:ring-outline-variant/65 shadow-[0_12px_28px_-12px_rgba(60,52,36,0.14)] dark:shadow-[0_16px_34px_-12px_rgba(0,0,0,0.62)] flex items-center justify-center"
                   >
                     {/* Portada del libro centrada dentro del arco (54% ancho, 2:3) */}
                     <div
-                      className="relative w-[54%] aspect-[2/3] rounded-[2px] overflow-hidden shadow-[0_14px_24px_-4px_rgba(32,28,20,0.24),0_4px_10px_-2px_rgba(32,28,20,0.12)] ring-1 ring-black/[0.06]"
+                      className="relative w-[54%] aspect-[2/3] rounded-[2px] overflow-hidden shadow-[0_14px_24px_-4px_rgba(32,28,20,0.24),0_4px_10px_-2px_rgba(32,28,20,0.12)] dark:shadow-[0_16px_28px_-4px_rgba(0,0,0,0.65),0_4px_12px_-2px_rgba(0,0,0,0.4)] ring-1 ring-black/[0.06] dark:ring-white/10"
                       title={`${book.title} — ${book.author}`}
                     >
                       {book.imageUrl ? (
@@ -427,8 +427,8 @@ export default function HeroBookShowcase({ slides = SLIDES, compact = false }) {
               <span
                 className={`block size-[7px] rounded-full transition-[background-color,transform] duration-200 ease-out ${
                   isActive
-                    ? 'bg-[#b37e3c] scale-110'
-                    : 'bg-[#d6d2c7] group-hover:bg-[#b8b3a6]'
+                    ? 'bg-[#b37e3c] dark:bg-secondary scale-110'
+                    : 'bg-[#d6d2c7] dark:bg-outline-variant group-hover:bg-[#b8b3a6] dark:group-hover:bg-outline'
                 }`}
               />
             </button>

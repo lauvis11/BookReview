@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* 1. Primario: Verde Bosque */
@@ -90,6 +91,68 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* ==========================================================================
+   Dark Mode Contract (Warm Editorial Forest & Gold)
+   ========================================================================== */
+.dark {
+  color-scheme: dark;
+
+  --color-primary: #146c5c;
+  --color-primary-container: #19826f;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #d6e8b5;
+  --color-primary-fixed: #18302b;
+  --color-primary-fixed-dim: #214039;
+  --color-on-primary-fixed: #f0ede6;
+  --color-on-primary-fixed-variant: #d6e8b5;
+
+  --color-secondary-dark: #edbd79;
+  --color-secondary-container: #3a2b17;
+  --color-on-secondary-container: #f5d199;
+
+  --color-tertiary: #146c5c;
+  --color-tertiary-container: #19826f;
+  --color-tertiary-fixed: #18302b;
+  --color-tertiary-fixed-dim: #214039;
+  --color-on-tertiary-fixed: #f0ede6;
+  --color-on-tertiary-fixed-variant: #d6e8b5;
+
+  --color-background: #0c1412;
+  --color-surface: #0c1412;
+  --color-surface-bright: #121e1b;
+  --color-surface-dim: #080e0c;
+  --color-surface-variant: #192824;
+  --color-surface-tint: #146c5c;
+  --color-surface-container-lowest: #131f1c;
+  --color-surface-container-low: #192824;
+  --color-surface-container: #1f312c;
+  --color-surface-container-high: #263b35;
+  --color-surface-container-highest: #2e463f;
+
+  --color-on-background: #f0ede6;
+  --color-on-surface: #f0ede6;
+  --color-on-surface-variant: #a6b7b1;
+  --color-inverse-surface: #f0ede6;
+  --color-inverse-on-surface: #131f1c;
+
+  --color-outline: #7c918a;
+  --color-outline-variant: #293e38;
+  --color-footer-bg: #080f0d;
+
+  --color-error: #ff8a80;
+  --color-on-error: #3b0807;
+  --color-error-container: #4a1917;
+  --color-on-error-container: #ffdad6;
+}
+
+/* Suppress all transitions for 1 frame on theme switch (/better-ui) */
+.disable-theme-transitions,
+.disable-theme-transitions *,
+.disable-theme-transitions *::before,
+.disable-theme-transitions *::after {
+  transition: none !important;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--color-surface);
@@ -109,10 +172,13 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
 .bookmark-chip { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 85%, 0% 100%); }
 
 .book-shadow { box-shadow: -12px 10px 30px -10px rgba(14, 81, 70, 0.28), -1px 0 2px rgba(0,0,0,0.1); }
+.dark .book-shadow { box-shadow: -12px 12px 32px -10px rgba(0, 0, 0, 0.65), -1px 0 2px rgba(0,0,0,0.45); }
 
 .editorial-shadow { box-shadow: 0 20px 40px rgba(24, 51, 47, 0.06); }
+.dark .editorial-shadow { box-shadow: 0 20px 42px rgba(0, 0, 0, 0.45); }
 
 .book-spine { box-shadow: -4px 0 8px -2px rgba(14, 81, 70, 0.16); }
+.dark .book-spine { box-shadow: -4px 0 10px -2px rgba(0, 0, 0, 0.5); }
 
 .glass-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 
@@ -461,6 +527,16 @@ h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
     6px 5px 0 #ded6c6,
     0 8px 0 #d1c7b5,
     0 24px 48px rgba(7, 35, 30, 0.32);
+}
+
+.dark .auth-book-spread {
+  box-shadow:
+    -3px 2px 0 #1b2c27,
+    3px 2px 0 #1b2c27,
+    -6px 5px 0 #13211d,
+    6px 5px 0 #13211d,
+    0 8px 0 #0d1714,
+    0 28px 56px rgba(0, 0, 0, 0.68);
 }
 
 /* Dedicated 3D perspective stage above the static form pages (z-30) */

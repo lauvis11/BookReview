@@ -80,7 +80,7 @@ export default function ChatMessages({
                         strokeWidth={1.85}
                         absoluteStrokeWidth
                         aria-hidden="true"
-                        className="text-primary/80 shrink-0"
+                        className="text-primary/80 dark:text-[#edbd79]/90 shrink-0"
                       />
                       <span>{item.label}</span>
                     </span>

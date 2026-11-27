@@ -11,10 +11,12 @@ import {
   Mail,
 } from 'lucide-react'
 import { useSEO } from '../hooks/useSEO'
+import { useTheme } from '../context/ThemeContext'
 import BrandLogo from '../components/ui/BrandLogo'
 import { forgotPassword, verifyResetCode, resetPassword } from '../api/auth'
 
 export default function RecoverPassword() {
+  const { isDark } = useTheme()
   const [step, setStep] = useState('email') // 'email' | 'code' | 'password' | 'success'
   const [email, setEmail] = useState('')
   const [code, setCode] = useState(['', '', '', '', '', ''])
@@ -212,14 +214,14 @@ export default function RecoverPassword() {
       {/* Atmósfera editorial sutil de fondo */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(14,81,70,0.06),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.12),transparent_50%)]"
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(14,81,70,0.06),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.12),transparent_50%)] dark:bg-[radial-gradient(circle_at_15%_20%,rgba(20,108,92,0.18),transparent_45%),radial-gradient(circle_at_85%_80%,rgba(237,189,121,0.08),transparent_50%)]"
       />
 
       {/* Enlace superior minimalista para volver a iniciar sesión */}
       <div className="relative z-10 w-full max-w-[440px] mb-3 flex items-center justify-between">
         <Link
           to="/auth"
-          className="group inline-flex items-center gap-1 py-1 font-body text-sm font-medium text-primary hover:text-outline transition-[color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-xs"
+          className="group inline-flex items-center gap-1 py-1 font-body text-sm font-medium text-primary dark:text-[#d6e8b5] hover:text-outline dark:hover:text-[#edbd79] transition-[color,transform] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-xs"
         >
           <ChevronLeft
             size={16}
@@ -233,7 +235,7 @@ export default function RecoverPassword() {
       </div>
 
       {/* Contenedor modal flotante con borde fino uniforme en todos los lados y sombra sutil */}
-      <div className="relative z-10 w-full max-w-[440px] rounded-[16px] bg-surface-container-lowest p-6 sm:p-8 lg:p-9 border border-primary/25 shadow-[0_16px_40px_-8px_rgba(14,81,70,0.1),0_4px_16px_-2px_rgba(0,0,0,0.04)]">
+      <div className="relative z-10 w-full max-w-[440px] rounded-[16px] bg-surface-container-lowest p-6 sm:p-8 lg:p-9 border border-primary/25 dark:border-outline-variant shadow-[0_16px_40px_-8px_rgba(14,81,70,0.1),0_4px_16px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_22px_54px_-10px_rgba(0,0,0,0.68)]">
         <div className="w-full">
           {/* Cabecera con logo centrado e indicador de progreso */}
           <div className="text-center">
@@ -241,7 +243,7 @@ export default function RecoverPassword() {
               to="/"
               className="inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm"
             >
-              <BrandLogo variant="light" className="h-8 sm:h-9 w-auto" />
+              <BrandLogo variant={isDark ? 'dark' : 'light'} className="h-8 sm:h-9 w-auto" />
             </Link>
 
             {step !== 'success' && (
@@ -254,9 +256,9 @@ export default function RecoverPassword() {
                     key={idx}
                     className={`h-1.5 rounded-full transition-[width,background-color] duration-200 ease-out ${
                       idx === stepIndex
-                        ? 'w-7 bg-primary'
+                        ? 'w-7 bg-primary dark:bg-secondary'
                         : idx < stepIndex
-                        ? 'w-3 bg-secondary'
+                        ? 'w-3 bg-secondary dark:bg-primary'
                         : 'w-3 bg-outline-variant/60'
                     }`}
                   />
@@ -285,7 +287,7 @@ export default function RecoverPassword() {
                       setError('')
                       setInfo('')
                     }}
-                    className="font-semibold text-primary hover:text-[#166e5e] underline underline-offset-2 cursor-pointer"
+                    className="font-semibold text-primary dark:text-[#d6e8b5] hover:text-[#166e5e] dark:hover:text-[#edbd79] underline underline-offset-2 cursor-pointer"
                   >
                     Cambiar
                   </button>
@@ -361,7 +363,7 @@ export default function RecoverPassword() {
                         setError('')
                       }}
                       required
-                      className="w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-3.5 font-body text-sm text-on-surface placeholder:text-outline/65 border border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white"
+                      className="w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-3.5 font-body text-sm text-on-surface placeholder:text-outline/65 border border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)] transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container"
                     />
                   </div>
                 </div>
@@ -370,7 +372,7 @@ export default function RecoverPassword() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     {loading ? (
                       <>
@@ -405,7 +407,7 @@ export default function RecoverPassword() {
                     <button
                       type="button"
                       onClick={handleResendCode}
-                      className="font-body text-xs font-semibold text-primary hover:text-[#166e5e] underline underline-offset-4 decoration-primary/70 transition-colors duration-150 cursor-pointer"
+                      className="font-body text-xs font-semibold text-primary dark:text-[#d6e8b5] hover:text-[#166e5e] dark:hover:text-[#edbd79] underline underline-offset-4 decoration-primary/70 dark:decoration-[#d6e8b5]/60 transition-colors duration-150 cursor-pointer"
                     >
                       Reenviar código
                     </button>
@@ -427,7 +429,7 @@ export default function RecoverPassword() {
                         onChange={(e) => handleDigitChange(idx, e.target.value)}
                         onKeyDown={(e) => handleDigitKeyDown(idx, e)}
                         aria-label={`Dígito ${idx + 1} del código`}
-                        className="w-full h-11 rounded-[10px] bg-surface-container-low/85 text-center font-body text-base font-bold tabular-nums text-on-surface border border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white"
+                        className="w-full h-11 rounded-[10px] bg-surface-container-low/85 text-center font-body text-base font-bold tabular-nums text-on-surface border border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)] transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container"
                       />
                     ))}
                   </div>
@@ -437,7 +439,7 @@ export default function RecoverPassword() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     {loading ? (
                       <>
@@ -487,16 +489,16 @@ export default function RecoverPassword() {
                         setError('')
                       }}
                       required
-                      className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white ${
+                      className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container ${
                         isPasswordFormatInvalid
                           ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(186,26,26,0.12)]'
-                          : 'border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)]'
+                          : 'border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)]'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
+                      className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary dark:hover:text-[#edbd79] hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
                       aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     >
                       {showPassword ? (
@@ -534,16 +536,16 @@ export default function RecoverPassword() {
                         setError('')
                       }}
                       required
-                      className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white ${
+                      className={`w-full h-11 rounded-[10px] bg-surface-container-low/85 pl-10 pr-10 font-body text-sm text-on-surface placeholder:text-outline/65 border transition-[background-color,border-color,box-shadow] duration-150 ease-out outline-none! focus-visible:outline-none! focus:translate-y-0! focus:bg-white dark:focus:bg-surface-container ${
                         isConfirmInvalid
                           ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(186,26,26,0.12)]'
-                          : 'border-outline-variant/85 hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)]'
+                          : 'border-outline-variant/85 hover:border-primary/40 dark:hover:border-secondary/50 focus:border-primary dark:focus:border-secondary focus:shadow-[0_0_0_3px_rgba(14,81,70,0.12)] dark:focus:shadow-[0_0_0_3px_rgba(237,189,121,0.16)]'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
+                      className="absolute right-2.5 z-10 p-1.5 rounded-md text-on-surface-variant hover:text-primary dark:hover:text-[#edbd79] hover:bg-surface-container transition-colors duration-150 ease-out cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
                       aria-label={
                         showConfirmPassword ? 'Ocultar confirmación' : 'Mostrar confirmación'
                       }
@@ -562,7 +564,7 @@ export default function RecoverPassword() {
                   <li
                     className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${
                       isPasswordFormatValid
-                        ? 'text-primary font-medium'
+                        ? 'text-primary dark:text-[#d6e8b5] font-medium'
                         : isPasswordFormatInvalid
                         ? 'text-error'
                         : 'text-on-surface-variant/80'
@@ -584,7 +586,7 @@ export default function RecoverPassword() {
                   <li
                     className={`flex items-center gap-2 font-body text-xs transition-colors duration-150 ${
                       doPasswordsMatch
-                        ? 'text-primary font-medium'
+                        ? 'text-primary dark:text-[#d6e8b5] font-medium'
                         : isConfirmInvalid
                         ? 'text-error'
                         : 'text-on-surface-variant/80'
@@ -609,7 +611,7 @@ export default function RecoverPassword() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     {loading ? (
                       <>
@@ -667,7 +669,7 @@ export default function RecoverPassword() {
                 <button
                   type="button"
                   onClick={() => navigate('/auth')}
-                  className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="w-full h-11 inline-flex items-center justify-center gap-2 px-5 rounded-[10px] bg-primary hover:bg-[#166e5e] dark:hover:bg-[#19826f] text-white font-body text-sm font-semibold shadow-[0_2px_6px_rgba(14,81,70,0.22)] hover:shadow-[0_6px_16px_rgba(14,81,70,0.28)] transition-[background-color,box-shadow,transform] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span>Iniciar sesión</span>
                 </button>

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { AIChatProvider, useAIChatContext } from './context/AIChatContext'
+import { ThemeProvider } from './context/ThemeContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import AdminLayout from './components/admin/AdminLayout'
@@ -82,40 +83,42 @@ function PublicLayout() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <AIChatProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Auth Routes (No Navbar/Footer) */}
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/recuperar-contraseña" element={<RecoverPassword />} />
-                <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
+    <ThemeProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <AIChatProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  {/* Auth Routes (No Navbar/Footer) */}
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/recuperar-contraseña" element={<RecoverPassword />} />
+                  <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
 
-                {/* Admin Routes */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute requireAdmin>
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="books" element={<AdminBooks />} />
-                  <Route path="users" element={<AdminUsers />} />
-                </Route>
+                  {/* Admin Routes */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute requireAdmin>
+                        <AdminLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="books" element={<AdminBooks />} />
+                    <Route path="users" element={<AdminUsers />} />
+                  </Route>
 
-                {/* Public Routes */}
-                <Route path="/*" element={<PublicLayout />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </AIChatProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+                  {/* Public Routes */}
+                  <Route path="/*" element={<PublicLayout />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </AIChatProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   )
 }
 

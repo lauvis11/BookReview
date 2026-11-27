@@ -105,7 +105,7 @@ export default function Hero() {
           <div>
             {isAuthenticated && user?.name ? (
               <h1
-                className={`font-hero-display max-w-170 mx-auto text-[34px] min-[400px]:text-4xl sm:text-5xl font-semibold leading-[1.04] tracking-[-0.02em] text-primary ${
+                className={`font-hero-display max-w-170 mx-auto text-[34px] min-[400px]:text-4xl sm:text-5xl font-semibold leading-[1.04] tracking-[-0.02em] text-primary dark:text-[#e8e3d6] ${
                   isSideOpen ? '' : 'lg:mx-0 lg:text-[50px] xl:text-[58px] lg:-mt-2'
                 }`}
               >
@@ -123,7 +123,7 @@ export default function Hero() {
               </h1>
             ) : (
               <h1
-                className={`font-hero-display font-semibold text-primary leading-[1.02] tracking-[-0.02em] ${
+                className={`font-hero-display font-semibold text-primary dark:text-[#e8e3d6] leading-[1.02] tracking-[-0.02em] ${
                   isSideOpen ? '' : 'lg:-mt-2'
                 }`}
               >
@@ -169,7 +169,7 @@ export default function Hero() {
           >
             <form
               onSubmit={handleSubmit}
-              className="flex items-center rounded-xl sm:rounded-2xl bg-white p-1 sm:p-1.5 border border-outline-variant/80 shadow-[0_12px_32px_-8px_rgba(14,81,70,0.09),0_2px_8px_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-200 ease-out focus-within:border-primary/40 focus-within:shadow-[0_16px_38px_-8px_rgba(14,81,70,0.16)]"
+              className="flex items-center rounded-xl sm:rounded-2xl bg-white dark:bg-surface-container-low p-1 sm:p-1.5 border border-outline-variant/80 dark:border-outline-variant shadow-[0_12px_32px_-8px_rgba(14,81,70,0.09),0_2px_8px_rgba(0,0,0,0.03)] dark:shadow-[0_14px_34px_-8px_rgba(0,0,0,0.52)] transition-[border-color,box-shadow] duration-200 ease-out focus-within:border-primary/40 dark:focus-within:border-secondary/60 focus-within:shadow-[0_16px_38px_-8px_rgba(14,81,70,0.16)] dark:focus-within:shadow-[0_18px_40px_-8px_rgba(0,0,0,0.62)]"
             >
               <label htmlFor="hero-book-search" className="sr-only">
                 Buscar en el catálogo
@@ -188,7 +188,7 @@ export default function Hero() {
                   }
                 }}
                 autoComplete="off"
-                className="min-w-0 flex-1 bg-transparent hover:bg-transparent! px-1 font-hero-sans text-xs sm:text-sm text-primary outline-none! focus:outline-none! focus-visible:outline-none! focus:translate-y-0! placeholder:text-[11.5px] sm:placeholder:text-sm placeholder:text-outline"
+                className="min-w-0 flex-1 bg-transparent hover:bg-transparent! px-1 font-hero-sans text-xs sm:text-sm text-primary dark:text-on-surface outline-none! focus:outline-none! focus-visible:outline-none! focus:translate-y-0! placeholder:text-[11.5px] sm:placeholder:text-sm placeholder:text-outline"
                 placeholder="Busca por título, autor o género..."
               />
               {query && (
@@ -200,7 +200,7 @@ export default function Hero() {
                     setShowDropdown(false)
                   }}
                   aria-label="Limpiar búsqueda"
-                  className="grid w-6 sm:w-8 shrink-0 place-items-center text-outline hover:text-primary transition-colors duration-150 cursor-pointer"
+                  className="grid w-6 sm:w-8 shrink-0 place-items-center text-outline hover:text-primary dark:hover:text-[#e8e3d6] transition-colors duration-150 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[15px] sm:text-[18px]">close</span>
                 </button>
@@ -215,21 +215,21 @@ export default function Hero() {
 
             {/* Dropdown de resultados en vivo */}
             {showDropdown && (
-              <div className="origin-top absolute left-0 right-0 top-full mt-2 z-50 overflow-hidden rounded-2xl border border-outline-variant/40 bg-white text-left shadow-[0_18px_40px_rgba(28,28,22,0.18)] animate-[dropdownIn_180ms_var(--ease-out-strong)_both]">
+              <div className="origin-top absolute left-0 right-0 top-full mt-2 z-50 overflow-hidden rounded-2xl border border-outline-variant/40 dark:border-outline-variant bg-white dark:bg-surface-container-low text-left shadow-[0_18px_40px_rgba(28,28,22,0.18)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.68)] animate-[dropdownIn_180ms_var(--ease-out-strong)_both]">
                 {searching ? (
                   <div className="flex items-center gap-3 px-4 py-4 text-sm font-body text-on-surface-variant">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-outline-variant/40 border-t-tertiary" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-outline-variant/40 border-t-tertiary dark:border-t-secondary" />
                     Buscando libros...
                   </div>
                 ) : results.length > 0 ? (
                   <>
-                    <ul className="divide-y divide-surface-container-low max-h-80 overflow-y-auto">
+                    <ul className="divide-y divide-surface-container-low dark:divide-outline-variant/60 max-h-80 overflow-y-auto overscroll-contain">
                       {results.map((book) => (
                         <li key={book.id}>
                           <button
                             type="button"
                             onClick={() => handleSelectBook(book.id)}
-                            className="flex w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-surface-container-low cursor-pointer"
+                            className="flex w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-surface-container-low dark:hover:bg-surface-container cursor-pointer"
                           >
                             <div className="h-12 w-9 shrink-0 overflow-hidden rounded-sm bg-surface-container">
                               {book.img ? (
@@ -243,7 +243,7 @@ export default function Hero() {
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="truncate font-headline text-sm font-bold text-primary">
+                              <p className="truncate font-headline text-sm font-bold text-primary dark:text-[#e8e3d6]">
                                 {book.title}
                               </p>
                               <p className="truncate font-body text-xs text-on-surface-variant">
@@ -251,7 +251,7 @@ export default function Hero() {
                               </p>
                             </div>
                             {Number(book.rate) > 0 && (
-                              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface-container-low px-2 py-0.5 font-label text-xs font-bold text-primary">
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface-container-low dark:bg-surface-container-high px-2 py-0.5 font-label text-xs font-bold text-primary dark:text-[#e8e3d6]">
                                 <span
                                   className="material-symbols-outlined text-[14px] text-[#E5B02E]"
                                   style={{ fontVariationSettings: "'FILL' 1" }}
@@ -268,7 +268,7 @@ export default function Hero() {
                     <button
                       type="button"
                       onClick={handleSubmit}
-                      className="flex w-full items-center justify-center gap-1.5 border-t border-surface-container-high bg-surface-container-low/70 px-4 py-2.5 font-label text-xs font-bold uppercase tracking-widest text-tertiary transition-colors hover:bg-surface-container-low cursor-pointer"
+                      className="flex w-full items-center justify-center gap-1.5 border-t border-surface-container-high dark:border-outline-variant bg-surface-container-low/70 dark:bg-surface-container px-4 py-2.5 font-label text-xs font-bold uppercase tracking-widest text-tertiary dark:text-[#d6e8b5] transition-colors hover:bg-surface-container-low dark:hover:bg-surface-container-high cursor-pointer"
                     >
                       Ver todos los resultados
                       <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -276,7 +276,7 @@ export default function Hero() {
                   </>
                 ) : (
                   <div className="px-4 py-5 text-center">
-                    <p className="font-headline text-sm font-bold text-primary">
+                    <p className="font-headline text-sm font-bold text-primary dark:text-[#e8e3d6]">
                       No encontramos resultados para «{query.trim()}»
                     </p>
                     <p className="mt-1 font-body text-xs text-outline">
