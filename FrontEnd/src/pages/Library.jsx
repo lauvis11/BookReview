@@ -42,33 +42,25 @@ const COLLECTION_NAV_ITEMS = [
 
 const COLLECTION_META = {
   reading: {
-    eyebrow: 'En tu mesa de lectura',
-    title: 'Leyendo',
-    accent: 'actualmente',
-    subtitle: 'Los títulos que estás leyendo ahora mismo. Sumá páginas para actualizar tu racha.',
+    title: 'Leyendo actualmente',
+    subtitle: 'Los títulos en tu mesa de lectura. Sumá páginas cada día para sostener tu racha.',
     emptyTitle: 'Todavía no estás leyendo ningún libro',
     emptySubtitle: 'Explorá el catálogo y marcá un libro como "Leyendo" o registrá tus primeras páginas.',
   },
   want_to_read: {
-    eyebrow: 'Lista de deseos',
-    title: 'Por',
-    accent: 'leer',
+    title: 'Por leer',
     subtitle: 'Tus próximas lecturas guardadas para cuando termines el libro actual.',
     emptyTitle: 'Tu lista "Por leer" está vacía',
     emptySubtitle: 'Explorá el catálogo y guardá libros para tenerlos siempre a mano.',
   },
   completed: {
-    eyebrow: 'Historial de obras terminadas',
-    title: 'Libros',
-    accent: 'completados',
+    title: 'Libros completados',
     subtitle: 'Todas las lecturas que llevaste hasta la última página.',
     emptyTitle: 'Aún no completaste ningún libro',
     emptySubtitle: 'Cuando termines un libro o llegues al 100% de sus páginas, aparecerá acá.',
   },
   favorites: {
-    eyebrow: 'Selección personal',
-    title: 'Tus',
-    accent: 'favoritos',
+    title: 'Tus favoritos',
     subtitle: 'Los libros que más te marcaron y querés recomendar o volver a leer.',
     emptyTitle: 'No marcaste favoritos todavía',
     emptySubtitle: 'Tocá el corazón en la ficha de cualquier libro para destacarlo en esta colección.',
@@ -215,94 +207,102 @@ export default function Library() {
   const readerInitial = user?.name?.charAt(0)?.toUpperCase() || 'L'
 
   return (
-    <main className="min-h-screen w-full max-w-[1440px] mx-auto pt-24 md:pt-28 pb-16 md:pb-24 px-4 sm:px-6 md:px-12">
-      <div className="grid grid-cols-1 lg:grid-cols-[276px_minmax(0,1fr)] gap-7 lg:gap-10 items-start">
-        {/* Panel lateral izquierdo */}
+    <main className="min-h-screen w-full max-w-[1380px] mx-auto pt-24 md:pt-28 pb-16 md:pb-24 px-4 sm:px-6 lg:px-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[268px_minmax(0,1fr)] gap-6 lg:gap-9 items-start">
+        {/* Panel lateral estilo Apple Books / macOS Settings */}
         <aside
           aria-label="Panel de gestión de biblioteca"
-          className="lg:sticky lg:top-28 bg-[#eae6da]/65 border border-[#d6d0c0]/85 rounded-2xl p-4 sm:p-5"
+          className="lg:sticky lg:top-28 bg-white dark:bg-[#131f1c] border border-black/[0.07] dark:border-white/[0.08] rounded-[22px] p-4 shadow-[0_1px_2px_rgba(16,42,36,0.04),0_8px_24px_-8px_rgba(16,42,36,0.07)] dark:shadow-none"
         >
-          {/* Resumen del lector + racha en vivo */}
-          <div className="pb-4 border-b border-[#d6d0c0]/80">
-            <div className="flex items-center gap-3">
-              <div
-                style={{ borderRadius: '9999px' }}
-                className="size-11 shrink-0 overflow-hidden bg-primary text-secondary-light font-hero-display font-semibold text-lg flex items-center justify-center ring-1 ring-black/10"
-              >
-                {showAvatarImage ? (
-                  <img
-                    src={user.profile_img}
-                    alt={user?.name || 'Lector'}
-                    onError={() => setFailedAvatarSrc(user.profile_img)}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span>{readerInitial}</span>
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <p className="font-hero-sans text-[10.5px] font-semibold uppercase tracking-[0.14em] text-secondary-dark">
-                  Mi Biblioteca
-                </p>
-                <p className="font-hero-display text-xl font-semibold text-primary leading-tight truncate">
-                  {user?.name || 'Lector'}
-                </p>
-              </div>
-            </div>
-
+          {/* Identidad del lector */}
+          <div className="flex items-center gap-3 px-1">
             <div
               style={{ borderRadius: '9999px' }}
-              className={`mt-3.5 w-full px-3 py-1.5 border flex items-center justify-between gap-2 text-xs font-hero-sans ${
-                streakStats.isActiveToday
-                  ? 'bg-white/85 border-primary/25 text-primary'
-                  : 'bg-[#f8f7f2]/85 border-[#d6d0c0] text-on-surface-variant'
-              }`}
+              className="size-10 shrink-0 overflow-hidden bg-[#0e5146] dark:bg-[#166e5e] text-[#edbd79] font-hero-display font-semibold text-lg flex items-center justify-center outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
             >
-              <span className="inline-flex items-center gap-1.5 font-semibold tabular-nums">
-                <span
-                  style={{ borderRadius: '9999px' }}
-                  className={`size-2 shrink-0 ${
-                    streakStats.isActiveToday ? 'bg-primary' : 'bg-[#c9833b]/75'
-                  }`}
-                  aria-hidden="true"
+              {showAvatarImage ? (
+                <img
+                  src={user.profile_img}
+                  alt={user?.name || 'Lector'}
+                  onError={() => setFailedAvatarSrc(user.profile_img)}
+                  className="w-full h-full object-cover"
                 />
-                <Flame
-                  size={13}
-                  strokeWidth={2}
-                  absoluteStrokeWidth
-                  className={streakStats.isActiveToday ? 'text-[#c9833b]' : 'text-on-surface-variant/75'}
-                  aria-hidden="true"
-                />
-                <span>
-                  {streakStats.currentStreak}{' '}
-                  {streakStats.currentStreak === 1 ? 'día de racha' : 'días de racha'}
-                </span>
-              </span>
+              ) : (
+                <span>{readerInitial}</span>
+              )}
+            </div>
 
-              <span className="text-[11px] font-medium shrink-0">
-                {streakStats.isActiveToday ? 'Activa hoy' : 'Pendiente'}
+            <div className="min-w-0">
+              <p className="font-hero-display text-[21px] font-semibold text-[#152e29] dark:text-[#f0ede6] leading-tight truncate">
+                {user?.name || 'Lector'}
+              </p>
+              <p className="font-hero-sans text-[12px] font-medium text-[#5c726c] dark:text-[#8ea39c] leading-tight mt-0.5">
+                Mi Biblioteca
+              </p>
+            </div>
+          </div>
+
+          {/* Estado compacto de racha diaria */}
+          <div className="mt-4 rounded-[14px] bg-[#f6f4ee] dark:bg-[#192824] border border-black/[0.05] dark:border-white/[0.06] px-3.5 py-2.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Flame
+                size={15}
+                strokeWidth={2}
+                absoluteStrokeWidth
+                className={
+                  streakStats.isActiveToday
+                    ? 'text-[#c9833b] dark:text-[#edbd79] shrink-0'
+                    : 'text-[#738781] dark:text-[#7f948e] shrink-0'
+                }
+                aria-hidden="true"
+              />
+              <span className="font-hero-sans text-[13px] font-semibold text-[#152e29] dark:text-[#f0ede6] tabular-nums truncate">
+                {streakStats.currentStreak}{' '}
+                {streakStats.currentStreak === 1 ? 'día de racha' : 'días de racha'}
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => handleOpenLogModal()}
-              className="mt-3.5 w-full h-10 px-4 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center justify-center gap-2 shadow-[0_3px_10px_rgba(14,81,70,0.18)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            <span
+              style={{ borderRadius: '9999px' }}
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 font-hero-sans text-[11px] font-medium shrink-0 ${
+                streakStats.isActiveToday
+                  ? 'bg-[#0e5146]/10 text-[#0e5146] dark:bg-[#4fb39d]/15 dark:text-[#4fb39d]'
+                  : 'bg-[#c9833b]/12 text-[#8d571b] dark:bg-[#edbd79]/12 dark:text-[#edbd79]'
+              }`}
             >
-              <Plus size={15} strokeWidth={2.2} absoluteStrokeWidth aria-hidden="true" />
-              <span>Registrar páginas leídas</span>
-            </button>
+              <span
+                style={{ borderRadius: '9999px' }}
+                className={`size-1.5 shrink-0 ${
+                  streakStats.isActiveToday
+                    ? 'bg-[#0e5146] dark:bg-[#4fb39d]'
+                    : 'bg-[#c9833b] dark:bg-[#edbd79]'
+                }`}
+                aria-hidden="true"
+              />
+              {streakStats.isActiveToday ? 'Hoy' : 'Pendiente'}
+            </span>
           </div>
 
+          {/* Acción primaria de la biblioteca */}
+          <button
+            type="button"
+            onClick={() => handleOpenLogModal()}
+            className="mt-3 w-full h-10 ps-3.5 pe-4 rounded-[12px] bg-[#0e5146] hover:bg-[#166e5e] dark:bg-[#166e5e] dark:hover:bg-[#1d8572] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center justify-center gap-2 transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d]"
+          >
+            <Plus size={15} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+            <span>Registrar páginas</span>
+          </button>
+
+          <div className="my-4 h-px bg-black/[0.06] dark:bg-white/[0.07]" aria-hidden="true" />
+
           {/* Navegación agrupada */}
-          <nav aria-label="Secciones de biblioteca" className="mt-4 space-y-4">
+          <nav aria-label="Secciones de biblioteca" className="space-y-4">
             {/* Grupo: Seguimiento */}
             <div>
-              <p className="px-2.5 mb-1.5 font-hero-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant/75">
+              <p className="px-2.5 mb-1.5 font-hero-sans text-[12px] font-medium text-[#647a74] dark:text-[#869b94]">
                 Seguimiento
               </p>
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-1.5">
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-1">
                 {TRACKING_NAV_ITEMS.map((item) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.key
@@ -312,25 +312,22 @@ export default function Library() {
                       type="button"
                       onClick={() => handleSelectSection(item.key)}
                       aria-current={isActive ? 'page' : undefined}
-                      className={`relative w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl font-hero-sans text-[13.5px] text-left transition-[background-color,border-color,color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary ${
+                      className={`w-full flex items-center justify-between gap-2 px-2.5 h-9 rounded-[10px] font-hero-sans text-[13.5px] text-left transition-[background-color,color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d] ${
                         isActive
-                          ? 'bg-[#f8f7f2] border border-[#d6d0c0]/85 shadow-sm text-primary font-semibold'
-                          : 'border border-transparent text-on-surface-variant hover:text-primary hover:bg-[#f8f7f2]/60 font-medium'
+                          ? 'bg-[#0e5146]/[0.09] text-[#0e5146] dark:bg-[#4fb39d]/[0.14] dark:text-[#f0ede6] font-semibold'
+                          : 'text-[#485f59] hover:text-[#152e29] hover:bg-black/[0.035] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-white/[0.05] font-medium'
                       }`}
                     >
-                      {isActive && (
-                        <span
-                          aria-hidden="true"
-                          style={{ borderRadius: '9999px' }}
-                          className="absolute left-0 top-2 bottom-2 w-[3px] bg-primary"
-                        />
-                      )}
                       <span className="inline-flex items-center gap-2.5 min-w-0">
                         <Icon
                           size={16}
-                          strokeWidth={isActive ? 2.1 : 1.75}
+                          strokeWidth={isActive ? 2 : 1.65}
                           absoluteStrokeWidth
-                          className={isActive ? 'text-primary shrink-0' : 'text-on-surface-variant/80 shrink-0'}
+                          className={
+                            isActive
+                              ? 'text-[#0e5146] dark:text-[#4fb39d] shrink-0'
+                              : 'text-[#6c817b] dark:text-[#7f948e] shrink-0'
+                          }
                           aria-hidden="true"
                         />
                         <span className="truncate">{item.label}</span>
@@ -343,10 +340,10 @@ export default function Library() {
 
             {/* Grupo: Colecciones */}
             <div>
-              <p className="px-2.5 mb-1.5 font-hero-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant/75">
+              <p className="px-2.5 mb-1.5 font-hero-sans text-[12px] font-medium text-[#647a74] dark:text-[#869b94]">
                 Colecciones
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1">
                 {COLLECTION_NAV_ITEMS.map((item) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.key
@@ -357,36 +354,32 @@ export default function Library() {
                       type="button"
                       onClick={() => handleSelectSection(item.key)}
                       aria-current={isActive ? 'page' : undefined}
-                      className={`relative w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl font-hero-sans text-[13.5px] text-left transition-[background-color,border-color,color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary ${
+                      className={`w-full flex items-center justify-between gap-2 px-2.5 h-9 rounded-[10px] font-hero-sans text-[13.5px] text-left transition-[background-color,color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d] ${
                         isActive
-                          ? 'bg-[#f8f7f2] border border-[#d6d0c0]/85 shadow-sm text-primary font-semibold'
-                          : 'border border-transparent text-on-surface-variant hover:text-primary hover:bg-[#f8f7f2]/60 font-medium'
+                          ? 'bg-[#0e5146]/[0.09] text-[#0e5146] dark:bg-[#4fb39d]/[0.14] dark:text-[#f0ede6] font-semibold'
+                          : 'text-[#485f59] hover:text-[#152e29] hover:bg-black/[0.035] dark:text-[#a6b7b1] dark:hover:text-[#f0ede6] dark:hover:bg-white/[0.05] font-medium'
                       }`}
                     >
-                      {isActive && (
-                        <span
-                          aria-hidden="true"
-                          style={{ borderRadius: '9999px' }}
-                          className="absolute left-0 top-2 bottom-2 w-[3px] bg-primary"
-                        />
-                      )}
                       <span className="inline-flex items-center gap-2.5 min-w-0">
                         <Icon
                           size={16}
-                          strokeWidth={isActive ? 2.1 : 1.75}
+                          strokeWidth={isActive ? 2 : 1.65}
                           absoluteStrokeWidth
-                          className={isActive ? 'text-primary shrink-0' : 'text-on-surface-variant/80 shrink-0'}
+                          className={
+                            isActive
+                              ? 'text-[#0e5146] dark:text-[#4fb39d] shrink-0'
+                              : 'text-[#6c817b] dark:text-[#7f948e] shrink-0'
+                          }
                           aria-hidden="true"
                         />
                         <span className="truncate">{item.label}</span>
                       </span>
 
                       <span
-                        style={{ borderRadius: '9999px' }}
-                        className={`px-2 py-0.5 text-[11px] tabular-nums shrink-0 ${
+                        className={`text-[12px] tabular-nums shrink-0 ${
                           isActive
-                            ? 'bg-primary/10 text-primary font-semibold'
-                            : 'bg-[#d6d0c0]/45 text-on-surface-variant font-medium'
+                            ? 'text-[#0e5146] dark:text-[#4fb39d] font-semibold'
+                            : 'text-[#738781] dark:text-[#7f948e] font-normal'
                         }`}
                       >
                         {loading ? '—' : count}
@@ -418,16 +411,12 @@ export default function Library() {
 
           {activeSection === 'stats' && (
             <div className="space-y-6">
-              <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#d6d0c0]/75">
-                <div>
-                  <span className="font-hero-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary-dark">
-                    Resumen mensual
-                  </span>
-                  <h1 className="mt-1 font-hero-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-primary leading-tight">
-                    Actividad y ritmo{' '}
-                    <span className="italic font-medium text-secondary-dark">mensual</span>
+              <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-black/[0.07] dark:border-white/[0.08]">
+                <div className="min-w-0">
+                  <h1 className="font-hero-display text-[32px] sm:text-[38px] font-semibold tracking-[-0.025em] text-[#152e29] dark:text-[#f0ede6] leading-[1.08]">
+                    Estadísticas mensuales
                   </h1>
-                  <p className="mt-1.5 font-hero-sans text-sm text-on-surface-variant max-w-2xl">
+                  <p className="mt-1.5 font-hero-sans text-[14px] text-[#566d67] dark:text-[#a6b7b1] max-w-2xl leading-relaxed">
                     Revisá tus páginas leídas, tiempo dedicado y constancia diaria de cada mes.
                   </p>
                 </div>
@@ -435,10 +424,10 @@ export default function Library() {
                 <button
                   type="button"
                   onClick={() => handleOpenLogModal()}
-                  className="h-10 px-4 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center justify-center gap-2 shadow-[0_3px_12px_rgba(14,81,70,0.18)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer shrink-0 self-start sm:self-auto"
+                  className="h-10 ps-3.5 pe-4 rounded-[12px] bg-[#0e5146] hover:bg-[#166e5e] dark:bg-[#166e5e] dark:hover:bg-[#1d8572] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center justify-center gap-2 transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer shrink-0 self-start sm:self-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d]"
                 >
-                  <Plus size={16} strokeWidth={2.1} absoluteStrokeWidth aria-hidden="true" />
-                  <span>Registrar páginas leídas</span>
+                  <Plus size={15} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+                  <span>Registrar páginas</span>
                 </button>
               </header>
 
@@ -452,22 +441,16 @@ export default function Library() {
           )}
 
           {activeCollection && (
-            <div className="space-y-8">
-              <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-[#d6d0c0]/75">
-                <div>
-                  <span className="font-hero-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-secondary-dark">
-                    {activeCollection.eyebrow}
-                  </span>
-                  <div className="mt-1 flex flex-wrap items-baseline gap-3">
-                    <h1 className="font-hero-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-primary leading-tight">
-                      {activeCollection.title}{' '}
-                      <span className="italic font-medium text-secondary-dark">
-                        {activeCollection.accent}
-                      </span>
+            <div className="space-y-7">
+              <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-black/[0.07] dark:border-white/[0.08]">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="font-hero-display text-[32px] sm:text-[38px] font-semibold tracking-[-0.025em] text-[#152e29] dark:text-[#f0ede6] leading-[1.08]">
+                      {activeCollection.title}
                     </h1>
                     <span
                       style={{ borderRadius: '9999px' }}
-                      className="px-3 py-0.5 bg-[#eae6da] border border-[#d6d0c0] font-hero-sans text-xs font-semibold text-primary tabular-nums"
+                      className="px-2.5 py-0.5 bg-[#efede6] dark:bg-[#192824] border border-black/[0.06] dark:border-white/[0.08] font-hero-sans text-[12px] font-semibold text-[#152e29] dark:text-[#f0ede6] tabular-nums"
                     >
                       {loading
                         ? 'Cargando...'
@@ -476,7 +459,7 @@ export default function Library() {
                           }`}
                     </span>
                   </div>
-                  <p className="mt-1.5 font-hero-sans text-sm text-on-surface-variant max-w-2xl">
+                  <p className="mt-1.5 font-hero-sans text-[14px] text-[#566d67] dark:text-[#a6b7b1] max-w-2xl leading-relaxed">
                     {activeCollection.subtitle}
                   </p>
                 </div>
@@ -486,16 +469,16 @@ export default function Library() {
                     <button
                       type="button"
                       onClick={() => handleOpenLogModal()}
-                      className="h-10 px-4 rounded-[10px] bg-primary hover:bg-[#166e5e] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center gap-2 shadow-[0_3px_12px_rgba(14,81,70,0.18)] transition-[background-color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer"
+                      className="h-10 ps-3.5 pe-4 rounded-[12px] bg-[#0e5146] hover:bg-[#166e5e] dark:bg-[#166e5e] dark:hover:bg-[#1d8572] text-white font-hero-sans text-[13px] font-semibold inline-flex items-center gap-2 transition-[background-color,transform] duration-150 ease-out motion-safe:enabled:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d]"
                     >
-                      <Plus size={15} strokeWidth={2.1} absoluteStrokeWidth aria-hidden="true" />
-                      <span>Registrar páginas leídas</span>
+                      <Plus size={15} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+                      <span>Registrar páginas</span>
                     </button>
                   )}
 
                   <Link
                     to="/catalog"
-                    className="group h-10 px-4 rounded-[10px] bg-[#eae6da]/75 hover:bg-[#eae6da] border border-[#d6d0c0] text-primary font-hero-sans text-[13px] font-semibold inline-flex items-center gap-1.5 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] [-webkit-tap-highlight-color:transparent]"
+                    className="group h-10 ps-4 pe-3.5 rounded-[12px] bg-white hover:bg-[#f4f2eb] dark:bg-[#131f1c] dark:hover:bg-[#192824] border border-black/[0.08] dark:border-white/[0.1] text-[#152e29] dark:text-[#f0ede6] font-hero-sans text-[13px] font-semibold inline-flex items-center gap-1.5 transition-[background-color,transform] duration-150 ease-out motion-safe:active:scale-[0.96] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e5146] dark:focus-visible:outline-[#4fb39d]"
                   >
                     <span>Explorar catálogo</span>
                     <ArrowRight
@@ -503,7 +486,7 @@ export default function Library() {
                       strokeWidth={2}
                       absoluteStrokeWidth
                       aria-hidden="true"
-                      className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+                      className="text-[#5c726c] dark:text-[#a6b7b1] transition-transform duration-150 ease-out group-hover:translate-x-0.5"
                     />
                   </Link>
                 </div>
