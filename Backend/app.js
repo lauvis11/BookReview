@@ -12,6 +12,7 @@ import { ratingRouter } from './routes/rating.js';
 import { commentsRouter } from './routes/comment.js';
 import { profileRouter } from './routes/profile.js';
 import { statusRouter } from './routes/status.js';
+import { readingRouter } from './routes/reading.js';
 import { aiRouter } from './routes/ai.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -82,6 +83,7 @@ app.use('/users', verifyToken, favoritesRouter)
 app.use('/books', verifyToken, ratingRouter)
 app.use('/book', commentsRouter)
 app.use('/status', verifyToken, statusRouter)
+app.use('/reading', verifyToken, readingRouter)
 app.use('/ai', aiRouter)
 
 app.use(errorHandler)
